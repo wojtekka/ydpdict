@@ -26,6 +26,10 @@ Charset ISO-8859-2
 
 UseColor On
 
+# Tryb z przezroczystym t³em lub bez
+
+UseTransparent On
+
 # By zmieniæ kolory wy¶wietlanego tekstu nale¿y zmieniæ poni¿sze warto¶ci
 # na jedne z nastêpuj±cych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
 # White, Gray, Yellow, LightRed, LightGreen, LightBlue, LightMagenta,

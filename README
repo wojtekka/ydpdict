@@ -1,5 +1,5 @@
 
-  ydpdict 0.61
+  ydpdict 0.62
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
   program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
@@ -10,7 +10,7 @@
   ¿e zadzia³a równie¿ pod innymi systemami, poniewa¿ jest pisany w miarê
   mo¿liwo¶ci przeno¶nie.
 		      
-  program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
+  program jest rozwijany g³ównie dla PLD (http://www.pld-linux.org/),
   przez co mo¿e nie dzia³aæ na innych systemach lub dystrybucjach
   Linuksa. aby skompilowaæ i zainstalowaæ pakiet, nale¿y wykonaæ
   polecenia:
@@ -44,6 +44,10 @@
   najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://toxygen.net/pub/
 
   lista zmian:
+  - 0.62 (2003-11-23): poprawka Piotra Domagalskiego (szalik%szalik.net):
+                       przezroczyste t³o w atermie. poprawki Jaros³awa
+		       Kruka (jareq%pld-linux.org): skok do danego s³owa
+		       z linii komend, zmiana adresów PLD na aktualne.
   - 0.61 (2003-10-01): wy¶wietlanie pomocy zaraz po uruchomieniu programu.
                        poprawki Cezarego M. Kruka: substytuty dla klawiszy
 		       funkcyjnych, blokada odtwarzania próbek d¼wiêkowych
@@ -83,7 +87,7 @@
 		       kontakt.
 		       poprawienie klawisza Backspace.
   - 0.52 (2002-05-27): autoconf, poprawki Grzegorza Go³awskiego
-                       (grzegol%pld.org.pl), poprawne dzia³anie na
+                       (grzegol%pld-linux.org), poprawne dzia³anie na
 		       maszynach bigendianowych.
   - 0.51 (1999-10-17): stabilna wersja 0.5, które nigdy nie wysz³o poza
                        wersjê rozwojow±.

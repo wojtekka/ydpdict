@@ -47,6 +47,7 @@ static struct option const longopts[] = {
 	{ "unicode", no_argument, 0, 'u' },
 	{ "unicodeset", no_argument, 0, 'U' },
 	{ "player", required_argument, 0, 'P' },
+	{ "word", required_argument, 0, 'w'},
 	{ 0, 0, 0, 0 }
 };
 #endif /* HAVE_GETOPT_LONG */
@@ -64,6 +65,7 @@ U¿ycie: %s [OPCJE]\n\
   -f, --path=¦CIE¯KA    podaje ¶cie¿kê do plików danych\n\
   -c, --cdpath=¦CIE¯KA  podaje ¶cie¿kê do p³yty CD\n\
   -P, --player=¦CIE¯KA  podaje ¶cie¿kê do odtwarzacza plików WAV\n\
+  -w, --word=S£OWO      uruchamia s³ownik i t³umaczy podane s³owo\n\
       --version		wy¶wietla wersjê programu\n\
   -h, --help		wy¶wietla ten tekst\n\
 \n", argv0);
@@ -178,9 +180,9 @@ int read_config(int argc, char **argv)
 	fclose(f);
   
 #ifdef HAVE_GETOPT_LONG
-	while ((optc = getopt_long(argc, argv, "hvVpaf:c:niuU", longopts, (int*) 0)) != -1) {
+	while ((optc = getopt_long(argc, argv, "hvVpaf:c:niuUw:", longopts, (int*) 0)) != -1) {
 #else
-	while ((optc = getopt(argc, argv, "hvVpaf:c:niuU")) != -1) {
+	while ((optc = getopt(argc, argv, "hvVpaf:c:niuUw:")) != -1) {
 #endif
 		switch(optc) {
 			case 'h':
@@ -216,6 +218,9 @@ int read_config(int argc, char **argv)
 				break;
 			case 'P':
 				player = xstrdup(optarg);
+				break;
+			case 'w':
+				word = xstrdup(optarg);
 				break;
 			default:
 				usage(argv[0]);
