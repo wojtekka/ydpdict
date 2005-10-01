@@ -1,0 +1,6 @@
+#!/bin/sh
+# Zmienia nazwy plików na pisane ma³ymi literami.
+
+find $1 -depth -type d -exec sh -c 'cd {}; \
+    for i in *; do mv $i `echo $i | tr [:upper:] [:lower:]`; \
+    done' \;

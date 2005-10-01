@@ -1,0 +1,10 @@
+#!/bin/sh
+# Konwertuje pliki w formacie WAV do formatu MP3
+# i wymaga programów sox oraz lame.
+
+find -depth -type d -exec sh -c 'cd {} ; \
+    for file in *.wav ; do file="`echo ${file} | sed 's/.wav//'`" ; \
+    sox ${file}.wav ${file}.cdr ; \
+    chmod u+w ${file}.wav ; rm ${file}.wav ; \
+    lame -b 64 ${file}.cdr ${file}.mp3 ; rm ${file}.cdr ; \
+    done' \;

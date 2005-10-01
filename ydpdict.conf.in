@@ -1,18 +1,18 @@
-# ¦cie¿ka, w której znajduj± siê pliki s³ownika. Podawanie ¶ciezki do partycji
-# dosowej przy kernelu 2.0 jest z³ym pomys³em, poniewa¿ dostêp bêdzie trwa³
-# kilkakrotnie d³u¿ej ni¿ do partycji ext2.
+# ¦cie¿ka prowadz±ca do plików s³ownika. Uwaga: dostêp do plików
+# umieszczonych na partycji FAT lub VFAT jest w wypadku j±der 2.0.x znacznie
+# wolniejszy ni¿ do plików na partycji EXT2.
 
 Path /usr/local/share/ydpdict
 
-# ¦cie¿ka, gdzie znajduje siê podmontowany CD-ROM ze s³ownikiem. U¿ywane do
-# odtwarzania próbek d¼wiêkowych.
+# ¦cie¿ka prowadz±ca do katalogów z próbkami d¼wiêkowymi.
 
 CDPath /mnt/cdrom
 
-# ¦cie¿ka do programu odtwarzaj±cego pliki WAV. Je¶li nie jest ustawiona,
-# program próbuje sam odtworzyæ próbki.
+# ¦cie¿ka do programu odtwarzaj±cego próbki d¼wiêkowe (play lub mpg321).
+# Je¿eli nie jest ustawiona, program próbuje sam odtworzyæ próbki.
 
-#Player wavplay
+#Player play
+#Player mpg321
 
 # Zestaw znaków, z którego korzysta program: None (bez polskich liter),
 # ISO-8859-2 (polskie litery), Unicode (polskie litery i transkrypcja
@@ -28,15 +28,18 @@ UseColor On
 
 # By zmieniæ kolory wy¶wietlanego tekstu nale¿y zmieniæ poni¿sze warto¶ci
 # na jedne z nastêpuj±cych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
-# White, Gray, LightRed, LightGreen, Yellow, LightBlue, LightMagenta,
-# LightCyan, LightWhite. Nale¿y zwróciæ uwagê, ¿e dla kolorów z przedrostkiem
-# "Light" pogrubienie tekstu nie bêdzie widoczne.
+# White, Gray, Yellow, LightRed, LightGreen, LightBlue, LightMagenta,
+# LightCyan, LightWhite. Uwaga: dla kolorów z przedrostkiem "Light"
+# pogrubienie tekstu nie bêdzie widoczne.
 
 # Kolor tekstu
+
 Color White
 
 # Kolor definicji
+
 DefinitionColor LightCyan
 
 # Kolor drugiego wyró¿nienia (np. czê¶æ mowy, rodzaj)
+
 InformationColor LightGreen

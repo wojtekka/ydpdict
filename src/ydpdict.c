@@ -45,7 +45,7 @@
 /* podstawowe zmienne programu */
 u_char input[INPUTLEN + 1], *def = NULL;
 int fw, menu = 0, menux = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
-int defsize, defupd = 1, color_text, color_cf1, color_cf2, parse_rtf = 1;
+int defsize, defupd = 0, color_text, color_cf1, color_cf2, parse_rtf = 1;
 int xsize, ysize, resized_term = 0, ctrlk = 0;
 int init;
 
@@ -125,6 +125,9 @@ int main(int argc, char **argv)
 	init = 0;
 
 	mousemask(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
+
+	/* wy¶wietl pomoc po uruchomieniu */
+	ungetch('?');
 	
 	/* i do dzie³a! */
 	for (;;) {
@@ -257,22 +260,32 @@ int main(int argc, char **argv)
 				defmark = (defmark) ? 0 : 1;
 				break;
 			case KEY_F(2):
-				if (playsample(pos + menu) < 1)
-					beep();
+			case '`':
+				if (dict_ap == 1) {
+				    if (playsample(pos + menu) < 1);
+				}
 				break;
 			case KEY_F(1):
-				xfree(def);
-				def = xstrdup(_("\
+			case '?':
+				def = strdup(_("\
 {\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2003 by wojtek kaniewski}\
 \\par\\pard{\
-hmm... tak w³a¶ciwie, to nie wiem, co mia³bym tutaj wrzuciæ. wystarczy \
-powiedzieæ, ¿e klawisz TAB prze³±cza okna, kursorami oraz PgUp i PgDn \
-mo¿na przewijaæ zarówno listê s³ów, jak i definicjê s³owa. klawisz F2 \
-powoduje odtworzenie próbki d¼wiêkowej, a F3 i F4 zmieniaj± odpowiednio \
-s³ownik na angielsko-polski i polsko-angielski.\
-}\\par\\pard{\
+}\
+{\\line{\\cf2 F1} lub {\\cf2 ?} - pomoc}\
+{\\line{\\cf2 Tab} - zmiana panelu}\
+{\\line{\\cf2 strza³ka w dó³} lub {\\cf2 w górê} - przewijanie paneli wiersz po wierszu}\
+{\\line{\\cf2 Page Up} lub {\\cf2 Page Down} - przewijanie paneli ekranami}\
+{\\line{\\cf2 F2} lub {\\cf2 `} - odtworzenie wymowy wyrazu}\
+{\\line{\\cf2 F3} lub {\\cf2 <} - s³ownik angielsko-polski}\
+{\\line{\\cf2 F4} lub {\\cf2 >} - s³ownik polsko-angielski}\
+{\\line{\\cf2 Ctrl-U} - usuniêcie wpisywanego s³owa}\
+{\\line{\\cf2 Ctrl-L} - od¶wie¿enie okna}\
+{\\line{\\cf2 strza³ka w lewo} lub {\\cf2 w prawo}- poruszanie siê w s³owie}\
+{\\line{\\cf2 Enter} - zakoñczenie edycji s³owa}\
+{\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakoñczenie pracy z programem.}\
+\\par\\pard{\
 kontakt z autorem: {\\b wojtekka@irc.pl} \
-najnowsze wersje s± dostêpne pod adresem {\\b ftp://dev.null.pl/pub/}\
+najnowsze wersje s± dostêpne pod adresem {\\b ftp://toxygen.net/pub/}\
 }"));
 				break;
 			case KEY_F(3):
@@ -413,7 +426,7 @@ najnowsze wersje s± dostêpne pod adresem {\\b ftp://dev.null.pl/pub/}\
 				else
 					menux--;
 				break;
-			case KEY_RIGHT:
+ 			case KEY_RIGHT:
 				if (menux >= strlen(input) || defmark)
 					beep();
 				else
