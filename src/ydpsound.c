@@ -61,7 +61,7 @@ int playsample(int def)
 	if (player) {
 		char buf2[512];
     
-		snprintf(buf2, sizeof(buf), "%s %s 2&>1 > /dev/null", player, buf);
+		snprintf(buf2, sizeof(buf), "%s %s 2>&1 > /dev/null", player, buf);
 		system(buf2);
 		return 0;
 	}

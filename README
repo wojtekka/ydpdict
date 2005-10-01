@@ -1,5 +1,5 @@
 
-  ydpdict 0.56
+  ydpdict 0.57
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
   program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
@@ -32,6 +32,10 @@
   najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://dev.null.pl/pub/
 
   lista zmian:
+  - 0.57 (2003-04-15): kolejne poprawki Piotra Domagalskiego porz±dkuj±ce
+                       kompilacjê na nielinuksowych systemach. poprawka
+		       Paw³a Fenglera (pawfen%wp.pl): wywo³ywanie
+		       zewnêtrznego odtwarzacza w poprawny sposób.
   - 0.56 (2003-03-21): wiosenne porz±dki w kodzie; obs³uga plików bazy
                        z nazwami pisanymi wielkimi literami; obs³uga próbek
 		       d¼wiêkowych o rozszerzeniu mp3; uzupe³nienie
