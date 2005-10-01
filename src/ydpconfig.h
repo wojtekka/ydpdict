@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  (c) 1998-2004 wojtek kaniewski <wojtekka@irc.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 #include <curses.h>
 
-#define VERSION "0.62"
+#define VERSION "0.63"
 #define HEADER_NAME "ydpdict-" VERSION
-#define HEADER_COPYRIGHT "(c) 1998-2003 by wojtek kaniewski"
+#define HEADER_COPYRIGHT "(c) 1998-2004 by wojtek kaniewski"
 #define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"
 #define CONFIGFILE_CWD1 "ydpdict.conf"
 #define CONFIGFILE_CWD2 ".ydpdictrc"

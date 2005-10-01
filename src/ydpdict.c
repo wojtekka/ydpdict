@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  (c) 1998-2004 wojtek kaniewski <wojtekka@irc.pl>
  *                piotr domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
 			case KEY_F(1):
 			case '?':
 				def = strdup(_("\
-{\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2003 by wojtek kaniewski}\
+{\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2004 by wojtek kaniewski}\
 \\par\\pard{\
 }\
 {\\line{\\cf2 F1} lub {\\cf2 ?} - pomoc}\
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
 {\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakoñczenie pracy z programem.}\
 \\par\\pard{\
 kontakt z autorem: {\\b wojtekka@irc.pl} \
-najnowsze wersje s± dostêpne pod adresem {\\b ftp://toxygen.net/pub/}\
+najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
 }"));
 				break;
 			case KEY_F(3):

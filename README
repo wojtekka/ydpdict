@@ -1,6 +1,6 @@
 
-  ydpdict 0.62
-  (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+  ydpdict 0.63
+  (c) copyright 1998-2004 wojtek kaniewski <wojtekka%irc.pl>
 
   program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
   multimedialnego s³ownika angielsko-polskiego i polsko-angielskiego
@@ -19,7 +19,15 @@
     make
     make install
 
-  teraz wystarczy skopiowaæ cztery pliki z oryginalnego pakietu:
+  ze wzglêdu na zmianê zachowania autoconfa, strony manuali bêd± instalowane
+  w katalogu $(prefix)/man, zamiast $(prefix)/share/man. je¶li chcesz je
+  zainstalowaæ w odpowiednim miejscu, wpisz:
+
+    ./configure --mandir=/usr/local/share/man
+    make
+    make install
+
+  potem teraz wystarczy skopiowaæ cztery pliki z oryginalnego pakietu:
 
     database/dict100.dat
     database/dict100.idx
@@ -41,9 +49,14 @@
   krawêdzie ekranu, mo¿na przewijaæ listê lub opis. je¶li klikniemy dwukrotnie
   na s³owo z okienka t³umaczenia, zostanie ono automatycznie wyszukane.
 
-  najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://toxygen.net/pub/
+  ydpdict jest wydany na licencji GPLv2, która jest dostêpna w pliku COPYING.
+  najnowsz± wersjê mo¿na ¶ci±gn±æ z http://toxygen.net/ydpdict/
 
   lista zmian:
+  - 0.63 (2004-05-31): poprawka adresu. poprawki Marcina Owsianego
+                       (marcin%owsiany.pl): poprawne zamykanie plików
+		       s³ownika, usuniêcie czytania konfiguracji z aktualnego
+		       katalogu, napisanie stron manuali.
   - 0.62 (2003-11-23): poprawka Piotra Domagalskiego (szalik%szalik.net):
                        przezroczyste t³o w atermie. poprawki Jaros³awa
 		       Kruka (jareq%pld-linux.org): skok do danego s³owa

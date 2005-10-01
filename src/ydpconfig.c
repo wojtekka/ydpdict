@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  (c) 1998-2004 wojtek kaniewski <wojtekka@irc.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -94,15 +94,8 @@ int read_config(int argc, char **argv)
 	config_cf2 = COLOR_GREEN | A_BOLD;
 
 	/* sprawd¼, czy plik istnieje */
-	f = fopen(CONFIGFILE_CWD1, "r");
-	
-	if (!f)
-		f = fopen(CONFIGFILE_CWD2, "r");
-	
-	if (!f) {
-		snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD1);
-		f = fopen(line, "r");
-	}
+	snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD1);
+	f = fopen(line, "r");
 	
 	if (!f) {
 		snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD2);
