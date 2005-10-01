@@ -214,8 +214,9 @@ kontakt z autorem: {\\b wojtekka@irc.pl}\
 	break;
       default:
         if ((ch == 'x' || ch == 'X') && ctrlk) showerror(_("Hmm... Joe? Nie znam tego pana..."));
-	if (defmark) break;
         if (strlen(input) > 17 || !ischar(ch)) break;
+	defmark=0;
+	defline=0;
 	input[strlen(input) + 1] = 0;
 	input[strlen(input)] = (unsigned char) ch;
 	if (!strcmp(&input[strlen(input) - 2], ":q") || !strcmp(&input[strlen(input)-3], ":wq")) showerror(_("E--- (Emacs sucks! vi forever!!!)"));

@@ -1,5 +1,5 @@
 
-  ydpdict 0.53
+  ydpdict 0.54
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
   program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
@@ -12,6 +12,11 @@
     make install
 
   lista zmian:
+  - 0.54 (2003-01-27): poprawki Paw³a Jab³oñskiego
+                       (pawelj%lodz.dialog.net.pl): wy¶wietlenie innego
+		       s³owa przewija okno definicji do góry; rozpoczêcie
+		       pisania s³owa, bed±c w oknie definicji, usuwa
+		       poprzednie; klawisz F12 równowa¿ny z Ctrl-U.
   - 0.53 (2003-01-07): z powodu awarii dysku straci³em poprawki, które
                        podes³ano mi od wydania 0.52. dlatego proszê o
 		       kontakt.
