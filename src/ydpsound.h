@@ -21,29 +21,29 @@
 #define __YDPSOUND_H
 
 struct riff_header_type {
-  char id[4];
-  unsigned long size;
-  char format[4];
+	char id[4];
+	unsigned long size;
+	char format[4];
 };
 
 struct riff_block_type {
-  char id[4];
-  unsigned long size;
+	char id[4];
+	unsigned long size;
 };
 
 #define WAVE_FORMAT_PCM 0x0001
 #define WAVE_FORMAT_ADPCM 0x0002
 
 struct wave_fmt_type {
-  unsigned short int wFormatTag;
-  unsigned short int wChannels;
-  unsigned long dwSamplesPerSec;
-  unsigned long dwAvgBytesPerSec;
-  unsigned short int wBlockAlign;
+	unsigned short int wFormatTag;
+	unsigned short int wChannels;
+	unsigned long dwSamplesPerSec;
+	unsigned long dwAvgBytesPerSec;
+	unsigned short int wBlockAlign;
 };
 
 struct wave_pcm_type {
-  unsigned short int wBitsPerSample;
+	unsigned short int wBitsPerSample;
 };
 
 int playsample(int def);

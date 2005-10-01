@@ -27,60 +27,64 @@ u_char *table_phonetic_iso[] = TABLE_PHONETIC_ISO;
 
 u_char *char_table_conv(u_char *inp, u_char *table)
 {
-  u_char *prev = inp;
+	u_char *prev = inp;
 
-  for(; *inp; inp++)
-    if (*inp > 127)
-      *inp = table[*inp - 128];
+	for (; *inp; inp++)
+		if (*inp > 127)
+			*inp = table[*inp - 128];
   
-  return prev;
+	return prev;
 }
        
 u_char *string_table_conv(u_char *inp, u_char **table)
 {
-  static u_char buf[1024], *_buf = buf, letter[2] = " \0";
+	static u_char buf[1024], *_buf = buf, letter[2] = " \0";
   
-  memset(_buf, 0, 1024);
-  for (; *inp; inp++)
-    if (*inp > 127)
-      strcat(_buf, table[*inp - 128]);
-    else {
-      letter[0] = *inp;
-      strcat(_buf, letter);
-    }
+	memset(buf, 0, sizeof(buf));
+	
+	for (; *inp; inp++) {
+		if (*inp > 127) {
+			strcat(_buf, table[*inp - 128]);
+		} else {
+			letter[0] = *inp;
+			strcat(_buf, letter);
+		}
+	}
   
-  return _buf;
+	return _buf;
 }
 
 u_char *convert_cp1250(u_char *buf, int alloc)
 {
-  return char_table_conv(alloc ? (u_char*) strdup(buf) : buf, table_cp_iso);
+	return char_table_conv(alloc ? (u_char*) strdup(buf) : buf, table_cp_iso);
 }
 
 u_char *convert_plain(u_char *inp, int charset, int alloc)
 {
-  switch(charset) {
-    case 0:
-      return char_table_conv(alloc ? (u_char*) strdup(inp) : inp, table_iso_plain);
-    case 1:
-      return inp;
-    case 2:
-    case 3:
-      return string_table_conv(inp, table_unicode);
-  }
-  return NULL;
+	switch (charset) {
+		case 0:
+			return char_table_conv(alloc ? (u_char*) strdup(inp) : inp, table_iso_plain);
+		case 1:
+			return inp;
+		case 2:
+		case 3:
+			return string_table_conv(inp, table_unicode);
+	}
+	
+	return NULL;
 }
 
 u_char *convert_phonetic(u_char *inp, int charset, int alloc)
 {
-  switch (charset) {
-    case 0:
-      return char_table_conv(string_table_conv(inp, table_phonetic_iso), table_iso_plain);
-    case 1:
-      return string_table_conv(inp, table_phonetic_iso);
-    case 2:
-    case 3:
-      return string_table_conv(inp, table_unicode);
-  }
-  return 0;
+	switch (charset) {
+		case 0:
+			return char_table_conv(string_table_conv(inp, table_phonetic_iso), table_iso_plain);
+		case 1:
+			return string_table_conv(inp, table_phonetic_iso);
+		case 2:
+		case 3:
+			return string_table_conv(inp, table_unicode);
+	}
+	
+	return 0;
 }

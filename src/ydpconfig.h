@@ -22,7 +22,7 @@
 
 #include <curses.h>
 
-#define VERSION "0.55"
+#define VERSION "0.56"
 #define HEADER_NAME "ydpdict-" VERSION
 #define HEADER_COPYRIGHT "(c) 1998-2003 by wojtek kaniewski"
 #define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"
@@ -38,18 +38,18 @@ int read_config();
 
 /* jakie s± wpisy w pliku konfiguracyjnym? c:kolor, b:boolean, s:tekst, h:charset */
 #define E_LABELS { "c:Color", "c:DefinitionColor", "c:InformationColor", \
-  "b:UseColor", "h:Charset", "s:Path", "s:CDPath", "s:Player", 0 }
+	"b:UseColor", "h:Charset", "s:Path", "s:CDPath", "s:Player", 0 }
 #define E_VALS { &config_text, &config_cf1, &config_cf2, &use_color, &charset, \
-  (int*)&filespath, (int*)&cdpath, (int*)&player, 0 }
+	(int*)&filespath, (int*)&cdpath, (int*)&player, 0 }
 
 /* sta³e okre¶laj±ce jak nazywa sie dany kolor */
 #define COLOR_DEFS { "Black", "Red", "Green", "Brown", "Blue", "Magenta", \
-  "Cyan", "White", "Gray", "LightRed", "LightGreen", "Yellow", "LightBlue", \
-  "LightMagenta", "LightCyan", "LightWhite", 0 }
+	"Cyan", "White", "Gray", "LightRed", "LightGreen", "Yellow", \
+	"LightBlue", "LightMagenta", "LightCyan", "LightWhite", 0 }
 #define COLOR_VALS { COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, \
-  COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE, COLOR_WHITE | A_DIM, \
-  COLOR_RED | A_BOLD, COLOR_GREEN | A_BOLD, COLOR_YELLOW | A_BOLD, \
-  COLOR_BLUE | A_BOLD, COLOR_MAGENTA | A_BOLD, COLOR_CYAN | A_BOLD, \
-  COLOR_WHITE | A_BOLD, 0 }
+	COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE, COLOR_WHITE \
+	| A_DIM, COLOR_RED | A_BOLD, COLOR_GREEN | A_BOLD, COLOR_YELLOW \
+	| A_BOLD, COLOR_BLUE | A_BOLD, COLOR_MAGENTA | A_BOLD, COLOR_CYAN \
+	| A_BOLD, COLOR_WHITE | A_BOLD, 0 }
 
 #endif /* __YDPCONFIG_H */

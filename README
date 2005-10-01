@@ -1,7 +1,13 @@
 
-  ydpdict 0.55
+  ydpdict 0.56
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
+  program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
+  multimedialnego s³ownika angielsko-polskiego i polsko-angielkiego
+  collinsa. oryginalny pakiet zawiera jedynie program windowsowy, co
+  uniemo¿liwia korzystanie z niego pod innymi systemami. niniejszy
+  program pozwala korzystaæ ze s³ownika pod kontrol± Linuksa.
+		      
   program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
   przez co mo¿e nie dzia³aæ na innych systemach lub dystrybucjach
   Linuksa. aby skompilowaæ i zainstalowaæ pakiet nale¿y wykonaæ
@@ -11,7 +17,25 @@
     make
     make install
 
+  teraz wystarczy skopiowaæ dwa pliki z oryginalnego pakietu
+  ,,database/dict100.dat'' i ,,database/dict100.idx'' do katalogu,
+  w którym znajduje siê program lub podaæ ¶cie¿kê, w której siê one
+  znajduj± w parametrze "Path" pliku konfiguracyjnego. nale¿y równie¿
+  zmieniæ parametr "CDPath" na ¶cie¿kê, gdzie znajduje siê podmountowana
+  p³yta CD. jego brak uniemo¿liwi odtwarzanie próbek d¼wiêkowych.
+ 
+  obs³uga programu jest bajecznie prosta. wystarczy wpisaæ szukane s³owo
+  lub wybraæ je klawiszami kursorów. do przemieszania siê miêdzy list±
+  s³ów, a definicj± s³u¿y klawisz Tab. odtwarzanie próbek to F2. zmiana
+  s³ownika na angielsko-polski i polsko-angielski to odpowiednio F3 i F4.
+
+  najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://dev.null.pl/pub/
+
   lista zmian:
+  - 0.56 (2003-03-21): wiosenne porz±dki w kodzie; obs³uga plików bazy
+                       z nazwami pisanymi wielkimi literami; obs³uga próbek
+		       d¼wiêkowych o rozszerzeniu mp3; uzupe³nienie
+		       dokumentacji na podstawie archiwalnej wersji 0.5.
   - 0.55 (2003-03-12): poprawki Piotra Domagalskiego (szalik%szalik.net):
                        poprawna kompilacja na OpenBSD, dok³adniejsze
 		       formatowanie tekstu.
@@ -27,5 +51,9 @@
   - 0.52 (2002-05-27): autoconf, poprawki Grzegorza Go³awskiego
                        (grzegol%pld.org.pl), poprawne dzia³anie na
 		       maszynach bigendianowych.
-  - 0.51 (1999-12-16): dawno temu i nieprawda.
+  - 0.51 (1999-10-17): stabilna wersja 0.5, które nigdy nie wysz³o poza
+                       wersjê rozwojow±.
+  - 0.5 (1999-08-17): wersja rozwojowa. spora reorganizacja kodu; pozbycie
+                      siê SLanga.
+  - 0.4 (1998-xx-xx): dawno temu i nieprawda.
 

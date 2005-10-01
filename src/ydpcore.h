@@ -20,7 +20,6 @@
 #ifndef __YDPCORE_H
 #define __YDPCORE_H
 
-#define whoops(x) { ydperror = x; return 0; }
 #define YDP_NONE 0
 #define YDP_CANTOPENIDX 1
 #define YDP_CANTOPENDEF 2
