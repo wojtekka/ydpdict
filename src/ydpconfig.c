@@ -23,8 +23,10 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <string.h>
-#include <getopt.h>
 #include "config.h"
+#ifdef HAVE_GETOPT_LONG
+#  include <getopt.h>
+#endif
 
 #include "ydpconfig.h"
 #include "ydpconvert.h"

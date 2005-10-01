@@ -375,6 +375,7 @@ int showdef(char *def, int first) {
 	if (!strcmp(token, "cf0")) newattr = color_text;
 	if (!strcmp(token, "cf1")) newattr = color_cf1;
 	if (!strcmp(token, "cf2")) newattr = color_cf2;
+	if (!strcmp(token, "cf5")) newattr = color_text;
         if (token[0] == 'f') newphon = 0;
 	if (!strcmp(token, "f1")) newphon = 1;
 	if (!strcmp(token, "qc")) newattr |= 0x8000; /* nie wy¶wietlaæ */

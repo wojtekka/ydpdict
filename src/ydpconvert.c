@@ -19,7 +19,6 @@
 
 #include <string.h>
 #include "ydpconvert.h"
-#include "ydpconfig.h"
 
 u_char table_cp_iso[] = TABLE_CP_ISO;
 u_char table_iso_plain[] = TABLE_ISO_PLAIN;
