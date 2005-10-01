@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  (c) 1998-2004 wojtek kaniewski <wojtekka@irc.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -94,6 +94,7 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 
 		if ((fd = fopen(p, "r")) == NULL) {
 			fclose(fi);
+			fi = NULL;
 			xfree(p);
 			ydperror = YDP_CANTOPENDEF;
 			return 0;
@@ -227,6 +228,13 @@ void closedict()
 		xfree(words);
 	}
 	
-	fclose(fd);
-	fclose(fi);
+	if (fd) {
+		fclose(fd);
+		fd = NULL;
+	}
+
+	if (fi) {
+		fclose(fi);
+		fd = NULL;
+	}
 }

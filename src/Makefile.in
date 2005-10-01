@@ -6,12 +6,20 @@ OBJS = ydpcore.o ydpconfig.o ydpsound.o ydpconvert.o xmalloc.o
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
+mandir = @mandir@
 
-all:	$(OBJS)
+all:	ydpdict
+
+ydpdict:	$(OBJS)
 	$(CC) $(CFLAGS) ydpdict.c -o ydpdict $(LIBS) $(OBJS)
 
 install:
+	install -d $(bindir)
 	install ydpdict $(bindir)
+	install -d $(mandir)/man1
+	install ../ydpdict.man $(mandir)/man1/ydpdict.1
+	install -d $(mandir)/pl/man1
+	install ../ydpdict.pl.man $(mandir)/pl/man1/ydpdict.1
 
 clean:
 	rm -f ydpdict *~ core *.o

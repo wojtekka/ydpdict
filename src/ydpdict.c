@@ -48,6 +48,7 @@ int fw, menu = 0, menux = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
 int defsize, defupd = 0, color_text, color_cf1, color_cf2, parse_rtf = 1;
 int xsize, ysize, resized_term = 0, ctrlk = 0;
 int init;
+int length;
 
 /* okienka ncurses */
 WINDOW *wordwin = NULL, *defwin = NULL, *headwin = NULL, *splitwin = NULL;
@@ -72,7 +73,7 @@ void change_dict(int pl);
 /* do dzie³a panie i panowie... */
 int main(int argc, char **argv)
 {
-	int ch;
+	int ch, bg;
 	MEVENT m_event;
 
 	/* na mój sygna³... */
@@ -94,12 +95,22 @@ int main(int argc, char **argv)
 	noecho();
 	cbreak();
 
+#ifndef COLOR_DEFAULT
+#  define COLOR_DEFAULT (-1)
+#endif
+
+	if (transparent) {
+		bg = COLOR_DEFAULT;
+		use_default_colors();
+	} else
+		bg = COLOR_BLACK;
+
 	/* je¶li chcemy kolorków, to je przygotuj */
 	if (use_color && has_colors()) {
 		start_color();
-		init_pair(1, config_text & 127, COLOR_BLACK);
-		init_pair(2, config_cf1 & 127, COLOR_BLACK);
-		init_pair(3, config_cf2 & 127, COLOR_BLACK);
+		init_pair(1, config_text & 127, bg);
+		init_pair(2, config_cf1 & 127, bg);
+		init_pair(3, config_cf2 & 127, bg);
 		color_text = COLOR_PAIR(1) | (config_text & A_BOLD);
 		color_cf1 = COLOR_PAIR(2) | (config_cf1 & A_BOLD);
 		color_cf2 = COLOR_PAIR(3) | (config_cf2 & A_BOLD);
@@ -126,8 +137,13 @@ int main(int argc, char **argv)
 
 	mousemask(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
 
-	/* wy¶wietl pomoc po uruchomieniu */
-	ungetch('?');
+	/* je¿eli poda³e¶ parametr word to wczytaj slowo*/
+	if (word)	
+		for (length = ((int) strlen(word)) - 1; length>=0; length--)
+			ungetch(word[length]);
+	else
+		/* wy¶wietl pomoc po uruchomieniu */
+		ungetch('?');
 	
 	/* i do dzie³a! */
 	for (;;) {
@@ -280,7 +296,7 @@ int main(int argc, char **argv)
 {\\line{\\cf2 F4} lub {\\cf2 >} - s³ownik polsko-angielski}\
 {\\line{\\cf2 Ctrl-U} - usuniêcie wpisywanego s³owa}\
 {\\line{\\cf2 Ctrl-L} - od¶wie¿enie okna}\
-{\\line{\\cf2 strza³ka w lewo} lub {\\cf2 w prawo}- poruszanie siê w s³owie}\
+{\\line{\\cf2 strza³ka w lewo} lub {\\cf2 w prawo} - poruszanie siê w s³owie}\
 {\\line{\\cf2 Enter} - zakoñczenie edycji s³owa}\
 {\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakoñczenie pracy z programem.}\
 \\par\\pard{\

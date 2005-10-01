@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  (c) 1998-2004 wojtek kaniewski <wojtekka@irc.pl>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

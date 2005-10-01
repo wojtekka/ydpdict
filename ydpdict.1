@@ -1,0 +1,68 @@
+.TH YDPDICT 1 "31 May 2004"
+.SH NAME
+ydpdict \- an interface for English-Polish Collins dictionary
+.SH SYNOPSIS
+.B ydpdict [
+.BI options
+.B ]
+
+.SH DESCRIPTION
+.B ydpdict
+is an ncurses interface for English-Polish and Polish-English Collins
+dictionary, which is distributed by Young Digital Poland.
+.PP
+.B ydpdict
+tries to find the configuration file in the following locations (reads only the
+first one found):
+.TP
+1)
+.BI ~/ydpdict.conf
+.TP
+2)
+.BI ~/.ydpdictrc
+.TP
+3)
+.BI /etc/ydpdict.conf
+
+.SH OPTIONS
+.TP
+.BI \-a\ [\-\-ang]
+Starts the English-Polish dictionary (default).
+.TP
+.BI \-p\ [\-\-pol]
+Starts the English-Polish dictionary (default).
+.TP
+.BI \-n\ [\-\-nopl]
+Turns of displaying of Polish diacritics.
+.TP
+.BI \-i\ [\-\-iso]
+Displays polish diacritics using ISO-8859-2.
+.TP
+.BI \-u\ [\-\-unicode]
+Displays polish diacritics using Unicode.
+.TP
+.BI \-U\ [\-\-unicodeset]
+Switches the console to Unicode mode at start, and back at exit.
+.TP
+.BI \-f\ [\-\-path=PATH]
+Sets the path to data files.
+.TP
+.BI \-c\ [\-\-cdpath=PATH]
+Sets the path to the CD. (For audio sample files).
+.TP
+.BI \-P\ [\-\-player=PATH]
+Sets the path to the WAV file player.
+.TP
+.BI \-w\ [\-\-word=WORD]
+Starts the dictionary and translates the specified word.
+.TP
+.BI \-\-version
+Displays the version of the program.
+.TP
+.BI \-h\ [\-\-help]
+Shows command line options.
+.SH AUTHOR
+.B ydpdict
+was written by Wojtek Kaniewski <wojtekka@irc.pl>. Latest version can be
+found at
+.I http://toxygen.net/ydpdict/
