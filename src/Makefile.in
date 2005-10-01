@@ -1,0 +1,17 @@
+CC = @CC@
+LIBS = @LIBS@
+CFLAGS = @CFLAGS@
+OBJS = ydpcore.o ydpconfig.o ydpsound.o ydpconvert.o
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+
+all:	$(OBJS)
+	$(CC) $(CFLAGS) ydpdict.c -o ydpdict $(LIBS) $(OBJS)
+
+install:
+	install ydpdict $(bindir)
+
+clean:
+	rm -f ydpdict *~ core *.o

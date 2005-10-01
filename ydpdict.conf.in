@@ -1,0 +1,42 @@
+# ¦cie¿ka, w której znajduj± siê pliki s³ownika. Podawanie ¶ciezki do partycji
+# dosowej przy kernelu 2.0 jest z³ym pomys³em, poniewa¿ dostêp bêdzie trwa³
+# kilkakrotnie d³u¿ej ni¿ do partycji ext2.
+
+Path /usr/local/share/ydpdict
+
+# ¦cie¿ka, gdzie znajduje siê podmontowany CD-ROM ze s³ownikiem. U¿ywane do
+# odtwarzania próbek d¼wiêkowych.
+
+CDPath /mnt/cdrom
+
+# ¦cie¿ka do programu odtwarzaj±cego pliki WAV. Je¶li nie jest ustawiona,
+# program próbuje sam odtworzyæ próbki.
+
+#Player wavplay
+
+# Zestaw znaków, z którego korzysta program: None (bez polskich liter),
+# ISO-8859-2 (polskie litery), Unicode (polskie litery i transkrypcja
+# fonetyczna przy odpowiedniej czcionce). Mo¿na te¿ u¿yæ parametru UnicodeSet,
+# a wtedy program sam prze³±czy konsolê w tryb UTF-8.
+
+Charset ISO-8859-2
+
+# Wprawdzie program potrafi wykrywac czy terminal obsluguje kolory czy nie,
+# to jednak mozna wymusic ich wyswietlanie lub ich brak.
+
+UseColor On
+
+# By zmienic kolory wyswietlanego tekstu nalezy zmienic ponizsze wartosci
+# na jedne z nastepujacych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
+# White, Gray, LightRed, LightGreen, Yellow, LightBlue, LightMagenta,
+# LightCyan, LightWhite. Nalezy zwrocic uwage, ze dla kolorow z przedrostkiem
+# "Light" pogrubienie tekstu nie bedzie widoczne.
+
+# Kolor tekstu
+Color White
+
+# Kolor definicji
+DefinitionColor LightCyan
+
+# Kolor drugiego wyroznienia (np. czesc mowy, rodzaj)
+InformationColor LightGreen

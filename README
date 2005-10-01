@@ -1,0 +1,23 @@
+
+  ydpdict 0.53
+  (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+
+  program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
+  przez co mo¿e nie dzia³aæ na innych systemach lub dystrybucjach
+  Linuksa. aby skompilowaæ i zainstalowaæ pakiet nale¿y wykonaæ
+  polecenia:
+
+    ./configure
+    make
+    make install
+
+  lista zmian:
+  - 0.53 (2003-01-07): z powodu awarii dysku straci³em poprawki, które
+                       podes³ano mi od wydania 0.52. dlatego proszê o
+		       kontakt.
+		       poprawienie klawisza Backspace.
+  - 0.52 (2002-05-27): autoconf, poprawki Grzegorza Go³awskiego
+                       (grzegol%pld.org.pl), poprawne dzia³anie na
+		       maszynach bigendianowych.
+  - 0.51 (1999-12-16): dawno temu i nieprawda.
+
