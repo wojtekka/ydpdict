@@ -28,7 +28,7 @@
 unsigned long *indexes;	/* tablica z indeksami definicji w pliku indeksowym */
 u_char **words;		/* tablica z list± s³ów */
 unsigned short wordcount;	/* ilo¶æ s³ów */
-int fd, fi;		/* deskryptory plików */
+FILE *fd, *fi;		/* strumienie */
 int ydperror;		/* kod b³êdu */
 
 int opendict(const u_char *path, const u_char *index, const u_char *def);

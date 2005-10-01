@@ -71,13 +71,13 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 	
 	snprintf(p, pathsize, "%s/%s", path, index);
 	
-	if ((fi = open(p, O_RDONLY)) == -1) {
+	if ((fi = fopen(p, "r")) == NULL) {
 		char *q;
 
 		for (q = strrchr(p, '/'); *q; q++)
 			*q = toupper(*q);
 
-		if ((fi = open(p, O_RDONLY)) == -1) {
+		if ((fi = fopen(p, "r")) == NULL) {
 			xfree(p);
 			ydperror = YDP_CANTOPENIDX;
 			return 0;
@@ -86,14 +86,14 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 	
 	snprintf(p, pathsize, "%s/%s", path, def);
 	
-	if ((fd = open(p, O_RDONLY)) == -1) {
+	if ((fd = fopen(p, "r")) == NULL) {
 		char *q;
 
 		for (q = strrchr(p, '/'); *q; q++) 
 			*q = toupper(*q);
 
-		if ((fd = open(p, O_RDONLY)) == -1) {
-			close(fi);
+		if ((fd = fopen(p, "r")) == NULL) {
+			fclose(fi);
 			xfree(p);
 			ydperror = YDP_CANTOPENDEF;
 			return 0;
@@ -103,39 +103,40 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 	xfree(p);
 
 	/* wczytaj ilo¶æ s³ów */
-	lseek(fi, 0x08, SEEK_SET);
+	fseek(fi, 0x08, SEEK_SET);
 	wordcount = 0;
-	read(fi, &wordcount, 2);
+	fread(&wordcount, 1, 2, fi);
 	wordcount = fix16(wordcount);
-  
+
 	/* zarezerwuj odpowiedni± ilo¶æ pamiêci */
 	indexes = xmalloc(wordcount * sizeof(unsigned long));
 	words = xmalloc((wordcount + 1) * sizeof(char*));
 	words[wordcount] = 0;
     
 	/* wczytaj offset tablicy indeksów */
-	lseek(fi, 0x10, SEEK_SET);
+	fseek(fi, 0x10, SEEK_SET);
 	pos = 0;
-	read(fi, &pos, 4);
+	fread(&pos, 1, 0x04, fi);
 	pos = fix32(pos);
-	lseek(fi, pos, SEEK_SET);
+	fseek(fi, pos, SEEK_SET);
 
 	/* wczytaj tablicê indeksów */
 	do {
-		lseek(fi, 0x04, SEEK_CUR);
+		fseek(fi, 0x04, SEEK_CUR);
 		indexes[current] = 0;
-		read(fi, &indexes[current], sizeof(unsigned long));
+		fread(&indexes[current], 1, sizeof(unsigned long), fi);
 		indexes[current] = fix32(indexes[current]);
 
 		bp = 0;
 		do {
-			read(fi, &ch, 1);
+			fread(&ch, 1, 1, fi);
 			buf[(bp < 255) ? bp++ : bp] = ch;
 		} while(ch);
-		
+
 		words[current] = xstrdup(buf);
-		
+
 		convert_cp1250(words[current], 0);
+
 	} while (++current < wordcount);
 
 	return 1;
@@ -144,28 +145,28 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 /* wczytuje definicjê */
 u_char *readdef(int i)
 {
-	unsigned long dsize, size;
-	u_char *def;
-	
-	/* za³aduj definicjê do bufora */
-	lseek(fd, indexes[i], SEEK_SET);
-	dsize = 0;
-	read(fd, &dsize, sizeof(unsigned long));
-	dsize = fix32(dsize);
-	
-	def = xmalloc(dsize + 1);
-	
-	if ((size = read(fd, def, dsize)) != dsize) {
-		xfree(def);
-		ydperror = YDP_INVALIDFILE;
-		return 0;
-	}
+        unsigned long dsize;
+        u_char *def;
 
-	def[size] = 0;
-	convert_cp1250(def, 0);
+        /* za³aduj definicjê do bufora */
+        fseek(fd, indexes[i], SEEK_SET);
+        dsize = 0;
+	fread(&dsize, 1, sizeof(unsigned long), fd);
+        dsize = fix32(dsize);
 
-	ydperror = YDP_NONE;
-	return def;
+        def = xmalloc(dsize + 1);
+
+        if (fread(def, 1, dsize, fd) != dsize) {
+                xfree(def);
+                ydperror = YDP_INVALIDFILE;
+                return 0;
+        }
+
+        def[dsize] = 0;
+        convert_cp1250(def, 0);
+
+        ydperror = YDP_NONE;
+        return def;
 }
 
 /* pozbywa siê liter, które zaszkodzi³yby strncasecmp() */
@@ -174,9 +175,9 @@ static const u_char *lower_pl(const u_char *word)
 	static u_char buf[128];
 	int i = 0;
 
-#define _c(x) { buf[i++] = (u_char) x; break; }
+#define _c(x) { u_char y = (u_char) x; buf[i++] = y; break; }
 
-	while (word[i])
+	while (word[i]) {
 		switch (word[i]) {
 			case (u_char) '¡': _c('±');
 			case (u_char) 'Æ': _c('æ');
@@ -189,6 +190,7 @@ static const u_char *lower_pl(const u_char *word)
 			case (u_char) '¯': _c('¿');
 			default: _c(word[i]);
 		}
+	}
 
 #undef _c
 
@@ -225,6 +227,6 @@ void closedict()
 		xfree(words);
 	}
 	
-	close(fd);
-	close(fi);
+	fclose(fd);
+	fclose(fi);
 }

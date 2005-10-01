@@ -46,7 +46,7 @@
 u_char input[INPUTLEN + 1], *def = NULL;
 int fw, menu = 0, menux = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
 int defsize, defupd = 1, color_text, color_cf1, color_cf2, parse_rtf = 1;
-int xsize, ysize, resize_term = 0, ctrlk = 0;
+int xsize, ysize, resized_term = 0, ctrlk = 0;
 int init;
 
 /* okienka ncurses */
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 	
 	/* i do dzie³a! */
 	for (;;) {
-		if (resize_term)
+		if (resized_term)
 			resize();
 
 		redrawdef();
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 				if (getmouse(&m_event) == OK) {
 
 					/* dwukrotne klikniêcie s³owa w opisie */
-					if (m_event.bstate & BUTTON1_DOUBLE_CLICKED && __MOUSE_IN(defwin, m_event, -2, 1, -3, 3)) {
+					if (m_event.bstate & BUTTON1_DOUBLE_CLICKED && __MOUSE_IN(defwin, m_event, -2, 1, -3, 2)) {
 						u_char c, buf[INPUTLEN + 1];
 						int i = 0, x = m_event.x - 27;
 
@@ -206,7 +206,9 @@ int main(int argc, char **argv)
 						if (m_event.y == ysize - 1) {
 							ungetch(KEY_NPAGE);
 							break;
-						} else if (m_event.y == 1 || m_event.y == 0) {
+						}
+
+						if (m_event.y <= 1) {
 							ungetch(KEY_PPAGE);
 							break;
 						}
@@ -215,9 +217,9 @@ int main(int argc, char **argv)
 
 					if (m_event.bstate & BUTTON1_CLICKED) {
 						/* zmiana ,,aktywnego'' okna */
-						if (__MOUSE_IN(wordwin, m_event, -2, 1, -3, 3) && defmark)
+						if (__MOUSE_IN(wordwin, m_event, -2, 1, -3, 2) && defmark)
 							defmark = 0;
-						if (__MOUSE_IN(defwin, m_event, -2, 1, -3, 3) && !defmark)
+						if (__MOUSE_IN(defwin, m_event, -2, 1, -3, 2) && !defmark)
 							defmark = 1;
 					}
 				}
@@ -233,8 +235,7 @@ int main(int argc, char **argv)
 				} else {
 					char *c = &input[strlen(input) - 1];
 					while (*c == ' ')
-						c--;
-					*(++c) = 0;
+						*c-- = 0;
 
 					menux = strlen(input);
 
@@ -249,7 +250,7 @@ int main(int argc, char **argv)
 				break;
 #ifdef KEY_RESIZE
 			case KEY_RESIZE:
-				resize_term = 1;
+				resized_term = 1;
 				break;
 #endif
 			case 9: /* TAB */
@@ -383,13 +384,14 @@ najnowsze wersje s± dostêpne pod adresem {\\b ftp://dev.null.pl/pub/}\
 				break;
 			case 12: /* ^L */
 				/* przerysowanie wszystkiego od nowa */
-				resize_term = 1;
+				resized_term = 1;
 				break;
 			case 11: /* ^K */
 				ctrlk = 2;
 				break;
 			case 21: /* ^U */
 				memset(&input, 0, sizeof(input));
+				menu = 0;
 				menux = 0;
 				pos = 0;
 				defupd = 1;
@@ -501,7 +503,7 @@ void preparewins()
 	
 	/* teraz je przygotuj */
 	keypad(wordwin, TRUE);
-	nodelay(wordwin, TRUE);
+	halfdelay(100);
 
 	werase(wordwin);
 	werase(defwin);
@@ -545,7 +547,7 @@ void preparewins()
 /* rozszerzanie okienka? */
 void sigresize()
 {
-	resize_term = 1;
+	resized_term = 1;
 }
 
 void resize()
@@ -556,7 +558,7 @@ void resize()
 	checksize();
 	preparewins();
 
-	resize_term = 0;
+	resized_term = 0;
 }
 
 void checksize()

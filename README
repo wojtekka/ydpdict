@@ -1,12 +1,14 @@
 
-  ydpdict 0.58
+  ydpdict 0.60
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
   program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
   multimedialnego s³ownika angielsko-polskiego i polsko-angielskiego
-  collinsa. oryginalny pakiet zawiera jedynie program windowsowy, co
+  Collinsa. oryginalny pakiet zawiera jedynie program windowsowy, co
   uniemo¿liwia korzystanie z niego pod innymi systemami. niniejszy
-  program pozwala korzystaæ ze s³ownika pod kontrol± Linuksa.
+  program pozwala korzystaæ ze s³ownika pod kontrol± Linuksa. mo¿liwe,
+  ¿e zadzia³a równie¿ pod innymi systemami, poniewa¿ jest pisany w miarê
+  mo¿liwo¶ci przeno¶nie.
 		      
   program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
   przez co mo¿e nie dzia³aæ na innych systemach lub dystrybucjach
@@ -42,6 +44,12 @@
   najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://dev.null.pl/pub/
 
   lista zmian:
+  - 0.60 (2003-08-27): poprawki Piotra Domagalskiego: buforowanie odczytu
+                       przyspieszaj±ce start programu.
+  - 0.59 (2003-07-22): poprawki Jerzego Kêdra (jxa%adm.onet.pl): program
+                       nie zajmuje ju¿ 100% czasu procesora. patch Micha³a
+		       Maternika (michal_m%ks.k.pl) pozwalaj±cy korzystaæ
+		       z niemieckiego s³ownika w pliku Deutsch.diff.
   - 0.58 (2003-05-16): poprawki Piotra Domagalskiego: prosta obs³uga
                        myszki, mo¿liwo¶æ edycji wpisywanego s³owa, Enter
                        zatwierdza i wyszukuje, lepsza reakcja na zmianê
