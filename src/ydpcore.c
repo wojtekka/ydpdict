@@ -1,32 +1,36 @@
 /*
-  ydpdict
-  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  ydpdict
+ *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-                
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-                               
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
+#include "config.h"
+#include <sys/types.h>
+#include <ctype.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
 #include <string.h>
-#include <ctype.h>
+#include <unistd.h>
+
 #include "ydpcore.h"
 #include "ydpconvert.h"
-#include "config.h"
+#include "xmalloc.h"
+
+#define max(a,b) ((a > b) ? a : b)
 
 unsigned long fix32(unsigned long x)
 {
@@ -52,24 +56,20 @@ unsigned short fix16(unsigned short x)
 #endif
 }
 
-#define max(a,b) (a > b) ? a : b
-
 /* otwiera s³ownik */
-int opendict(char *path, char *index, char *def)
+int opendict(const u_char *path, const u_char *index, const u_char *def)
 {
 	int current = 0, bp = 0;
 	unsigned long pos;
-	char buf[256], ch, *p;
+	u_char buf[256], ch, *p;
+	size_t pathsize = max(strlen(index), strlen(def)) + strlen(path) + 2;
 	
 	ydperror = YDP_NONE;
 
 	/* otwórz plik indeksowy i plik z definicjami */
-	if (!(p = (char*) malloc(max(strlen(index), strlen(def)) + strlen(path) + 2))) {
-		ydperror = YDP_OUTOFMEMORY;
-		return 0;
-	}
+	p = xmalloc(pathsize);
 	
-	snprintf(p, sizeof(buf), "%s/%s", path, index);
+	snprintf(p, pathsize, "%s/%s", path, index);
 	
 	if ((fi = open(p, O_RDONLY)) == -1) {
 		char *q;
@@ -78,13 +78,13 @@ int opendict(char *path, char *index, char *def)
 			*q = toupper(*q);
 
 		if ((fi = open(p, O_RDONLY)) == -1) {
-			free(p);
+			xfree(p);
 			ydperror = YDP_CANTOPENIDX;
 			return 0;
 		}
 	}
 	
-	snprintf(p, sizeof(buf), "%s/%s", path, def);
+	snprintf(p, pathsize, "%s/%s", path, def);
 	
 	if ((fd = open(p, O_RDONLY)) == -1) {
 		char *q;
@@ -93,13 +93,14 @@ int opendict(char *path, char *index, char *def)
 			*q = toupper(*q);
 
 		if ((fd = open(p, O_RDONLY)) == -1) {
-			free(p);
+			close(fi);
+			xfree(p);
 			ydperror = YDP_CANTOPENDEF;
 			return 0;
 		}
 	}
 
-	free(p);
+	xfree(p);
 
 	/* wczytaj ilo¶æ s³ów */
 	lseek(fi, 0x08, SEEK_SET);
@@ -108,12 +109,8 @@ int opendict(char *path, char *index, char *def)
 	wordcount = fix16(wordcount);
   
 	/* zarezerwuj odpowiedni± ilo¶æ pamiêci */
-	indexes = (unsigned long*) malloc(wordcount * sizeof(unsigned long));
-	words = (char**) malloc((wordcount + 1) * sizeof(char*));
-	if (!indexes || !words) {
-		ydperror = YDP_OUTOFMEMORY;
-		return 0;
-	}
+	indexes = xmalloc(wordcount * sizeof(unsigned long));
+	words = xmalloc((wordcount + 1) * sizeof(char*));
 	words[wordcount] = 0;
     
 	/* wczytaj offset tablicy indeksów */
@@ -136,10 +133,7 @@ int opendict(char *path, char *index, char *def)
 			buf[(bp < 255) ? bp++ : bp] = ch;
 		} while(ch);
 		
-		if (!(words[current] = strdup(buf))) {
-			ydperror = YDP_OUTOFMEMORY;
-			return 0;
-		}
+		words[current] = xstrdup(buf);
 		
 		convert_cp1250(words[current], 0);
 	} while (++current < wordcount);
@@ -148,10 +142,10 @@ int opendict(char *path, char *index, char *def)
 }
 
 /* wczytuje definicjê */
-char *readdef(int i)
+u_char *readdef(int i)
 {
 	unsigned long dsize, size;
-	unsigned char *def;
+	u_char *def;
 	
 	/* za³aduj definicjê do bufora */
 	lseek(fd, indexes[i], SEEK_SET);
@@ -159,13 +153,10 @@ char *readdef(int i)
 	read(fd, &dsize, sizeof(unsigned long));
 	dsize = fix32(dsize);
 	
-	if (!(def = (char*) malloc(dsize + 1))) {
-		ydperror = YDP_OUTOFMEMORY;
-		return 0;
-	}
+	def = xmalloc(dsize + 1);
 	
 	if ((size = read(fd, def, dsize)) != dsize) {
-		free(def);
+		xfree(def);
 		ydperror = YDP_INVALIDFILE;
 		return 0;
 	}
@@ -177,13 +168,42 @@ char *readdef(int i)
 	return def;
 }
 
+/* pozbywa siê liter, które zaszkodzi³yby strncasecmp() */
+static const u_char *lower_pl(const u_char *word)
+{
+	static u_char buf[128];
+	int i = 0;
+
+#define _c(x) { buf[i++] = (u_char) x; break; }
+
+	while (word[i])
+		switch (word[i]) {
+			case (u_char) '¡': _c('±');
+			case (u_char) 'Æ': _c('æ');
+			case (u_char) 'Ê': _c('ê');
+			case (u_char) '£': _c('³');
+			case (u_char) 'Ñ': _c('ñ');
+			case (u_char) 'Ó': _c('ó');
+			case (u_char) '¦': _c('¶');
+			case (u_char) '¬': _c('¼');
+			case (u_char) '¯': _c('¿');
+			default: _c(word[i]);
+		}
+
+#undef _c
+
+	buf[i] = 0;
+
+	return buf;
+}
+
 /* znajduje indeks s³owa zaczynaj±cego siê od podanego tekstu */
-int findword(char *word)
+int findword(const u_char *word)
 {
 	int x = 0;
 	
 	for (; x < wordcount; x++)
-		if (!strncasecmp(words[x], word, strlen(word)))
+		if (!strncasecmp(words[x], lower_pl(word), strlen(word)))
 			return x;
 	
 	return -1;
@@ -194,19 +214,17 @@ void closedict()
 {
 	int x = 0;
   
-	if (indexes)
-		free(indexes);
+	xfree(indexes);
 	
 	if (words) {
 		while (words[x]) {
-			free(words[x]);
+			xfree(words[x]);
 			x++;
 		}
 		
-		free(words);
+		xfree(words);
 	}
 	
 	close(fd);
 	close(fi);
 }
-

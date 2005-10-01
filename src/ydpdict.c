@@ -1,77 +1,88 @@
 /*
-	ydpdict
-	(c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  ydpdict
+ *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *                piotr domagalski <szalik@szalik.net>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
-			          
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-			                         
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <curses.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <string.h>
-#include <curses.h>
-#include <signal.h>
+#include <unistd.h>
+
 #include "ydpcore.h"
 #include "ydpconfig.h"
 #include "ydpsound.h"
 #include "ydpconvert.h"
+#include "xmalloc.h"
 
 #define DEFDICT_AP "dict100.dat"
 #define DEFINDEX_AP "dict100.idx"
 #define DEFDICT_PA "dict101.dat"
 #define DEFINDEX_PA "dict101.idx"
 
+#define INPUTLEN 17
+
 /* podstawowe zmienne programu */
-unsigned char input[64];
-char *def = NULL;
-int fw, menu = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
+u_char input[INPUTLEN + 1], *def = NULL;
+int fw, menu = 0, menux = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
 int defsize, defupd = 1, color_text, color_cf1, color_cf2, parse_rtf = 1;
-int xsize, ysize, ctrlk = 0;
+int xsize, ysize, resize_term = 0, ctrlk = 0;
+int init;
 
 /* okienka ncurses */
-WINDOW *wordwin, *defwin, *headwin, *splitwin;
+WINDOW *wordwin = NULL, *defwin = NULL, *headwin = NULL, *splitwin = NULL;
 
 /* deklaracja pó¼niej opisanych funkcji */
-void showerror(char *msg);
+void showerror(const u_char *msg);
 void showmenu(int pos, int menu);
-void onsignal();
 void findword2();
 void updateall();
-int showdef(char *def, int first);
+int showdef(u_char *def, int first);
 int read_config();
-int ischar(unsigned char ch);
+int ischar(u_char ch);
 void sigsegv();
 void sigresize();
+void resize();
+void checksize();
 void sigterm();
 void redrawdef();
 void preparewins();
 void change_dict(int pl);
 
-/* do dzie³a panowie... */
+/* do dzie³a panie i panowie... */
 int main(int argc, char **argv)
 {
 	int ch;
+	MEVENT m_event;
 
 	/* na mój sygna³... */
 	signal(SIGSEGV, sigsegv);
+#ifdef SIGWINCH
 	signal(SIGWINCH, sigresize);
+#endif
 	signal(SIGTERM, sigterm);
 	signal(SIGINT, sigterm);
+	signal(SIGHUP, sigterm);
 
 	/* wczytaj konfiguracjê (przed inicjalizacj± ncurses) */
 	read_config(argc, argv);
@@ -80,9 +91,8 @@ int main(int argc, char **argv)
 
 	/* inicjalizacja ncurses */
 	initscr();
-	xsize = stdscr->_maxx + 1;
-	ysize = stdscr->_maxy + 1;
 	noecho();
+	cbreak();
 
 	/* je¶li chcemy kolorków, to je przygotuj */
 	if (use_color && has_colors()) {
@@ -99,43 +109,162 @@ int main(int argc, char **argv)
 		color_cf2 = A_NORMAL;
 	}
 
-	/* zrób co¶ z okienkami */
+	memset(input, 0, sizeof(input));
+
+	init = 1;
+
+	/* sprawd¼, czy siê zmie¶cimy */
+	checksize();
+
+	/* i zrób co¶ z okienkami */
 	preparewins();
 
-	/* ...komunikat, ze co¶ siê dzieje */
-	waddstr(defwin, _("Proszê czekaæ, trwa ³adowanie s³ownika...\n"));
+	/* za³aduj s³ownik */
+	change_dict((dict_ap) ? 0 : 1);
 
-	/* oczywi¶cie wy¶wietl */
-	updateall();
+	init = 0;
 
-	/* teraz otwórz s³ownik */
-	if (!opendict(filespath, dict_ap ? DEFINDEX_AP : DEFINDEX_PA, dict_ap ? DEFDICT_AP : DEFDICT_PA)) switch (ydperror) {
-		case YDP_OUTOFMEMORY:
-			showerror(_("Brak pamiêci."));
-		case YDP_CANTOPENIDX:
-			showerror(_("Nie mo¿na otworzyæ pliku indeksowego."));
-		case YDP_CANTOPENDEF:
-			showerror(_("Nie mo¿na otworzyæ pliku z definicjami."));
-		case YDP_INVALIDFILE:
-			showerror(_("B³±d podczas czytania plików."));
-	}
+	mousemask(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
 	
 	/* i do dzie³a! */
-	do {
+	for (;;) {
+		if (resize_term)
+			resize();
+
 		redrawdef();
 		ch = wgetch(wordwin);
-		switch(ch) {
+
+		switch (ch) {
+
+#define __MOUSE_IN(window, event, correct1, correct2, correct3, correct4) (\
+	 event.y > (window->_begy + correct1) && event.y < (window->_begy + window->_maxy + correct2) &&\
+	 event.x > (window->_begx + correct3) && event.x < (window->_begx + window->_maxx + correct4))
+
+#define isalpha_pl_PL(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') || x == (u_char) '±' ||\
+	x == (u_char) 'æ' || x == (u_char) 'ê' || x == (u_char) '³' || x == (u_char) 'ñ' ||\
+	x == (u_char) 'ó' || x == (u_char) '¶' || x == (u_char) '¿' || x == (u_char) '¼' ||\
+	x == (u_char) '¡' || x == (u_char) 'Æ' || x == (u_char) 'Ê' || x == (u_char) '£' ||\
+	x == (u_char) 'Ñ' || x == (u_char) 'Ó' || x == (u_char) '¦' || x == (u_char) '¯' ||\
+	x == (u_char) '¬')
+
+			case KEY_MOUSE:
+				if (getmouse(&m_event) == OK) {
+
+					/* dwukrotne klikniêcie s³owa w opisie */
+					if (m_event.bstate & BUTTON1_DOUBLE_CLICKED && __MOUSE_IN(defwin, m_event, -2, 1, -3, 3)) {
+						u_char c, buf[INPUTLEN + 1];
+						int i = 0, x = m_event.x - 27;
+
+						c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
+
+						if (!(isalpha_pl_PL(c) || c == '-'))
+							break;
+
+						/* szukamy pierwszej nie-litery */
+						do {
+							x--;
+							c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
+						} while ((isalpha_pl_PL(c) || c == '-') && x >= 0);
+
+						/* i na prawo próbujemy uzbieraæ s³owo */
+						do {
+							x++;
+							c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
+							buf[i++] = c;
+						} while ((isalpha_pl_PL(c) || c == '-') && x < defwin->_maxx);
+
+						buf[--i] = 0;
+
+						/* uzbierali¶my co¶ ? */
+						if (strlen(buf)) {
+							strncpy(input, buf, sizeof(input) - 1);
+							menux = strlen(input);
+							findword2();
+							defupd = 1;
+						}
+
+						break;
+					}
+
+					if (m_event.bstate & BUTTON1_CLICKED || m_event.bstate & BUTTON1_DOUBLE_CLICKED) {
+						/* wskazanie s³owa na li¶cie */
+						if (__MOUSE_IN(wordwin, m_event, -2, 1, -1, 1) && m_event.y > 2) {
+							menu = m_event.y - 3;
+							memset(&input, 0, sizeof(input));
+							menux = 0;
+							defline = 0;
+							defupd = 1;
+						}
+
+						/* copyright ;> */
+						if (m_event.y == 0 && m_event.x > xsize - strlen(HEADER_COPYRIGHT) - 2) {
+							ungetch(KEY_F(1));
+							break;
+						}
+
+						/* przewijanie ekranu */
+						if (m_event.y == ysize - 1) {
+							ungetch(KEY_NPAGE);
+							break;
+						} else if (m_event.y == 1 || m_event.y == 0) {
+							ungetch(KEY_PPAGE);
+							break;
+						}
+
+					}
+
+					if (m_event.bstate & BUTTON1_CLICKED) {
+						/* zmiana ,,aktywnego'' okna */
+						if (__MOUSE_IN(wordwin, m_event, -2, 1, -3, 3) && defmark)
+							defmark = 0;
+						if (__MOUSE_IN(defwin, m_event, -2, 1, -3, 3) && !defmark)
+							defmark = 1;
+					}
+				}
+
+				break;
+#undef isalpha_pl_PL
+#undef __MOUSE_IN
+
+			case 10: /* Enter */
+				if (defmark) {
+					if (defline < defsize - (ysize - 3))
+						defline++;
+				} else {
+					char *c = &input[strlen(input) - 1];
+					while (*c == ' ')
+						c--;
+					*(++c) = 0;
+
+					menux = strlen(input);
+
+					findword2();
+					defupd = 1;
+				}
+				break;
+			case 27:
+				/* ESC */
+				if ((ch = wgetch(wordwin)) == ERR || ch == 27)
+					showerror(NULL);
+				break;
+#ifdef KEY_RESIZE
+			case KEY_RESIZE:
+				resize_term = 1;
+				break;
+#endif
 			case 9: /* TAB */
 				defmark = (defmark) ? 0 : 1;
 				break;
 			case KEY_F(2):
-				if (playsample(pos + menu) < 1) beep();
+				if (playsample(pos + menu) < 1)
+					beep();
 				break;
 			case KEY_F(1):
-				def = strdup(_("\
+				xfree(def);
+				def = xstrdup(_("\
 {\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2003 by wojtek kaniewski}\
 \\par\\pard{\
-hmm... tak w³a¶ciwie, to nie wiem co mia³bym tutaj wrzuciæ. wystarczy \
+hmm... tak w³a¶ciwie, to nie wiem, co mia³bym tutaj wrzuciæ. wystarczy \
 powiedzieæ, ¿e klawisz TAB prze³±cza okna, kursorami oraz PgUp i PgDn \
 mo¿na przewijaæ zarówno listê s³ów, jak i definicjê s³owa. klawisz F2 \
 powoduje odtworzenie próbki d¼wiêkowej, a F3 i F4 zmieniaj± odpowiednio \
@@ -147,15 +276,19 @@ najnowsze wersje s± dostêpne pod adresem {\\b ftp://dev.null.pl/pub/}\
 				break;
 			case KEY_F(3):
 			case '<':
-				change_dict(0);
-				defline = 0;
-				defupd = 1;
+				if (!dict_ap) {
+					change_dict(0);
+					defline = 0;
+					defupd = 1;
+				}
 				break;
 			case KEY_F(4):
 			case '>':
-				change_dict(1);
-				defline = 0;
-				defupd = 1;
+				if (dict_ap) {
+					change_dict(1);
+					defline = 0;
+					defupd = 1;
+				}
 				break;
 			case KEY_UP:
 				if (defmark) {
@@ -172,73 +305,157 @@ najnowsze wersje s± dostêpne pod adresem {\\b ftp://dev.null.pl/pub/}\
 				}
 				break;
 			case KEY_PPAGE:
-			  if (defmark) {
-	  if (defline > ysize - 4) defline -= ysize - 3; else defline = 0;
-	} else {
-			    if (menu > 0) menu = 0; else if (pos > ysize - 5) pos -= ysize - 4; else pos = 0;
-	  defline = 0;
-	  defupd = 1;
-	}
-	break;
+				if (defmark) {
+	  				if (defline > ysize - 4)
+						defline -= ysize - 3;
+					else
+						defline = 0;
+				} else {
+					if (menu > 0)
+						menu = 0;
+					else if (pos > ysize - 5)
+						pos -= ysize - 4;
+					else pos = 0;
+
+					defline = 0;
+					defupd = 1;
+				}
+				break;
 			case KEY_DOWN:
-			  if (defmark) {
-	  if (defline < defsize - (ysize - 3)) defline++;
-	} else {
-			    if (menu < ysize - 5) menu++; else if (pos < wordcount - (ysize - 4)) pos++;
-	  defline = 0;
-	  defupd = 1;
-	}
-	break;
+				if (defmark) {
+					if (defline < defsize - (ysize - 3))
+						defline++;
+				} else {
+					if (menu < ysize - 5)
+						menu++;
+					else if (pos < wordcount - (ysize - 4))
+						pos++;
+					defline = 0;
+					defupd = 1;
+				}
+				break;
 			case KEY_NPAGE:
-			  if (defmark) {
-	  if (defline < defsize - (ysize - 3) * 2 - 1) defline += ysize - 3; else defline = defsize - (ysize - 3);
-	} else {
-			    if (menu < ysize - 5) menu = ysize - 5; else if (pos < wordcount - 39) pos += ysize - 4; else pos = wordcount - (ysize - 4);
-	  defline = 0;
-	  defupd = 1;
-	}
-	break;
+				if (defmark) {
+					if (defline < defsize - (ysize - 3) * 2 - 1)
+						defline += ysize - 3;
+					else
+						defline = defsize - (ysize - 3);
+				} else {
+					if (menu < ysize - 5)
+						menu = ysize - 5;
+					else if (pos < wordcount - 39)
+						pos += ysize - 4;
+					else
+						pos = wordcount - (ysize - 4);
+					defline = 0;
+					defupd = 1;
+				}
+				break;
 			case KEY_F(9):
-			  parse_rtf = parse_rtf ? 0 : 1;
-	break;
+				parse_rtf = (parse_rtf) ? 0 : 1;
+				break;
+			case KEY_DC:
+				if (!defmark) {
+					if (menux < strlen(input)) {
+						memmove(&input[menux], &input[menux + 1], strlen(&input[menux]) + 1);
+						findword2();
+						defupd = 1;
+					} else
+						beep();
+				}
+				break;
 			case KEY_BACKSPACE:
 			case 127:
 			case 8:
-	if (defmark) break;
-			  if (input[0]) input[strlen(input) - 1] = 0;
-	findword2();
-			  defupd = 1;
-	break;
+				if (defmark) {
+					if (defline > 0)
+						defline--;
+					break;
+				} else {
+					if (menux) {
+						memmove(&input[menux - 1], &input[menux], strlen(&input[menux]) + 1);
+						menux--;
+						findword2();
+						defupd = 1;
+					} else
+						beep();
+				}
+				break;
+			case 12: /* ^L */
+				/* przerysowanie wszystkiego od nowa */
+				resize_term = 1;
+				break;
 			case 11: /* ^K */
-			  ctrlk = 2;
-	break;
+				ctrlk = 2;
+				break;
 			case 21: /* ^U */
-			  strcpy(input, "\0");
-	break;
+				memset(&input, 0, sizeof(input));
+				menux = 0;
+				pos = 0;
+				defupd = 1;
+				break;
 			case 24: /* ^X */
-			  showerror(ctrlk ? _("Hmm... Joe? Nie znam tego pana...") : _("E---- (Emacs sucks! pico forever!!!)"));
-	break;
+				showerror(ctrlk ? _("Hmm... Joe? Nie znam tego pana...") : _("E---- (Emacs sucks! pico forever!!!)"));
+				break;
+			case KEY_HOME:
+			case KEY_FIND:
+				menux = 0;
+				break;
+			case KEY_END:
+			case KEY_SELECT:
+				menux = strlen(input);
+				break;
+			case KEY_LEFT:
+				if (!menux || defmark)
+					beep();
+				else
+					menux--;
+				break;
+			case KEY_RIGHT:
+				if (menux >= strlen(input) || defmark)
+					beep();
+				else
+					menux++;
+				break;
 			default:
-			  if ((ch == 'x' || ch == 'X') && ctrlk) showerror(_("Hmm... Joe? Nie znam tego pana..."));
-			  if (strlen(input) > 17 || !ischar(ch)) break;
-	defmark=0;
-	defline=0;
-	input[strlen(input) + 1] = 0;
-	input[strlen(input)] = (unsigned char) ch;
-	if (!strcmp(&input[strlen(input) - 2], ":q") || !strcmp(&input[strlen(input)-3], ":wq")) showerror(_("E--- (Emacs sucks! vi forever!!!)"));
-			  findword2();
-			  defupd = 1;
-	break;
+				if ((ch == 'x' || ch == 'X') && ctrlk)
+					showerror(_("Hmm... Joe? Nie znam tego pana..."));
+
+				if (!ischar(ch))
+					break;
+
+				if (defmark) {
+					memset(input, 0, sizeof(input));
+					menux = 0;
+				}
+
+				if (strlen(input) > INPUTLEN)
+					break;
+
+				if (menux < strlen(input))
+					memmove(&input[menux + 1], &input[menux], strlen(&input[menux]) + 1);
+				
+				input[menux++] = (u_char) ch;
+
+				if (!strcmp(&input[strlen(input) - 2], ":q") || !strcmp(&input[strlen(input) - 3], ":wq"))
+					showerror(_("E--- (Emacs sucks! vi forever!!!)"));
+
+				findword2();
+				defupd = 1;
+				defmark = 0;
+				defline = 0;
+				break;
 		}
+
 		if (ctrlk)
 			ctrlk--;
-	} while (ch != 27);
+	}
 	
 	showerror(NULL);
-	return -1;
+	return 0;
 }
 
-/* zakoñczenie killem */
+/* zakoñczenie killem lub CTRL-C */
 void sigterm()
 {
 	showerror(NULL);
@@ -248,8 +465,7 @@ void sigterm()
 void redrawdef()
 {
 	if (defupd) {
-		if (def)
-			free(def);
+		xfree(def);
 		def = readdef(pos + menu);
 		defupd = 0;
 	}
@@ -266,23 +482,27 @@ void preparewins()
 {
 	int x;
 
-	/* je¶li ju¿ istnia³y, to znaczy ¿e mamy resize */
-	if (wordwin) {
+	/* je¶li ju¿ istnia³y, to znaczy, ¿e mamy resize */
+	if (wordwin || defwin || headwin || splitwin) {
 		delwin(wordwin);
 		delwin(defwin);
 		delwin(headwin);
 		delwin(splitwin);
 	}
 	
-	/* utwórz co trzeba */
+	/* utwórz, co trzeba */
 	wordwin = newwin(ysize - 3, 20, 2, 2);
 	defwin = newwin(ysize - 3, xsize - 29, 2, 27);
 	headwin = newwin(1, xsize, 0, 0);
 	splitwin = newwin(ysize - 1, 4, 1, 23);
+
+	if (!wordwin || !defwin || !headwin || !splitwin)
+		showerror(_("Brak pamiêci."));
 	
 	/* teraz je przygotuj */
-	keypad(wordwin, 1);
-	keypad(defwin, 1);
+	keypad(wordwin, TRUE);
+	nodelay(wordwin, TRUE);
+
 	werase(wordwin);
 	werase(defwin);
 	werase(headwin);
@@ -304,37 +524,76 @@ void preparewins()
 
 	/* teraz piêkny nag³ówek */
 	wattrset(headwin, A_REVERSE);
-	for (x = 0; x < xsize; x++)
-		waddch(headwin, ' ');
-	mvwaddstr(headwin, 0, 1, HEADER_NAME);
-	mvwaddstr(headwin, 0, xsize - strlen(HEADER_COPYRIGHT) - 1, HEADER_COPYRIGHT);
+
+	{
+		const u_char *hname = HEADER_NAME, *hcopyright = HEADER_COPYRIGHT;
+
+		for (x = 0; x < xsize; x++)
+			waddch(headwin, ' ');
+
+		/* na pocz±tku... */
+		for (x = 1; x < xsize && *hname; x++)
+			mvwaddch(headwin, 0, x, *hname++);
+
+		/* ... i na koñcu */
+		for (x = xsize - strlen(hcopyright) - 1; x < xsize && *hcopyright; x++)
+			mvwaddch(headwin, 0, x, *hcopyright++);
+	}
+
 }
 
 /* rozszerzanie okienka? */
 void sigresize()
 {
-	initscr();
-	xsize = stdscr->_maxx + 1;
-	ysize = stdscr->_maxy + 1;
+	resize_term = 1;
+}
+
+void resize()
+{
+	endwin();
+	refresh();
+
+	checksize();
 	preparewins();
-	redrawdef();
+
+	resize_term = 0;
+}
+
+void checksize()
+{
+	int newx, newy, fake = 0;
+
+	newx = stdscr->_maxx + 1;
+	newy = stdscr->_maxy + 1;
+
+	/* minimalne rozmiary */
+	if (newx < 29)
+		fake = newx = 29;
+	if (newy < 4)
+		fake = newy = 4;
+	
+	if (fake)
+		resizeterm(newy, newx);
+
+	xsize = newx;
+	ysize = newy;
 }
 
 /* czy podany znaczek da siê wy¶wietliæ i wprowadziæ z klawiatury? */
-int ischar(unsigned char ch)
+int ischar(u_char ch)
 {
 	return (ch > 31 && ch < 128) || strchr("±æê³ñó¶¿¼¡ÆÊ£ÑÓ¦¯¬", ch);
 }
 
-#define is_visible(x) (ypos >= first && ypos < (ysize - 3) + first) ? x : ""
-#define conv(x, y) (phon) ? (char*) convert_phonetic(x, y, 0) : (char*) convert_plain(x, y, 0)
+#define is_visible(x) ((ypos >= first && ypos < (ysize - 3) + first) ? x : "")
+#define conv(x, y) ((phon) ? (char*) convert_phonetic(x, y, 0) : (char*) convert_plain(x, y, 0))
 
-int showdef(char *def, int first)
+int showdef(u_char *def, int first)
 {
 	int attr = color_text, attrs[16], level = 0, lastsp = 1, xpos = 0;
 	int phon = 0, lp = 0, dispword, newline_, newattr, lastnl = 0;
-	int ypos = 0, margin = 0, tp,newphon;
-	char token[64],	line[80];
+	int ypos = 0, margin = 0, tp, newphon;
+	u_char token[64], line[80];
 
 	/* wyczy¶æ okienko */
 	werase(defwin);
@@ -359,7 +618,7 @@ int showdef(char *def, int first)
 				def++;
 				tp = 0;
 				
-				while ((*def >= 'a' && *def <= 'z') || (*def >='0' && *def <= '9'))
+				while ((*def >= 'a' && *def <= 'z') || (*def >= '0' && *def <= '9'))
 					token[tp++] = *def++;
 				
 				token[tp] = 0;
@@ -510,10 +769,12 @@ void findword2()
 	int x = findword(input);
 	
 	exact = (x == -1) ? 0 : 1;
-	if (x != -1) {
+
+	if (exact) {
 		pos = x;
 		menu = 0;
 	}
+
 	if (pos > wordcount - (ysize - 4)) {
 		pos = wordcount - (ysize - 4);
 		menu = x - pos;
@@ -522,7 +783,7 @@ void findword2()
 
 /* pokazuje cudowne menu */
 void showmenu(int pos, int menu) {
-	char buf[32];
+	u_char buf[32];
 	int y;
 
 	werase(wordwin);
@@ -530,29 +791,40 @@ void showmenu(int pos, int menu) {
 	for (y = 0; y < (ysize - 4); y++) {
 		wattrset(wordwin, y == menu ? A_REVERSE : A_NORMAL);
 		mvwprintw(wordwin, y + 1, 0, "                    ");
-		mvwprintw(wordwin, y + 1, 1, convert_plain(strncpy(buf, words[pos + y], 32), charset, 0));
+		mvwprintw(wordwin, y + 1, 1, convert_plain(strncpy(buf, words[pos + y], sizeof(buf) - 1), charset, 0));
 	}
 	
 	wattrset(wordwin, exact ? A_BOLD : A_NORMAL);
 	mvwprintw(wordwin, 0, 0, "[__________________]");
-	strcpy(buf, input);
-	mvwprintw(wordwin, 0, 1, convert_plain(strncpy(buf, input, 32), charset, 0));
+	mvwprintw(wordwin, 0, 1, convert_plain(strncpy(buf, input, sizeof(buf) - 1), charset, 0));
 	wattrset(wordwin, A_NORMAL);
+
+	wmove(wordwin, 0, menux + 1);
 }
 
+#define xdelwin(x) { if (x) delwin(x); }
+
 /* zamyka ncurses i wywala komunikat o b³êdzie */
-void showerror(char *msg)
+void showerror(const u_char *msg)
 {
+	xdelwin(wordwin);
+	xdelwin(headwin);
+	xdelwin(splitwin);
+	xdelwin(defwin);
+
 	werase(stdscr);
-	wnoutrefresh(stdscr);
-	doupdate();
-	curs_set(1);
+	wrefresh(stdscr);
+
 	endwin();
+	closedict();
+	xfree(def);
+
 	if (msg)
 		fprintf(stderr, "%s\n\n", msg);
-	closedict();
+
 	if (charset == 3)
 		puts((char *)putchar);
+
 	exit(msg ? 1 : 0);
 }
 
@@ -563,15 +835,21 @@ void sigsegv()
 	showerror(_("Naruszenie ochrony pamiêci (skontaktuj siê z autorem programu)"));
 }
 
-/* Zmienia s³ownik */
+/* wybiera s³ownik */
 void change_dict(int pl)
 {
-	closedict();
+	if (!init)
+		closedict();
 
-	if (!opendict(filespath, (pl) ? DEFINDEX_PA : DEFINDEX_AP, pl ? DEFDICT_PA : DEFDICT_AP)) {
+	curs_set(0);
+	wattrset(defwin, A_NORMAL);
+	werase(defwin);
+	waddstr(defwin, _("Proszê czekaæ, trwa ³adowanie s³ownika..."));
+
+	updateall();
+
+	if (!opendict(filespath, ((pl) ? DEFINDEX_PA : DEFINDEX_AP), ((pl) ? DEFDICT_PA : DEFDICT_AP))) {
 		switch (ydperror) {
-			case YDP_OUTOFMEMORY:
-				showerror(_("Brak pamiêci."));
 			case YDP_CANTOPENIDX:
 				showerror(_("Nie mo¿na otworzyæ pliku indeksowego."));
 			case YDP_CANTOPENDEF:
@@ -581,10 +859,17 @@ void change_dict(int pl)
 		}
 	}
 
+	dict_ap = !pl;
 	defline = 0;
 	defupd = 1;
 	menu = 0;
+	menux = 0;
 	pos = 0;
+	if (strlen(input)) {
+		menux = strlen(input);
+		findword2();
+	}
+
+	curs_set(1);
 	updateall();
-	memset(input, 0, sizeof(input));
 }

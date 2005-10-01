@@ -1,26 +1,31 @@
 
-  ydpdict 0.57
+  ydpdict 0.58
   (c) copyright 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
 
   program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
-  multimedialnego s³ownika angielsko-polskiego i polsko-angielkiego
+  multimedialnego s³ownika angielsko-polskiego i polsko-angielskiego
   collinsa. oryginalny pakiet zawiera jedynie program windowsowy, co
   uniemo¿liwia korzystanie z niego pod innymi systemami. niniejszy
   program pozwala korzystaæ ze s³ownika pod kontrol± Linuksa.
 		      
   program jest rozwijany g³ównie dla PLD (http://www.pld.org.pl/),
   przez co mo¿e nie dzia³aæ na innych systemach lub dystrybucjach
-  Linuksa. aby skompilowaæ i zainstalowaæ pakiet nale¿y wykonaæ
+  Linuksa. aby skompilowaæ i zainstalowaæ pakiet, nale¿y wykonaæ
   polecenia:
 
     ./configure
     make
     make install
 
-  teraz wystarczy skopiowaæ dwa pliki z oryginalnego pakietu
-  ,,database/dict100.dat'' i ,,database/dict100.idx'' do katalogu,
-  w którym znajduje siê program lub podaæ ¶cie¿kê, w której siê one
-  znajduj± w parametrze "Path" pliku konfiguracyjnego. nale¿y równie¿
+  teraz wystarczy skopiowaæ cztery pliki z oryginalnego pakietu:
+
+    database/dict100.dat
+    database/dict100.idx
+    database/dict101.dat
+    database/dict101.idx
+
+  do katalogu, w którym znajduje siê program lub podaæ ¶cie¿kê, w której siê
+  one znajduj± w parametrze "Path" pliku konfiguracyjnego. nale¿y równie¿
   zmieniæ parametr "CDPath" na ¶cie¿kê, gdzie znajduje siê podmountowana
   p³yta CD. jego brak uniemo¿liwi odtwarzanie próbek d¼wiêkowych.
  
@@ -29,9 +34,18 @@
   s³ów, a definicj± s³u¿y klawisz Tab. odtwarzanie próbek to F2. zmiana
   s³ownika na angielsko-polski i polsko-angielski to odpowiednio F3 i F4.
 
+  program obs³ugiwaæ mo¿na czê¶ciowo za pomoc± myszki. klikniêcie na s³owo
+  z listy, spowoduje wy¶wietlenie jego t³umaczenia. klikaj±æ na dolne i górne
+  krawêdzie ekranu, mo¿na przewijaæ listê lub opis. je¶li klikniemy dwukrotnie
+  na s³owo z okienka t³umaczenia, zostanie ono automatycznie wyszukane.
+
   najnowsz± wersjê mo¿na ¶ci±gn±æ z ftp://dev.null.pl/pub/
 
   lista zmian:
+  - 0.58 (2003-05-16): poprawki Piotra Domagalskiego: prosta obs³uga
+                       myszki, mo¿liwo¶æ edycji wpisywanego s³owa, Enter
+                       zatwierdza i wyszukuje, lepsza reakcja na zmianê
+                       rozmiaru terminala, CTRL-L, kosmetyka, xmalloc.
   - 0.57 (2003-04-15): kolejne poprawki Piotra Domagalskiego porz±dkuj±ce
                        kompilacjê na nielinuksowych systemach. poprawka
 		       Paw³a Fenglera (pawfen%wp.pl): wywo³ywanie

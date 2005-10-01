@@ -21,16 +21,16 @@ CDPath /mnt/cdrom
 
 Charset ISO-8859-2
 
-# Wprawdzie program potrafi wykrywac czy terminal obsluguje kolory czy nie,
-# to jednak mozna wymusic ich wyswietlanie lub ich brak.
+# Wprawdzie program potrafi wykrywaæ, czy terminal obs³uguje kolory czy nie,
+# to jednak mo¿na wymusiæ ich wy¶wietlanie lub ich brak.
 
 UseColor On
 
-# By zmienic kolory wyswietlanego tekstu nalezy zmienic ponizsze wartosci
-# na jedne z nastepujacych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
+# By zmieniæ kolory wy¶wietlanego tekstu nale¿y zmieniæ poni¿sze warto¶ci
+# na jedne z nastêpuj±cych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
 # White, Gray, LightRed, LightGreen, Yellow, LightBlue, LightMagenta,
-# LightCyan, LightWhite. Nalezy zwrocic uwage, ze dla kolorow z przedrostkiem
-# "Light" pogrubienie tekstu nie bedzie widoczne.
+# LightCyan, LightWhite. Nale¿y zwróciæ uwagê, ¿e dla kolorów z przedrostkiem
+# "Light" pogrubienie tekstu nie bêdzie widoczne.
 
 # Kolor tekstu
 Color White
@@ -38,5 +38,5 @@ Color White
 # Kolor definicji
 DefinitionColor LightCyan
 
-# Kolor drugiego wyroznienia (np. czesc mowy, rodzaj)
+# Kolor drugiego wyró¿nienia (np. czê¶æ mowy, rodzaj)
 InformationColor LightGreen

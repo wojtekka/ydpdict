@@ -1,35 +1,37 @@
 /*
-  ydpdict
-  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *  ydpdict
+ *  (c) 1998-2003 wojtek kaniewski <wojtekka@irc.pl>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-                
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-                               
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <string.h>
 #include "config.h"
+#include <sys/types.h>
+#include <curses.h>
+#include <fcntl.h>
 #ifdef HAVE_GETOPT_LONG
 #  include <getopt.h>
 #endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "ydpconfig.h"
 #include "ydpconvert.h"
+#include "xmalloc.h"
 
 #ifdef HAVE_GETOPT_LONG
 /* informacje dla getopt */
@@ -50,10 +52,10 @@ static struct option const longopts[] = {
 #endif /* HAVE_GETOPT_LONG */
 
 /* instrukcja u¿ycia */
-void usage(char *argv0) {
+void usage(const char *argv0) {
 	printf("\
 U¿ycie: %s [OPCJE]\n\
-  -a, --ang             uruchamia s³ownik angielski-polski (domy¶lne)\n\
+  -a, --ang             uruchamia s³ownik angielsko-polski (domy¶lne)\n\
   -p, --pol             uruchamia s³ownik polsko-angielski\n\
   -n, --nopl            wy³±cza wy¶wietlanie polskich liter\n\
   -i, --iso		wy¶wietla polskie literki w standardzie ISO-8859-2\n\
@@ -73,10 +75,10 @@ int *e_vals[] = E_VALS;
 char *color_defs[] = COLOR_DEFS;
 int color_vals[] = COLOR_VALS;
 
-/* wczytuje konfiguracjê z pliku */
+/* wczytuje konfiguracjê z pliku, a pó¼niej z argumentów wywo³ania */
 int read_config(int argc, char **argv)
 {
-	char linia[256], *par;
+	u_char line[256], *par;
 	int optc, l = 0, x, y;
 	FILE *f;
 
@@ -89,20 +91,20 @@ int read_config(int argc, char **argv)
 	config_cf1 = COLOR_CYAN | A_BOLD;
 	config_cf2 = COLOR_GREEN | A_BOLD;
 
-	/* sprawd¼ czy plik istnieje */
+	/* sprawd¼, czy plik istnieje */
 	f = fopen(CONFIGFILE_CWD1, "r");
 	
 	if (!f)
 		f = fopen(CONFIGFILE_CWD2, "r");
 	
 	if (!f) {
-		snprintf(linia, 256, "%s/%s", getenv("HOME"), CONFIGFILE_CWD1);
-		f = fopen(linia, "r");
+		snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD1);
+		f = fopen(line, "r");
 	}
 	
 	if (!f) {
-		snprintf(linia, 256, "%s/%s", getenv("HOME"), CONFIGFILE_CWD2);
-		f = fopen(linia, "r");
+		snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD2);
+		f = fopen(line, "r");
 	}
 	
 	if (!f)
@@ -112,22 +114,22 @@ int read_config(int argc, char **argv)
 		return -1;
   
 	/* ka¿d± liniê z osobna */
-	while (fgets(linia, sizeof(linia), f)) {
+	while (fgets(line, sizeof(line), f)) {
 		/* obrób liniê tak, ¿eby¶my nie dostawali ¶mieci */
-		if (linia[strlen(linia) - 1] == '\n')
-			linia[strlen(linia) - 1] = '\0';
-		if (linia[strlen(linia) - 1] == '\r')
-			linia[strlen(linia) - 1] = '\0';
-		if (linia[0] == '#' || linia[0] == '\0')
+		if (line[strlen(line) - 1] == '\n')
+			line[strlen(line) - 1] = '\0';
+		if (line[strlen(line) - 1] == '\r')
+			line[strlen(line) - 1] = '\0';
+		if (line[0] == '#' || line[0] == '\0')
 			continue;
 		l++;
 
-		/* sprawd¼ czy co¶ pasuje do zadeklarowanych w³a¶ciwo¶ci */
+		/* sprawd¼, czy co¶ pasuje do zadeklarowanych w³a¶ciwo¶ci */
 		for (x = 0; e_labels[x]; x++) {
-			if (strncasecmp(linia, &e_labels[x][2], strlen(e_labels[x]) - 2))
+			if (strncasecmp(line, &e_labels[x][2], strlen(e_labels[x]) - 2))
 				continue;
 
-			par = &linia[strlen(&e_labels[x][2]) + 1];
+			par = &line[strlen(&e_labels[x][2]) + 1];
 			
 			switch (e_labels[x][0]) {
 				/* jaki¶ ³adny kolorek */
@@ -148,7 +150,7 @@ int read_config(int argc, char **argv)
 					
 				/* warto¶æ ci±gu */
 				case 's':
-					*(char**)e_vals[x] = strdup(par);
+					*(char**)e_vals[x] = xstrdup(par);
 					break;
 
 				/* zestaw znaków */
@@ -162,12 +164,13 @@ int read_config(int argc, char **argv)
 					if (!strcasecmp(par, "UnicodeSet"))
 						charset = 3; /* unikod-2 */
 					break;
-      }
-      break;
+      			}
+
+      			break;
 		}
 
 		if (!e_labels[x]) {
-			fprintf(stderr, "B£¡D: plik konfiguracyjny, linia %d: %s\n", l, linia);
+			fprintf(stderr, "B£¡D: plik konfiguracyjny, linia %d: %s\n", l, line);
 			exit(1);
 		}
 	}
@@ -175,48 +178,48 @@ int read_config(int argc, char **argv)
 	fclose(f);
   
 #ifdef HAVE_GETOPT_LONG
-	while ((optc = getopt_long(argc, argv, "hvVpaf:c:niuU", longopts, (int*) 0)) != EOF) {
+	while ((optc = getopt_long(argc, argv, "hvVpaf:c:niuU", longopts, (int*) 0)) != -1) {
 #else
-	while ((optc = getopt(argc, argv, "hvVpaf:c:niuU")) != EOF) {
+	while ((optc = getopt(argc, argv, "hvVpaf:c:niuU")) != -1) {
 #endif
-	switch(optc) {
-		case 'h':
-			usage(argv[0]);
-			exit(0);
-		case 'v':
-		case 'V':
-			printf("ydpdict-" VERSION "\n");
-			exit(0);
-		case 'p':
-			dict_ap = 0;
-			break;
-		case 'a':
-			dict_ap = 1;
-			break;
-		case 'n':
-			charset = 0;
-			break;
-		case 'i':
-			charset = 1;
-			break;
-		case 'u':
-			charset = 2;
-			break;
-		case 'U':
-			charset = 3;
-			break;
-		case 'f':
-			filespath = strdup(optarg);
-			break;
-		case 'c':
-			cdpath = strdup(optarg);
-			break;
-		case 'P':
-			player = strdup(optarg);
-			break;
-		default:
-			usage(argv[0]);
-			exit(1);
+		switch(optc) {
+			case 'h':
+				usage(argv[0]);
+				exit(0);
+			case 'v':
+			case 'V':
+				printf("ydpdict-" VERSION "\n");
+				exit(0);
+			case 'p':
+				dict_ap = 0;
+				break;
+			case 'a':
+				dict_ap = 1;
+				break;
+			case 'n':
+				charset = 0;
+				break;
+			case 'i':
+				charset = 1;
+				break;
+			case 'u':
+				charset = 2;
+				break;
+			case 'U':
+				charset = 3;
+				break;
+			case 'f':
+				filespath = xstrdup(optarg);
+				break;
+			case 'c':
+				cdpath = xstrdup(optarg);
+				break;
+			case 'P':
+				player = xstrdup(optarg);
+				break;
+			default:
+				usage(argv[0]);
+				exit(1);
 		}
 	}
 
