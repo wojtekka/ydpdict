@@ -22,7 +22,7 @@
 
 #include <curses.h>
 
-#define VERSION "0.63"
+#define VERSION "0.64"
 #define HEADER_NAME "ydpdict-" VERSION
 #define HEADER_COPYRIGHT "(c) 1998-2004 by wojtek kaniewski"
 #define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"
@@ -31,16 +31,17 @@
 
 /* konfiguracja */
 u_char *filespath, *cdpath, *player, *word;
-int dict_ap, charset, use_color, transparent, config_text, config_cf1, config_cf2;
+int dict, charset, use_color, transparent, config_text, config_cf1, config_cf2;
 
 /* g³ówna funkcja */
 int read_config(int argc, char **argv);
 
 /* jakie s± wpisy w pliku konfiguracyjnym? c:kolor, b:boolean, s:tekst, h:charset */
 #define E_LABELS { "c:Color", "c:DefinitionColor", "c:InformationColor", \
-	"b:UseColor", "h:Charset", "s:Path", "s:CDPath", "s:Player", "b:UseTransparent", 0 }
+	"b:UseColor", "h:Charset", "s:Path", "s:CDPath", "s:Player", \
+	"i:DefaultDictionary", "b:UseTransparent", 0 }
 #define E_VALS { &config_text, &config_cf1, &config_cf2, &use_color, &charset, \
-	(int*)&filespath, (int*)&cdpath, (int*)&player, &transparent, 0 }
+	&filespath, &cdpath, &player, &dict, &transparent, 0 }
 
 /* sta³e okre¶laj±ce, jak nazywa siê dany kolor */
 #define COLOR_DEFS { "Black", "Red", "Green", "Brown", "Blue", "Magenta", \

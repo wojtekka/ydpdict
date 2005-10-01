@@ -13,6 +13,12 @@ CDPath /mnt/cdrom
 
 #Player play
 #Player mpg321
+#Player ogg123
+
+# Domy¶lny s³ownik (0 - angielsko-polski, 1 - polsko-angielski, 
+# 2 - niemiecko-polski, 3 - polsko-niemiecki)
+
+DefaultDictionary 0
 
 # Zestaw znaków, z którego korzysta program: None (bez polskich liter),
 # ISO-8859-2 (polskie litery), Unicode (polskie litery i transkrypcja

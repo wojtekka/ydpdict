@@ -1,6 +1,6 @@
 .TH YDPDICT 1 "31 May 2004"
 .SH NAME
-ydpdict \- an interface for English-Polish Collins dictionary
+ydpdict \- an interface for Collins dictionaries
 .SH SYNOPSIS
 .B ydpdict [
 .BI options
@@ -8,8 +8,9 @@ ydpdict \- an interface for English-Polish Collins dictionary
 
 .SH DESCRIPTION
 .B ydpdict
-is an ncurses interface for English-Polish and Polish-English Collins
-dictionary, which is distributed by Young Digital Poland.
+is an ncurses interface for English-Polish, Polish-English, German-Polish and
+Polish-German Collins dictionaries, which are distributed by Young Digital
+Poland.
 .PP
 .B ydpdict
 tries to find the configuration file in the following locations (reads only the
@@ -30,10 +31,16 @@ first one found):
 Starts the English-Polish dictionary (default).
 .TP
 .BI \-p\ [\-\-pol]
-Starts the English-Polish dictionary (default).
+Starts the Polish-English dictionary.
+.TP
+.BI \-o\ [\-\-niem-pol]
+Starts the German-Polish dictionary.
+.TP
+.BI \-d\ [\-\-pol-niem]
+Starts the Polish-German dictionary.
 .TP
 .BI \-n\ [\-\-nopl]
-Turns of displaying of Polish diacritics.
+Turns off displaying of Polish diacritics.
 .TP
 .BI \-i\ [\-\-iso]
 Displays polish diacritics using ISO-8859-2.

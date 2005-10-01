@@ -1,6 +1,6 @@
-.TH YDPDICT 1 "31 maja 2004" 
+.TH YDPDICT 1 "1 grudnia 2004" 
 .SH NAZWA
-ydpdict \- interfejs angielsko-polskiego s³ownika Collinsa
+ydpdict \- interfejs s³owników Collinsa
 .SH SK£ADNIA
 .B ydpdict [
 .BI opcje
@@ -9,7 +9,8 @@ ydpdict \- interfejs angielsko-polskiego s³ownika Collinsa
 .SH OPIS
 .B ydpdict
 jest korzystaj±cym z biblioteki ncurses interfejsem s³u¿±cym do obs³ugi
-multimedialnego s³ownika angielsko-polskiego i polsko-angielskiego Collinsa.
+multimedialnych s³owników: angielsko-polskiego, polsko-angielskiego, 
+niemiecko-polskiego i polsko-niemieckiego Collinsa.
 .PP
 .B ydpdict
 szuka pliku konfiguracyjnego w nastêpuj±cych miejscach (czytany jest tylko pierwszy znaleziony plik):
@@ -31,6 +32,12 @@ Uruchamia s³ownik angielsko-polski (domy¶lne).
 .BI \-p\ [\-\-pol]
 Uruchamia s³ownik polsko-angielski.
 .TP
+.BI \-o\ [\-\-niem-pol]
+Uruchamia s³ownik niemiecko-polski.
+.TP
+.BI \-d\ [\-\-pol-niem]
+Uruchamia s³ownik polsko-niemiecki.
+.TP
 .BI \-n\ [\-\-nopl]
 Wy³±cza wy¶wietlanie polskich znaków diakrytycznych.
 .TP
@@ -49,7 +56,7 @@ Podaje ¶cie¿kê do plików danych.
 .BI \-c\ [\-\-cdpath=¦CIE¯KA]
 Podaje ¶cie¿kê do p³yty CD.
 .TP
-.BI \-P\ [\-\-cdplayer=¦CIE¯KA]
+.BI \-P\ [\-\-player=¦CIE¯KA]
 Podaje ¶cie¿kê do odtwarzacza plików WAV.
 .TP
 .BI \-w\ [\-\-word=S£OWO]

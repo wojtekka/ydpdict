@@ -38,23 +38,18 @@
 int playsample(int def)
 {
 	static u_char buf[256];
-  
-	snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.WAV", cdpath, def / 1000, def + 1);
+	char *exts[] = { "WAV", "wav", "MP3", "mp3", "OGG", "ogg", NULL };
+	int i;
+
+	for (i = 0; exts[i]; i++) {
+		snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.%s", cdpath, def / 1000, def + 1, exts[i]);
 	
-	if (access(buf, R_OK)) {
-		snprintf(buf, sizeof(buf), "%s/s%.3d/%.6d.wav", cdpath, def / 1000, def + 1);
-
-		if (access(buf, R_OK)) {
-			snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.MP3", cdpath, def / 1000, def + 1);
-
-			if (access(buf, R_OK)) {
-				snprintf(buf, sizeof(buf), "%s/s%.3d/%.6d.mp3", cdpath, def / 1000, def + 1);
-
-				if (access(buf, R_OK))
-					return 0;
-			}
-		}
+		if (!access(buf, R_OK))
+			break;
 	}
+
+	if (!exts[i])
+		return 0;
 
 	if (player) {
 		u_char buf2[512];

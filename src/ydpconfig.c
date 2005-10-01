@@ -40,6 +40,8 @@ static struct option const longopts[] = {
 	{ "version", no_argument, 0, 'v' },
 	{ "pol", no_argument, 0, 'p' },
 	{ "ang", no_argument, 0, 'a' },
+	{ "pol-niem", no_argument, 0, 'P' },
+	{ "niem-pol", no_argument, 0, 'D' },
 	{ "path", required_argument, 0, 't' },
 	{ "cdpath", required_argument, 0, 'c' },
 	{ "nopl", no_argument, 0, 'n' },
@@ -58,6 +60,8 @@ void usage(const char *argv0) {
 U¿ycie: %s [OPCJE]\n\
   -a, --ang             uruchamia s³ownik angielsko-polski (domy¶lne)\n\
   -p, --pol             uruchamia s³ownik polsko-angielski\n\
+  -d, --niem-pol        uruchamia s³ownik niemiecko-polski\n\
+  -o, --pol-niem        uruchamia s³ownik polsko-niemiecki\n\
   -n, --nopl            wy³±cza wy¶wietlanie polskich liter\n\
   -i, --iso		wy¶wietla polskie literki w standardzie ISO-8859-2\n\
   -u, --unicode		wy¶wietla polskie literki u¿ywaj±c unikodu\n\
@@ -73,7 +77,7 @@ U¿ycie: %s [OPCJE]\n\
 
 /* jakie¶tam zmienne */
 char *e_labels[] = E_LABELS;
-int *e_vals[] = E_VALS;
+void *e_vals[] = E_VALS;
 char *color_defs[] = COLOR_DEFS;
 int color_vals[] = COLOR_VALS;
 
@@ -88,7 +92,7 @@ int read_config(int argc, char **argv)
 	filespath = "./";
 	use_color = 1;
 	charset = 1;
-	dict_ap = 1;
+	dict = 1;
 	config_text = COLOR_WHITE;
 	config_cf1 = COLOR_CYAN | A_BOLD;
 	config_cf2 = COLOR_GREEN | A_BOLD;
@@ -131,21 +135,26 @@ int read_config(int argc, char **argv)
 				case 'c':
 					for (y = 0; color_defs[y]; y++) {
 						if (!strcasecmp(par, color_defs[y]))
-							*e_vals[x] = color_vals[y];
+							*(int*)(e_vals[x]) = color_vals[y];
 					}
 					break;
 					
 				/* warto¶æ bool'owska: on lub off */
 				case 'b':
 					if (!strncasecmp(par, "On", 2))
-						*e_vals[x] = TRUE;
+						*(int*)(e_vals[x]) = TRUE;
 					if (!strncasecmp(par, "Of", 2))
-						*e_vals[x] = FALSE;
+						*(int*)(e_vals[x]) = FALSE;
 					break;
 					
 				/* warto¶æ ci±gu */
 				case 's':
 					*(char**)e_vals[x] = xstrdup(par);
+					break;
+
+				/* liczba */
+				case 'i':
+					*(int*)(e_vals[x]) = atoi(par);
 					break;
 
 				/* zestaw znaków */
@@ -173,9 +182,9 @@ int read_config(int argc, char **argv)
 	fclose(f);
   
 #ifdef HAVE_GETOPT_LONG
-	while ((optc = getopt_long(argc, argv, "hvVpaf:c:niuUw:", longopts, (int*) 0)) != -1) {
+	while ((optc = getopt_long(argc, argv, "hvVpaodf:c:niuUw:", longopts, (int*) 0)) != -1) {
 #else
-	while ((optc = getopt(argc, argv, "hvVpaf:c:niuUw:")) != -1) {
+	while ((optc = getopt(argc, argv, "hvVpaodf:c:niuUw:")) != -1) {
 #endif
 		switch(optc) {
 			case 'h':
@@ -186,10 +195,16 @@ int read_config(int argc, char **argv)
 				printf("ydpdict-" VERSION "\n");
 				exit(0);
 			case 'p':
-				dict_ap = 0;
+				dict = 0;
 				break;
 			case 'a':
-				dict_ap = 1;
+				dict = 1;
+				break;
+			case 'o':
+				dict = 2;
+				break;
+			case 'd':
+				dict = 3;
 				break;
 			case 'n':
 				charset = 0;

@@ -40,6 +40,11 @@
 #define DEFDICT_PA "dict101.dat"
 #define DEFINDEX_PA "dict101.idx"
 
+#define DEFDICT_DP "dict200.dat"
+#define DEFINDEX_DP "dict200.idx"
+#define DEFDICT_PD "dict201.dat"
+#define DEFINDEX_PD "dict201.idx"
+
 #define INPUTLEN 17
 
 /* podstawowe zmienne programu */
@@ -87,8 +92,10 @@ int main(int argc, char **argv)
 
 	/* wczytaj konfiguracjê (przed inicjalizacj± ncurses) */
 	read_config(argc, argv);
-	if (charset == 3)
-		puts((char *)putchar);
+	if (charset == 3) {
+		puts("\033%G");
+		fflush(stdout);
+	}
 
 	/* inicjalizacja ncurses */
 	initscr();
@@ -131,7 +138,7 @@ int main(int argc, char **argv)
 	preparewins();
 
 	/* za³aduj s³ownik */
-	change_dict((dict_ap) ? 0 : 1);
+	change_dict(dict);
 
 	init = 0;
 
@@ -277,9 +284,9 @@ int main(int argc, char **argv)
 				break;
 			case KEY_F(2):
 			case '`':
-				if (dict_ap == 1) {
-				    if (playsample(pos + menu) < 1);
-				}
+				if (dict == 1 || dict == 3)
+					if (playsample(pos + menu) < 1);
+
 				break;
 			case KEY_F(1):
 			case '?':
@@ -294,6 +301,8 @@ int main(int argc, char **argv)
 {\\line{\\cf2 F2} lub {\\cf2 `} - odtworzenie wymowy wyrazu}\
 {\\line{\\cf2 F3} lub {\\cf2 <} - s³ownik angielsko-polski}\
 {\\line{\\cf2 F4} lub {\\cf2 >} - s³ownik polsko-angielski}\
+{\\line{\\cf2 F5} lub {\\cf2 [} - s³ownik niemiecko-polski}\
+{\\line{\\cf2 F6} lub {\\cf2 ]} - s³ownik polsko-niemiecki}\
 {\\line{\\cf2 Ctrl-U} - usuniêcie wpisywanego s³owa}\
 {\\line{\\cf2 Ctrl-L} - od¶wie¿enie okna}\
 {\\line{\\cf2 strza³ka w lewo} lub {\\cf2 w prawo} - poruszanie siê w s³owie}\
@@ -306,7 +315,7 @@ najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
 				break;
 			case KEY_F(3):
 			case '<':
-				if (!dict_ap) {
+				if (dict != 0) {
 					change_dict(0);
 					defline = 0;
 					defupd = 1;
@@ -314,8 +323,24 @@ najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
 				break;
 			case KEY_F(4):
 			case '>':
-				if (dict_ap) {
+				if (dict != 1) {
 					change_dict(1);
+					defline = 0;
+					defupd = 1;
+				}
+				break;
+			case KEY_F(5):
+			case '[':
+				if (dict != 2) {
+					change_dict(2);
+					defline = 0;
+					defupd = 1;
+				}
+				break;
+			case KEY_F(6):
+			case ']':
+				if (dict != 3) {
+					change_dict(3);
 					defline = 0;
 					defupd = 1;
 				}
@@ -853,8 +878,10 @@ void showerror(const u_char *msg)
 	if (msg)
 		fprintf(stderr, "%s\n\n", msg);
 
-	if (charset == 3)
-		puts((char *)putchar);
+	if (charset == 3) {
+		puts("\033%@");
+		fflush(stdout);
+	}
 
 	exit(msg ? 1 : 0);
 }
@@ -867,8 +894,10 @@ void sigsegv()
 }
 
 /* wybiera s³ownik */
-void change_dict(int pl)
+void change_dict(int new_dict)
 {
+	const char *idx, *dat;
+
 	if (!init)
 		closedict();
 
@@ -879,7 +908,29 @@ void change_dict(int pl)
 
 	updateall();
 
-	if (!opendict(filespath, ((pl) ? DEFINDEX_PA : DEFINDEX_AP), ((pl) ? DEFDICT_PA : DEFDICT_AP))) {
+	switch (new_dict) {
+		case 0:
+			idx = DEFINDEX_AP;
+			dat = DEFDICT_AP;
+			break;
+		case 1:
+			idx = DEFINDEX_PA;
+			dat = DEFDICT_PA;
+			break;
+		case 2:
+			idx = DEFINDEX_DP;
+			dat = DEFDICT_DP;
+			break;
+		case 3:
+			idx = DEFINDEX_PD;
+			dat = DEFDICT_PD;
+			break;
+		default:
+			idx = "";
+			dat = "";
+	}
+
+	if (!opendict(filespath, idx, dat)) {
 		switch (ydperror) {
 			case YDP_CANTOPENIDX:
 				showerror(_("Nie mo¿na otworzyæ pliku indeksowego."));
@@ -890,7 +941,7 @@ void change_dict(int pl)
 		}
 	}
 
-	dict_ap = !pl;
+	dict = new_dict;
 	defline = 0;
 	defupd = 1;
 	menu = 0;

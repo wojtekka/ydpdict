@@ -25,7 +25,7 @@
 #define YDP_CANTOPENDEF 2
 #define YDP_INVALIDFILE 3
 
-unsigned long *indexes;	/* tablica z indeksami definicji w pliku indeksowym */
+unsigned int *indexes;	/* tablica z indeksami definicji w pliku indeksowym */
 u_char **words;		/* tablica z list± s³ów */
 unsigned short wordcount;	/* ilo¶æ s³ów */
 FILE *fd, *fi;		/* strumienie */

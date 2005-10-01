@@ -32,16 +32,16 @@
 
 #define max(a,b) ((a > b) ? a : b)
 
-unsigned long fix32(unsigned long x)
+unsigned int fix32(unsigned int x)
 {
 #ifndef WORDS_BIGENDIAN
 	return x;
 #else
-	return (unsigned long)
-		(((x & (unsigned long) 0x000000ffU) << 24) |
-                 ((x & (unsigned long) 0x0000ff00U) << 8) |
-                 ((x & (unsigned long) 0x00ff0000U) >> 8) |
-                 ((x & (unsigned long) 0xff000000U) >> 24));
+	return (unsigned int)
+		(((x & (unsigned int) 0x000000ffU) << 24) |
+                 ((x & (unsigned int) 0x0000ff00U) << 8) |
+                 ((x & (unsigned int) 0x00ff0000U) >> 8) |
+                 ((x & (unsigned int) 0xff000000U) >> 24));
 #endif		
 }
 
@@ -60,7 +60,7 @@ unsigned short fix16(unsigned short x)
 int opendict(const u_char *path, const u_char *index, const u_char *def)
 {
 	int current = 0, bp = 0;
-	unsigned long pos;
+	unsigned int pos;
 	u_char buf[256], ch, *p;
 	size_t pathsize = max(strlen(index), strlen(def)) + strlen(path) + 2;
 	
@@ -110,8 +110,8 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 	wordcount = fix16(wordcount);
 
 	/* zarezerwuj odpowiedni± ilo¶æ pamiêci */
-	indexes = xmalloc(wordcount * sizeof(unsigned long));
-	words = xmalloc((wordcount + 1) * sizeof(char*));
+	indexes = xcalloc(wordcount, sizeof(unsigned int));
+	words = xcalloc(wordcount + 1, sizeof(char*));
 	words[wordcount] = 0;
     
 	/* wczytaj offset tablicy indeksów */
@@ -125,7 +125,7 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 	do {
 		fseek(fi, 0x04, SEEK_CUR);
 		indexes[current] = 0;
-		fread(&indexes[current], 1, sizeof(unsigned long), fi);
+		fread(&indexes[current], 1, sizeof(unsigned int), fi);
 		indexes[current] = fix32(indexes[current]);
 
 		bp = 0;
@@ -146,13 +146,13 @@ int opendict(const u_char *path, const u_char *index, const u_char *def)
 /* wczytuje definicjê */
 u_char *readdef(int i)
 {
-        unsigned long dsize;
+        unsigned int dsize;
         u_char *def;
 
         /* za³aduj definicjê do bufora */
         fseek(fd, indexes[i], SEEK_SET);
         dsize = 0;
-	fread(&dsize, 1, sizeof(unsigned long), fd);
+	fread(&dsize, 1, sizeof(unsigned int), fd);
         dsize = fix32(dsize);
 
         def = xmalloc(dsize + 1);
@@ -215,17 +215,19 @@ int findword(const u_char *word)
 /* zamyka pliki i zwalnia pamiêæ */
 void closedict()
 {
-	int x = 0;
-  
 	xfree(indexes);
+	indexes = NULL;
 	
 	if (words) {
+		int x = 0;
+
 		while (words[x]) {
 			xfree(words[x]);
 			x++;
 		}
 		
 		xfree(words);
+		words = NULL;
 	}
 	
 	if (fd) {
