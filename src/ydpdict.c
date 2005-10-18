@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 			case KEY_F(1):
 			case '?':
 				def = strdup(_("\
-{\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2004 by wojtek kaniewski}\
+{\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2005 by wojtek kaniewski}\
 \\par\\pard{\
 }\
 {\\line{\\cf2 F1} lub {\\cf2 ?} - pomoc}\
