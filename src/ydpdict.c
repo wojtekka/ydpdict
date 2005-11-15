@@ -1,7 +1,7 @@
 /*
  *  ydpdict
- *  (c) 1998-2005 wojtek kaniewski <wojtekka@irc.pl>
- *                piotr domagalski <szalik@szalik.net>
+ *  (C) Copyright 1998-2005 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *                          Piotr Domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 			case KEY_F(1):
 			case '?':
 				def = strdup(_("\
-{\\b ydpdict-" VERSION "\\line\\cf1(c) 1998-2005 by wojtek kaniewski}\
+{\\b ydpdict-" VERSION "\\line\\cf1" HEADER_COPYRIGHT "}\
 \\par\\pard{\
 }\
 {\\line{\\cf2 F1} lub {\\cf2 ?} - pomoc}\
@@ -309,8 +309,8 @@ int main(int argc, char **argv)
 {\\line{\\cf2 Enter} - zakoñczenie edycji s³owa}\
 {\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakoñczenie pracy z programem.}\
 \\par\\pard{\
-kontakt z autorem: {\\b wojtekka@irc.pl} \
-najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
+Kontakt z autorem: {\\b wojtekka@toxygen.net} \
+Najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
 }"));
 				break;
 			case KEY_F(3):
@@ -398,7 +398,7 @@ najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
 				} else {
 					if (menu < ysize - 5)
 						menu = ysize - 5;
-					else if (pos < wordcount - 39)
+					else if (pos < wordcount - (ysize - 4) * 2 - 1)
 						pos += ysize - 4;
 					else
 						pos = wordcount - (ysize - 4);
@@ -559,10 +559,7 @@ void preparewins()
 	keypad(wordwin, TRUE);
 	halfdelay(100);
 
-	werase(wordwin);
-	werase(defwin);
-	werase(headwin);
-	werase(splitwin);
+	erase();
 
 	/* narysuj cudown± pionow± liniê */
 	for (x = 0; x < ysize; x++) {
@@ -617,7 +614,7 @@ void resize()
 
 void checksize()
 {
-	int newx, newy, fake = 0;
+	int newx, newy, fake = 0, diff;
 
 	newx = stdscr->_maxx + 1;
 	newy = stdscr->_maxy + 1;
@@ -633,6 +630,17 @@ void checksize()
 
 	xsize = newx;
 	ysize = newy;
+
+	diff = pos + (ysize - 4) - wordcount;
+	if (diff > 0) {
+		pos -= diff;
+		menu += diff;
+	}
+	diff = menu - (ysize - 5);
+	if (diff > 0) {
+		pos += diff;
+		menu -= diff;
+	}
 }
 
 /* czy podany znaczek da siê wy¶wietliæ i wprowadziæ z klawiatury? */
@@ -847,12 +855,16 @@ void showmenu(int pos, int menu) {
 	for (y = 0; y < (ysize - 4); y++) {
 		wattrset(wordwin, y == menu ? A_REVERSE : A_NORMAL);
 		mvwprintw(wordwin, y + 1, 0, "                    ");
-		mvwprintw(wordwin, y + 1, 1, convert_plain(strncpy(buf, words[pos + y], sizeof(buf) - 1), charset, 0));
+
+		if (pos + y >= wordcount)
+			continue;
+
+		mvwprintw(wordwin, y + 1, 1, "%s", convert_plain(strncpy(buf, words[pos + y], sizeof(buf) - 1), charset, 0));
 	}
 	
 	wattrset(wordwin, exact ? A_BOLD : A_NORMAL);
 	mvwprintw(wordwin, 0, 0, "[__________________]");
-	mvwprintw(wordwin, 0, 1, convert_plain(strncpy(buf, input, sizeof(buf) - 1), charset, 0));
+	mvwprintw(wordwin, 0, 1, "%s", convert_plain(strncpy(buf, input, sizeof(buf) - 1), charset, 0));
 	wattrset(wordwin, A_NORMAL);
 
 	wmove(wordwin, 0, menux + 1);
