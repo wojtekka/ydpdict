@@ -1,33 +1,33 @@
 
-  ydpdict 0.64
-  (c) copyright 1998-2005 wojtek kaniewski <wojtekka%irc.pl>
+  ydpdict 0.65
+  (C) Copyright 1998-2005 Wojtek Kaniewski <wojtekka%toxygen.net>
 
-  program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
+  Program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
   multimedialnych s³owników angielsko-polskiego, polsko-angielskiego,
-  niemiecko-polskiego i polsko-niemieckiego Collinsa. oryginalne pakiety
-  zawiera jedynie programy windowsowowe, co uniemo¿liwia korzystanie
-  z nich pod innymi systemami. niniejszy program pozwala korzystaæ ze
-  s³owników pod kontrol± Linuksa. mo¿liwe, ¿e zadzia³a równie¿ pod innymi
+  niemiecko-polskiego i polsko-niemieckiego Collinsa. Oryginalne pakiety
+  zawieraj± jedynie programy windowsowowe, co uniemo¿liwia korzystanie
+  z nich pod innymi systemami. Niniejszy program pozwala korzystaæ ze
+  s³owników pod kontrol± Linuksa. Mo¿liwe, ¿e zadzia³a równie¿ pod innymi
   systemami, poniewa¿ jest pisany w miarê mo¿liwo¶ci przeno¶nie.
 		      
-  program jest rozwijany g³ównie dla PLD (http://www.pld-linux.org/),
+  Program jest rozwijany g³ównie dla PLD (http://www.pld-linux.org/),
   przez co kompilacja na innych systemach lub dystrybucjach Linuksa mo¿e
-  wymagaæ drobnych zmian. aby skompilowaæ i zainstalowaæ pakiet, nale¿y
+  wymagaæ drobnych zmian. Aby skompilowaæ i zainstalowaæ pakiet, nale¿y
   wykonaæ polecenia:
 
     ./configure
     make
     make install
 
-  ze wzglêdu na zmianê zachowania autoconfa, strony manuali bêd± instalowane
-  w katalogu $(prefix)/man, zamiast $(prefix)/share/man. je¶li chcesz je
+  Ze wzglêdu na zmianê zachowania autoconfa, strony manuali bêd± instalowane
+  w katalogu $(prefix)/man, zamiast $(prefix)/share/man. Je¶li chcesz je
   zainstalowaæ w odpowiednim miejscu, wpisz:
 
     ./configure --mandir=/usr/local/share/man
     make
     make install
 
-  potem teraz wystarczy skopiowaæ cztery pliki z oryginalnego pakietu:
+  Potem teraz wystarczy skopiowaæ cztery pliki z oryginalnego pakietu:
 
     database/dict100.dat
     database/dict100.idx
@@ -43,43 +43,56 @@
 
   dla s³ownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
   w którym znajduje siê program. mo¿na te¿ podaæ ¶cie¿kê, w której siê
-  one znajduj± w parametrze "Path" pliku konfiguracyjnego. nale¿y równie¿
+  one znajduj± w parametrze "Path" pliku konfiguracyjnego. Nale¿y równie¿
   zmieniæ parametr "CDPath" na ¶cie¿kê, gdzie znajduje siê podmountowana
-  p³yta CD. jego brak uniemo¿liwi odtwarzanie próbek d¼wiêkowych.
+  p³yta CD. Jego brak uniemo¿liwi odtwarzanie próbek d¼wiêkowych.
  
   UWAGA! NAZWY PLIKÓW MUSZ¡ BYÆ PISANE MA£YMI LITERAMI, INACZEJ PROGRAM
   ICH NIE ZNAJDZIE.
  
-  obs³uga programu jest bajecznie prosta. wystarczy wpisaæ szukane s³owo
-  lub wybraæ je klawiszami kursorów. do przemieszania siê miêdzy list±
-  s³ów, a definicj± s³u¿y klawisz Tab. odtwarzanie próbek to F2. zmiana na
+  Obs³uga programu jest bajecznie prosta. Wystarczy wpisaæ szukane s³owo
+  lub wybraæ je klawiszami kursorów. Do przemieszania siê miêdzy list±
+  s³ów, a definicj± s³u¿y klawisz Tab. Odtwarzanie próbek to F2. Zmiana na
   inny s³ownik to F3, F4, F5, F6.
 
-  program obs³ugiwaæ mo¿na czê¶ciowo za pomoc± myszki. klikniêcie na s³owo
-  z listy, spowoduje wy¶wietlenie jego t³umaczenia. klikaj±æ na dolne i górne
-  krawêdzie ekranu, mo¿na przewijaæ listê lub opis. je¶li klikniemy dwukrotnie
+  Program obs³ugiwaæ mo¿na czê¶ciowo za pomoc± myszki. Klikniêcie na s³owo
+  z listy, spowoduje wy¶wietlenie jego t³umaczenia. Klikaj±æ na dolne i górne
+  krawêdzie ekranu, mo¿na przewijaæ listê lub opis. Je¶li klikniemy dwukrotnie
   na s³owo z okienka t³umaczenia, zostanie ono automatycznie wyszukane.
 
-  ydpdict jest wydany na licencji GPLv2, która jest dostêpna w pliku COPYING.
-  najnowsz± wersjê mo¿na ¶ci±gn±æ z http://toxygen.net/ydpdict/
+  ydpdict jest wydany na licencji GPL w wersji 2, która jest dostêpna
+  w pliku COPYING. Wszelkie poprawki wys³ane do autora na licencji innej
+  ni¿ GPL w wersji 2 zostan± odrzucone. Brak informacji o licencji bêdzie
+  traktowany jak przyjêcie licencji kodu, który jest poprawiany.
 
-  lista zmian:
-  - 0.64 (2005-10-18): poprawki strony manuala Kamila Jaros³awskiego
-                       (kamil%visual.pl). obs³uga próbek o rozszerzeniu ogg
-		       Tomasza Marciniaka <ciniol@atos.wmid.amu.edu.pl>.
-		       oficjalne w³±czenie poprawki Micha³a Maternika
+  Najnowsz± wersjê mo¿na pobraæ z http://toxygen.net/ydpdict/
+
+  Znane b³êdy:
+  - Prze³±czenie na s³ownik niemiecko-polski lub polsko-niemiecki, gdy nie
+    s± one zainstalowane, spowoduje wyj¶cie z programu z komunikatem b³êdu,
+    zamiast poinformowaæ o b³êdzie i pozostaæ w s³owniku angielsko-polskim
+    lub polsko-angielskim.
+
+  Lista zmian:
+  - 0.65 (2005-11-16): Poprawki Jakuba Wilka (ubanus@users.sf.net): usuniêcie
+                       z³ych zachowañ prowadz±cych do segfaultów. Dodanie
+		       informacji o licencji poprawek. Kosmetyka dokumentacji.
+  - 0.64 (2005-10-18): Poprawki strony manuala Kamila Jaros³awskiego
+                       (kamil%visual.pl). Obs³uga próbek o rozszerzeniu .ogg
+		       Tomasza Marciniaka (ciniol%atos.wmid.amu.edu.pl).
+		       Oficjalne w³±czenie poprawki Micha³a Maternika
 		       (michal_m%ks.k.pl) pozwalaj±cej korzystaæ z
-		       niemieckiego s³ownika. poprawka dzia³ania na amd64
+		       niemieckiego s³ownika. Poprawka dzia³ania na amd64
 		       Arkadiusza Ko³acza (akolacz%gmail.com).
-  - 0.63 (2004-05-31): poprawka adresu. poprawki Marcina Owsianego
+  - 0.63 (2004-05-31): Poprawka adresu. Poprawki Marcina Owsianego
                        (marcin%owsiany.pl): poprawne zamykanie plików
 		       s³ownika, usuniêcie czytania konfiguracji z aktualnego
 		       katalogu, napisanie stron manuali.
-  - 0.62 (2003-11-23): poprawka Piotra Domagalskiego (szalik%szalik.net):
-                       przezroczyste t³o w atermie. poprawki Jaros³awa
+  - 0.62 (2003-11-23): Poprawka Piotra Domagalskiego (szalik%szalik.net):
+                       przezroczyste t³o w atermie. Poprawki Jaros³awa
 		       Kruka (jareq%pld-linux.org): skok do danego s³owa
 		       z linii komend, zmiana adresów PLD na aktualne.
-  - 0.61 (2003-10-01): wy¶wietlanie pomocy zaraz po uruchomieniu programu.
+  - 0.61 (2003-10-01): Wy¶wietlanie pomocy zaraz po uruchomieniu programu.
                        poprawki Cezarego M. Kruka: substytuty dla klawiszy
 		       funkcyjnych, blokada odtwarzania próbek d¼wiêkowych
 		       podczas przegl±dania s³ownika polsko-angielskiego,
@@ -87,42 +100,41 @@
 		       fonetycznej, korekta zapobiegaj±ca ¶mieceniu po ekranie
 		       podczas odtwarzania plików w formacie MP3.
 		       Dodane skrypty do konwersji z formatu WAV do MP3.
-  - 0.60 (2003-08-27): poprawki Piotra Domagalskiego: buforowanie odczytu
+  - 0.60 (2003-08-27): Poprawki Piotra Domagalskiego: buforowanie odczytu
                        przyspieszaj±ce start programu.
-  - 0.59 (2003-07-22): poprawki Jerzego Kêdra (jxa%adm.onet.pl): program
-                       nie zajmuje ju¿ 100% czasu procesora. patch Micha³a
+  - 0.59 (2003-07-22): Poprawki Jerzego Kêdra (jxa%adm.onet.pl): program
+                       nie zajmuje ju¿ 100% czasu procesora. Patch Micha³a
 		       Maternika (michal_m%ks.k.pl) pozwalaj±cy korzystaæ
 		       z niemieckiego s³ownika w pliku Deutsch.diff.
-  - 0.58 (2003-05-16): poprawki Piotra Domagalskiego: prosta obs³uga
+  - 0.58 (2003-05-16): Poprawki Piotra Domagalskiego: prosta obs³uga
                        myszki, mo¿liwo¶æ edycji wpisywanego s³owa, Enter
                        zatwierdza i wyszukuje, lepsza reakcja na zmianê
                        rozmiaru terminala, CTRL-L, kosmetyka, xmalloc.
-  - 0.57 (2003-04-15): kolejne poprawki Piotra Domagalskiego porz±dkuj±ce
+  - 0.57 (2003-04-15): Kolejne poprawki Piotra Domagalskiego porz±dkuj±ce
                        kompilacjê na nielinuksowych systemach. poprawka
 		       Paw³a Fenglera (pawfen%wp.pl): wywo³ywanie
 		       zewnêtrznego odtwarzacza w poprawny sposób.
-  - 0.56 (2003-03-21): wiosenne porz±dki w kodzie; obs³uga plików bazy
+  - 0.56 (2003-03-21): Wiosenne porz±dki w kodzie; obs³uga plików bazy
                        z nazwami pisanymi wielkimi literami; obs³uga próbek
 		       d¼wiêkowych o rozszerzeniu mp3; uzupe³nienie
 		       dokumentacji na podstawie archiwalnej wersji 0.5.
-  - 0.55 (2003-03-12): poprawki Piotra Domagalskiego (szalik%szalik.net):
+  - 0.55 (2003-03-12): Poprawki Piotra Domagalskiego (szalik%szalik.net):
                        poprawna kompilacja na OpenBSD, dok³adniejsze
 		       formatowanie tekstu.
-  - 0.54 (2003-01-27): poprawki Paw³a Jab³oñskiego
+  - 0.54 (2003-01-27): Poprawki Paw³a Jab³oñskiego
                        (pawelj%lodz.dialog.net.pl): wy¶wietlenie innego
 		       s³owa przewija okno definicji do góry; rozpoczêcie
 		       pisania s³owa, bed±c w oknie definicji, usuwa
 		       poprzednie; klawisz F12 równowa¿ny z Ctrl-U.
-  - 0.53 (2003-01-07): z powodu awarii dysku straci³em poprawki, które
+  - 0.53 (2003-01-07): Z powodu awarii dysku straci³em poprawki, które
                        podes³ano mi od wydania 0.52. dlatego proszê o
-		       kontakt.
-		       poprawienie klawisza Backspace.
+		       kontakt. Poprawienie klawisza Backspace.
   - 0.52 (2002-05-27): autoconf, poprawki Grzegorza Go³awskiego
                        (grzegol%pld-linux.org), poprawne dzia³anie na
 		       maszynach bigendianowych.
-  - 0.51 (1999-10-17): stabilna wersja 0.5, które nigdy nie wysz³o poza
+  - 0.51 (1999-10-17): Stabilna wersja 0.5, które nigdy nie wysz³o poza
                        wersjê rozwojow±.
-  - 0.5 (1999-08-17): wersja rozwojowa. spora reorganizacja kodu; pozbycie
+  - 0.5 (1999-08-17): Wersja rozwojowa. Spora reorganizacja kodu; pozbycie
                       siê SLanga.
-  - 0.4 (1998-xx-xx): dawno temu i nieprawda.
+  - 0.4 (1998-xx-xx): Dawno temu i nieprawda.
 
