@@ -194,16 +194,16 @@ int read_config(int argc, char **argv)
 			case 'V':
 				printf("ydpdict-" VERSION "\n");
 				exit(0);
-			case 'p':
+			case 'a':
 				dict = 0;
 				break;
-			case 'a':
+			case 'p':
 				dict = 1;
 				break;
-			case 'o':
+			case 'd':
 				dict = 2;
 				break;
-			case 'd':
+			case 'o':
 				dict = 3;
 				break;
 			case 'n':
