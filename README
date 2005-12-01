@@ -1,5 +1,5 @@
 
-  ydpdict 0.65
+  ydpdict 0.66
   (C) Copyright 1998-2005 Wojtek Kaniewski <wojtekka%toxygen.net>
 
   Program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
@@ -74,7 +74,10 @@
     lub polsko-angielskim.
 
   Lista zmian:
-  - 0.65 (2005-11-16): Poprawki Jakuba Wilka (ubanus@users.sf.net): usuniêcie
+  - 0.66 (2005-12-xx): Poprawka odtwarzania próbek Tomasza Jakuba Skrynnyka
+                       (skrynnyk%post.pl). Poprawka obs³ugi parametrów Jasia
+		       (jasiu%tool.eu.org).
+  - 0.65 (2005-11-16): Poprawki Jakuba Wilka (ubanus%users.sf.net): usuniêcie
                        z³ych zachowañ prowadz±cych do segfaultów. Dodanie
 		       informacji o licencji poprawek. Kosmetyka dokumentacji.
   - 0.64 (2005-10-18): Poprawki strony manuala Kamila Jaros³awskiego

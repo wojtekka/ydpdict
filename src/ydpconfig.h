@@ -22,7 +22,7 @@
 
 #include <curses.h>
 
-#define VERSION "0.65"
+#define VERSION "0.66"
 #define HEADER_NAME "ydpdict-" VERSION
 #define HEADER_COPYRIGHT "(C) Copyright 1998-2005 Wojtek Kaniewski"
 #define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"

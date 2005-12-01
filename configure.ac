@@ -9,5 +9,7 @@ AC_CHECK_HEADERS([linux/soundcard.h])
 AC_CHECK_FUNCS([getopt_long])
 CFLAGS="$CFLAGS $CURSES_INCLUDEDIR"
 LIBS="$LIBS $CURSES_LIBS"
-AC_OUTPUT(src/Makefile)
+AC_SUBST(VERSION)
+VERSION=$(grep '^#define VERSION' src/ydpconfig.h | sed -e 's/^[^"]\+"//' -e 's/".*//')
+AC_OUTPUT([Makefile src/Makefile])
 
