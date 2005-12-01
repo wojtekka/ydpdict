@@ -284,7 +284,7 @@ int main(int argc, char **argv)
 				break;
 			case KEY_F(2):
 			case '`':
-				if (dict == 1 || dict == 3)
+				if (dict == 0 || dict == 2)
 					if (playsample(pos + menu) < 1);
 
 				break;
