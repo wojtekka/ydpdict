@@ -1,6 +1,6 @@
 CC = @CC@
 LIBS = @LIBS@
-CFLAGS = @CFLAGS@ -Wall
+CFLAGS = @CFLAGS@ -Wall -DVERSION=\"@VERSION@\"
 OBJS = ydpcore.o ydpconfig.o ydpsound.o ydpconvert.o ydpdict.o xmalloc.o
 
 prefix = @prefix@
