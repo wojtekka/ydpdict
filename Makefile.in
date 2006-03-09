@@ -1,7 +1,7 @@
 VERSION=@VERSION@
 
 all:	configure src/Makefile
-	(cd src; make all)
+	make -C src
 
 configure:	configure.in
 	./autogen.sh
@@ -19,7 +19,7 @@ acclean:	distclean
 	rm -f configure aclocal.m4
 
 install:
-	(cd src; make install)
+	make -C src install
 
 tarball:	distclean
 	cd ..; mv ydpdict ydpdict-$(VERSION); tar zcvf ydpdict-$(VERSION)/ydpdict-$(VERSION).tar.gz --exclude ydpdict-$(VERSION)/ydpdict-$(VERSION).tar.gz --exclude '*CVS*' ydpdict-$(VERSION); mv ydpdict-$(VERSION) ydpdict
