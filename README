@@ -1,5 +1,5 @@
 
-  ydpdict 0.66
+  ydpdict 0.67
   (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka%toxygen.net>
 
   Program, którego dokumentacjê w tej chwili czytasz, s³u¿y do obs³ugi
@@ -74,9 +74,11 @@
     lub polsko-angielskim.
 
   Lista zmian:
-  - 0.66 (2005-12-xx): Poprawka odtwarzania próbek Tomasza Jakuba Skrynnyka
+  - 0.67 (2006-xx-xx): Dodanie $(DESTDIR) przy instalacji przez Stanis³awa
+                       Halika (weirdo%tehran.lain.pl).
+  - 0.66 (2006-01-02): Poprawka odtwarzania próbek Tomasza Jakuba Skrynnyka
                        (skrynnyk%post.pl). Poprawka obs³ugi parametrów Jasia
-		       (jasiu%tool.eu.org).
+		       (jasiu%tool.eu.org). Poprawka skryptów budowania.
   - 0.65 (2005-11-16): Poprawki Jakuba Wilka (ubanus%users.sf.net): usuniêcie
                        z³ych zachowañ prowadz±cych do segfaultów. Dodanie
 		       informacji o licencji poprawek. Kosmetyka dokumentacji.
