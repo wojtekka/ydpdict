@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2004 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,32 +20,39 @@
 #ifndef __YDPSOUND_H
 #define __YDPSOUND_H
 
+#include <inttypes.h>
+
 struct riff_header_type {
 	char id[4];
-	unsigned long size;
+	uint32_t size;
 	char format[4];
-};
+} __attribute__ ((packed));
 
 struct riff_block_type {
 	char id[4];
-	unsigned long size;
-};
+	uint32_t size;
+} __attribute__ ((packed));
 
-#define WAVE_FORMAT_PCM 0x0001
-#define WAVE_FORMAT_ADPCM 0x0002
+enum wave_fmt_type_type {
+	WAVE_FORMAT_PCM = 0x0001,
+	WAVE_FORMAT_ADPCM = 0x0002
+};
 
 struct wave_fmt_type {
-	unsigned short int wFormatTag;
-	unsigned short int wChannels;
-	unsigned long dwSamplesPerSec;
-	unsigned long dwAvgBytesPerSec;
-	unsigned short int wBlockAlign;
-};
+	uint16_t wFormatTag;
+	uint16_t wChannels;
+	uint32_t dwSamplesPerSec;
+	uint32_t dwAvgBytesPerSec;
+	uint16_t wBlockAlign;
+	uint16_t wBitsPerSample;
+} __attribute__ ((packed));
 
-struct wave_pcm_type {
-	unsigned short int wBitsPerSample;
-};
+struct wave_adpcm_type {
+	uint16_t wExtSize;
+	uint16_t wSamplesPerBlock;
+	uint16_t wCoefs;
+} __attribute__ ((packed));
 
-int playsample(int def);
+int play_sample(int def);
 
 #endif /* __YDPSOUND_H */
