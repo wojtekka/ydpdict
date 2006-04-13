@@ -1,55 +1,38 @@
-# ¦cie¿ka prowadz±ca do plików s³ownika. Uwaga: dostêp do plików
-# umieszczonych na partycji FAT lub VFAT jest w wypadku j±der 2.0.x znacznie
-# wolniejszy ni¿ do plików na partycji EXT2.
+# Path to dictionary databases. Filenames within the directory MUST be
+# written using lowercase letters.
 
 Path /usr/local/share/ydpdict
 
-# ¦cie¿ka prowadz±ca do katalogów z próbkami d¼wiêkowymi.
+# Path to pronuciation samples.
 
-CDPath /mnt/cdrom
+CDPath /media/cdrom
 
-# ¦cie¿ka do programu odtwarzaj±cego próbki d¼wiêkowe (play lub mpg321).
-# Je¿eli nie jest ustawiona, program próbuje sam odtworzyæ próbki.
+# Path to external sound player. If unset, internal playback routines are
+# used.
 
 #Player play
 #Player mpg321
 #Player ogg123
 
-# Domy¶lny s³ownik (0 - angielsko-polski, 1 - polsko-angielski, 
-# 2 - niemiecko-polski, 3 - polsko-niemiecki)
+# Default dictionary (0 - English-Polish, 1 - Polish-English,
+# 2 - German-Polish, 3 - Polish-German)
 
 DefaultDictionary 0
 
-# Zestaw znaków, z którego korzysta program: None (bez polskich liter),
-# ISO-8859-2 (polskie litery), Unicode (polskie litery i transkrypcja
-# fonetyczna przy odpowiedniej czcionce). Mo¿na te¿ u¿yæ parametru UnicodeSet,
-# a wtedy program sam prze³±czy konsolê w tryb UTF-8.
-
-Charset ISO-8859-2
-
-# Wprawdzie program potrafi wykrywaæ, czy terminal obs³uguje kolory czy nie,
-# to jednak mo¿na wymusiæ ich wy¶wietlanie lub ich brak.
+# Color support is autodetected, but color display can be forced with this
+# option.
 
 UseColor On
 
-# Tryb z przezroczystym t³em lub bez
+# Terminal transparency
 
 UseTransparent On
 
-# By zmieniæ kolory wy¶wietlanego tekstu nale¿y zmieniæ poni¿sze warto¶ci
-# na jedne z nastêpuj±cych: Black, Red, Green, Brown, Blue, Magenta, Cyan,
-# White, Gray, Yellow, LightRed, LightGreen, LightBlue, LightMagenta,
-# LightCyan, LightWhite. Uwaga: dla kolorów z przedrostkiem "Light"
-# pogrubienie tekstu nie bêdzie widoczne.
-
-# Kolor tekstu
+# Colors used to display definitions can be set to one of the following:
+# Black, Red, Green, Brown, Blue, Magenta, Cyan, White, Gray, Yellow,
+# LightRed, LightGreen, LightBlue, LightMagenta, LightCyan, LightWhite.
+# Note: for colors with "Light" prefix, emphasis will be invisible.
 
 Color White
-
-# Kolor definicji
-
 DefinitionColor LightCyan
-
-# Kolor drugiego wyró¿nienia (np. czê¶æ mowy, rodzaj)
-
 InformationColor LightGreen
