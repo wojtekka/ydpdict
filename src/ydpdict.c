@@ -18,608 +18,219 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <ctype.h>
-#include <curses.h>
+#define _XOPEN_SOURCE_EXTENDED
+#include <ncursesw/ncurses.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ydpdict.h>
+#include <wchar.h>
+#include <wctype.h>
 
-#include "ydpcore.h"
+#ifdef HAVE_LIBINTL_H
+#include <libintl.h>
+#define _(x) gettext(x)
+#else
+#define _(x) x
+#endif
+
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
+
+#ifdef HAVE_LIBAO
+#include <ao/ao.h>
+#endif
+
 #include "ydpconfig.h"
 #include "ydpsound.h"
-#include "ydpconvert.h"
 #include "xmalloc.h"
 
-#define DEFDICT_AP "dict100.dat"
-#define DEFINDEX_AP "dict100.idx"
-#define DEFDICT_PA "dict101.dat"
-#define DEFINDEX_PA "dict101.idx"
-
-#define DEFDICT_DP "dict200.dat"
-#define DEFINDEX_DP "dict200.idx"
-#define DEFDICT_PD "dict201.dat"
-#define DEFINDEX_PD "dict201.idx"
-
-#define INPUTLEN 17
-
-/* podstawowe zmienne programu */
-u_char input[INPUTLEN + 1], *def = NULL;
-int fw, menu = 0, menux = 0, pos = 0, exact = 1, defmark = 0, defline = 0;
-int defsize, defupd = 0, color_text, color_cf1, color_cf2, parse_rtf = 1;
-int xsize, ysize, resized_term = 0, ctrlk = 0;
-int init;
-int length;
-
-/* okienka ncurses */
-WINDOW *wordwin = NULL, *defwin = NULL, *headwin = NULL, *splitwin = NULL;
-
-/* deklaracja pó¼niej opisanych funkcji */
-void showerror(const u_char *msg);
-void showmenu(int pos, int menu);
-void findword2();
-void updateall();
-int showdef(u_char *def, int first);
-int read_config();
-int ischar(u_char ch);
-void sigsegv();
-void sigresize();
-void resize();
-void checksize();
-void sigterm();
-void redrawdef();
-void preparewins();
-void change_dict(int pl);
-
-/* do dzie³a panie i panowie... */
-int main(int argc, char **argv)
-{
-	int ch, bg;
-	MEVENT m_event;
-
-	/* na mój sygna³... */
-	signal(SIGSEGV, sigsegv);
-#ifdef SIGWINCH
-	signal(SIGWINCH, sigresize);
-#endif
-	signal(SIGTERM, sigterm);
-	signal(SIGINT, sigterm);
-	signal(SIGHUP, sigterm);
-
-	/* wczytaj konfiguracjê (przed inicjalizacj± ncurses) */
-	read_config(argc, argv);
-	if (charset == 3) {
-		puts("\033%G");
-		fflush(stdout);
-	}
-
-	/* inicjalizacja ncurses */
-	initscr();
-	noecho();
-	cbreak();
-
 #ifndef COLOR_DEFAULT
-#  define COLOR_DEFAULT (-1)
+#define COLOR_DEFAULT (-1)
 #endif
 
-	if (transparent) {
-		bg = COLOR_DEFAULT;
-		use_default_colors();
-	} else
-		bg = COLOR_BLACK;
+ydpdict_t dict;		///< Dictionary handle
+int dict_open;		///< Dictionary open flag
+int word_count;		///< Dictionary word count
 
-	/* je¶li chcemy kolorków, to je przygotuj */
-	if (use_color && has_colors()) {
-		start_color();
-		init_pair(1, config_text & 127, bg);
-		init_pair(2, config_cf1 & 127, bg);
-		init_pair(3, config_cf2 & 127, bg);
-		color_text = COLOR_PAIR(1) | (config_text & A_BOLD);
-		color_cf1 = COLOR_PAIR(2) | (config_cf1 & A_BOLD);
-		color_cf2 = COLOR_PAIR(3) | (config_cf2 & A_BOLD);
-	} else {
-		color_text = A_NORMAL;
-		color_cf1 = A_NORMAL;
-		color_cf2 = A_NORMAL;
+wchar_t input[INPUT_LEN + 1];	///< Input word
+int input_index;		///< Input word cursor index
+int input_exact = 1;		///< Input word Exact match flag
+
+int list_index;		///< Word list scroll line index
+int list_page;		///< Word list scroll page
+int focus;		///< Current focus (0 - word list, 1 - word definition)
+
+char *def;		///< Current definition
+int def_index;		///< Definition scroll line index
+int def_height;		///< Definition height in lines
+int def_update;		///< Definition update flag
+int def_raw_rtf;	///< Display raw RTF flag
+
+int screen_width;	///< Screen width
+int screen_height;	///< Screen height
+
+int resized_term;	///< Terminal resize flag
+
+WINDOW *window_word;	///< Wordlist window
+WINDOW *window_def;	///< Definition window
+WINDOW *window_header;	///< Header window
+WINDOW *window_sep;	///< Separator window
+WINDOW *window_arrows;	///< Arrows window
+
+int color_text;
+int color_cf1;
+int color_cf2;
+
+/**
+ * \brief Exits program
+ *
+ * \param msg Error message or NULL if there is no error condition
+ *
+ * Cleans up a bit.
+ */
+void show_error(const char *msg)
+{
+	if (window_word)
+		delwin(window_word);
+
+	if (window_header)
+		delwin(window_header);
+
+	if (window_sep)
+		delwin(window_sep);
+
+	if (window_def)
+		delwin(window_def);
+
+	if (window_arrows)
+		delwin(window_arrows);
+
+	werase(stdscr);
+	wrefresh(stdscr);
+
+	endwin();
+
+	if (dict_open) {
+		ydpdict_close(&dict);
+		dict_open = 0;
 	}
 
-	memset(input, 0, sizeof(input));
+	xfree(def);
 
-	init = 1;
+	if (msg)
+		fprintf(stderr, "%s\n\n", msg);
 
-	/* sprawd¼, czy siê zmie¶cimy */
-	checksize();
-
-	/* i zrób co¶ z okienkami */
-	preparewins();
-
-	/* za³aduj s³ownik */
-	change_dict(dict);
-
-	init = 0;
-
-	mousemask(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
-
-	/* je¿eli poda³e¶ parametr word to wczytaj slowo*/
-	if (word)	
-		for (length = ((int) strlen(word)) - 1; length>=0; length--)
-			ungetch(word[length]);
-	else
-		/* wy¶wietl pomoc po uruchomieniu */
-		ungetch('?');
-	
-	/* i do dzie³a! */
-	for (;;) {
-		if (resized_term)
-			resize();
-
-		redrawdef();
-		ch = wgetch(wordwin);
-
-		switch (ch) {
-
-#define __MOUSE_IN(window, event, correct1, correct2, correct3, correct4) (\
-	 event.y > (window->_begy + correct1) && event.y < (window->_begy + window->_maxy + correct2) &&\
-	 event.x > (window->_begx + correct3) && event.x < (window->_begx + window->_maxx + correct4))
-
-#define isalpha_pl_PL(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') || x == (u_char) '±' ||\
-	x == (u_char) 'æ' || x == (u_char) 'ê' || x == (u_char) '³' || x == (u_char) 'ñ' ||\
-	x == (u_char) 'ó' || x == (u_char) '¶' || x == (u_char) '¿' || x == (u_char) '¼' ||\
-	x == (u_char) '¡' || x == (u_char) 'Æ' || x == (u_char) 'Ê' || x == (u_char) '£' ||\
-	x == (u_char) 'Ñ' || x == (u_char) 'Ó' || x == (u_char) '¦' || x == (u_char) '¯' ||\
-	x == (u_char) '¬')
-
-			case KEY_MOUSE:
-				if (getmouse(&m_event) == OK) {
-
-					/* dwukrotne klikniêcie s³owa w opisie */
-					if (m_event.bstate & BUTTON1_DOUBLE_CLICKED && __MOUSE_IN(defwin, m_event, -2, 1, -3, 2)) {
-						u_char c, buf[INPUTLEN + 1];
-						int i = 0, x = m_event.x - 27;
-
-						c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
-
-						if (!(isalpha_pl_PL(c) || c == '-'))
-							break;
-
-						/* szukamy pierwszej nie-litery */
-						do {
-							x--;
-							c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
-						} while ((isalpha_pl_PL(c) || c == '-') && x >= 0);
-
-						/* i na prawo próbujemy uzbieraæ s³owo */
-						do {
-							x++;
-							c = (u_char) (mvwinch(defwin, m_event.y - 2, x) & A_CHARTEXT);
-							buf[i++] = c;
-						} while ((isalpha_pl_PL(c) || c == '-') && x < defwin->_maxx);
-
-						buf[--i] = 0;
-
-						/* uzbierali¶my co¶ ? */
-						if (strlen(buf)) {
-							strncpy(input, buf, sizeof(input) - 1);
-							menux = strlen(input);
-							findword2();
-							defupd = 1;
-						}
-
-						break;
-					}
-
-					if (m_event.bstate & BUTTON1_CLICKED || m_event.bstate & BUTTON1_DOUBLE_CLICKED) {
-						/* wskazanie s³owa na li¶cie */
-						if (__MOUSE_IN(wordwin, m_event, -2, 1, -1, 1) && m_event.y > 2) {
-							menu = m_event.y - 3;
-							memset(&input, 0, sizeof(input));
-							menux = 0;
-							defline = 0;
-							defupd = 1;
-						}
-
-						/* copyright ;> */
-						if (m_event.y == 0 && m_event.x > xsize - strlen(HEADER_COPYRIGHT) - 2) {
-							ungetch(KEY_F(1));
-							break;
-						}
-
-						/* przewijanie ekranu */
-						if (m_event.y == ysize - 1) {
-							ungetch(KEY_NPAGE);
-							break;
-						}
-
-						if (m_event.y <= 1) {
-							ungetch(KEY_PPAGE);
-							break;
-						}
-
-					}
-
-					if (m_event.bstate & BUTTON1_CLICKED) {
-						/* zmiana ,,aktywnego'' okna */
-						if (__MOUSE_IN(wordwin, m_event, -2, 1, -3, 2) && defmark)
-							defmark = 0;
-						if (__MOUSE_IN(defwin, m_event, -2, 1, -3, 2) && !defmark)
-							defmark = 1;
-					}
-				}
-
-				break;
-#undef isalpha_pl_PL
-#undef __MOUSE_IN
-
-			case 10: /* Enter */
-				if (defmark) {
-					if (defline < defsize - (ysize - 3))
-						defline++;
-				} else {
-					char *c = &input[strlen(input) - 1];
-					while (*c == ' ')
-						*c-- = 0;
-
-					menux = strlen(input);
-
-					findword2();
-					defupd = 1;
-				}
-				break;
-			case 27:
-				/* ESC */
-				if ((ch = wgetch(wordwin)) == ERR || ch == 27)
-					showerror(NULL);
-				break;
-#ifdef KEY_RESIZE
-			case KEY_RESIZE:
-				resized_term = 1;
-				break;
+#ifdef HAVE_LIBAO
+	ao_shutdown();
 #endif
-			case 9: /* TAB */
-				defmark = (defmark) ? 0 : 1;
-				break;
-			case KEY_F(2):
-			case '`':
-				if (dict == 0 || dict == 2)
-					if (playsample(pos + menu) < 1);
 
-				break;
-			case KEY_F(1):
-			case '?':
-				def = strdup(_("\
-{\\b ydpdict-" VERSION "\\line\\cf1" HEADER_COPYRIGHT "}\
-\\par\\pard{\
-}\
-{\\line{\\cf2 F1} lub {\\cf2 ?} - pomoc}\
-{\\line{\\cf2 Tab} - zmiana panelu}\
-{\\line{\\cf2 strza³ka w dó³} lub {\\cf2 w górê} - przewijanie paneli wiersz po wierszu}\
-{\\line{\\cf2 Page Up} lub {\\cf2 Page Down} - przewijanie paneli ekranami}\
-{\\line{\\cf2 F2} lub {\\cf2 `} - odtworzenie wymowy wyrazu}\
-{\\line{\\cf2 F3} lub {\\cf2 <} - s³ownik angielsko-polski}\
-{\\line{\\cf2 F4} lub {\\cf2 >} - s³ownik polsko-angielski}\
-{\\line{\\cf2 F5} lub {\\cf2 [} - s³ownik niemiecko-polski}\
-{\\line{\\cf2 F6} lub {\\cf2 ]} - s³ownik polsko-niemiecki}\
-{\\line{\\cf2 Ctrl-U} - usuniêcie wpisywanego s³owa}\
-{\\line{\\cf2 Ctrl-L} - od¶wie¿enie okna}\
-{\\line{\\cf2 strza³ka w lewo} lub {\\cf2 w prawo} - poruszanie siê w s³owie}\
-{\\line{\\cf2 Enter} - zakoñczenie edycji s³owa}\
-{\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakoñczenie pracy z programem.}\
-\\par\\pard{\
-Kontakt z autorem: {\\b wojtekka@toxygen.net} \
-Najnowsze wersje s± dostêpne pod adresem {\\b http://toxygen.net/ydpdict/}\
-}"));
-				break;
-			case KEY_F(3):
-			case '<':
-				if (dict != 0) {
-					change_dict(0);
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_F(4):
-			case '>':
-				if (dict != 1) {
-					change_dict(1);
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_F(5):
-			case '[':
-				if (dict != 2) {
-					change_dict(2);
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_F(6):
-			case ']':
-				if (dict != 3) {
-					change_dict(3);
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_UP:
-				if (defmark) {
-					if (defline > 0)
-						defline--;
-				} else {
-					if (menu > 0)
-						menu--;
-					else
-						if (pos > 0)
-							pos--;
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_PPAGE:
-				if (defmark) {
-	  				if (defline > ysize - 4)
-						defline -= ysize - 3;
-					else
-						defline = 0;
-				} else {
-					if (menu > 0)
-						menu = 0;
-					else if (pos > ysize - 5)
-						pos -= ysize - 4;
-					else pos = 0;
-
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_DOWN:
-				if (defmark) {
-					if (defline < defsize - (ysize - 3))
-						defline++;
-				} else {
-					if (menu < ysize - 5)
-						menu++;
-					else if (pos < wordcount - (ysize - 4))
-						pos++;
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_NPAGE:
-				if (defmark) {
-					if (defline < defsize - (ysize - 3) * 2 - 1)
-						defline += ysize - 3;
-					else
-						defline = defsize - (ysize - 3);
-				} else {
-					if (menu < ysize - 5)
-						menu = ysize - 5;
-					else if (pos < wordcount - (ysize - 4) * 2 - 1)
-						pos += ysize - 4;
-					else
-						pos = wordcount - (ysize - 4);
-					defline = 0;
-					defupd = 1;
-				}
-				break;
-			case KEY_F(9):
-				parse_rtf = (parse_rtf) ? 0 : 1;
-				break;
-			case KEY_DC:
-				if (!defmark) {
-					if (menux < strlen(input)) {
-						memmove(&input[menux], &input[menux + 1], strlen(&input[menux]) + 1);
-						findword2();
-						defupd = 1;
-					} else
-						beep();
-				}
-				break;
-			case KEY_BACKSPACE:
-			case 127:
-			case 8:
-				if (defmark) {
-					if (defline > 0)
-						defline--;
-					break;
-				} else {
-					if (menux) {
-						memmove(&input[menux - 1], &input[menux], strlen(&input[menux]) + 1);
-						menux--;
-						findword2();
-						defupd = 1;
-					} else
-						beep();
-				}
-				break;
-			case 12: /* ^L */
-				/* przerysowanie wszystkiego od nowa */
-				resized_term = 1;
-				break;
-			case 11: /* ^K */
-				ctrlk = 2;
-				break;
-			case 21: /* ^U */
-				memset(&input, 0, sizeof(input));
-				menu = 0;
-				menux = 0;
-				pos = 0;
-				defupd = 1;
-				break;
-			case 24: /* ^X */
-				showerror(ctrlk ? _("Hmm... Joe? Nie znam tego pana...") : _("E---- (Emacs sucks! pico forever!!!)"));
-				break;
-			case KEY_HOME:
-			case KEY_FIND:
-				menux = 0;
-				break;
-			case KEY_END:
-			case KEY_SELECT:
-				menux = strlen(input);
-				break;
-			case KEY_LEFT:
-				if (!menux || defmark)
-					beep();
-				else
-					menux--;
-				break;
- 			case KEY_RIGHT:
-				if (menux >= strlen(input) || defmark)
-					beep();
-				else
-					menux++;
-				break;
-			default:
-				if ((ch == 'x' || ch == 'X') && ctrlk)
-					showerror(_("Hmm... Joe? Nie znam tego pana..."));
-
-				if (!ischar(ch))
-					break;
-
-				if (defmark) {
-					memset(input, 0, sizeof(input));
-					menux = 0;
-				}
-
-				if (strlen(input) > INPUTLEN)
-					break;
-
-				if (menux < strlen(input))
-					memmove(&input[menux + 1], &input[menux], strlen(&input[menux]) + 1);
-				
-				input[menux++] = (u_char) ch;
-
-				if (!strcmp(&input[strlen(input) - 2], ":q") || !strcmp(&input[strlen(input) - 3], ":wq"))
-					showerror(_("E--- (Emacs sucks! vi forever!!!)"));
-
-				findword2();
-				defupd = 1;
-				defmark = 0;
-				defline = 0;
-				break;
-		}
-
-		if (ctrlk)
-			ctrlk--;
-	}
-	
-	showerror(NULL);
-	return 0;
+	exit(msg ? 1 : 0);
 }
 
-/* zakoñczenie killem lub CTRL-C */
-void sigterm()
+/**
+ * \brief SIGTERM handler.
+ */
+static void sigterm(void)
 {
-	showerror(NULL);
+	show_error(NULL);
 }
 
-/* od¶wie¿a definicjê */
-void redrawdef()
+/**
+ * \brief Updates and redraws all ncurses windows
+ */
+void update_all(void)
 {
-	if (defupd) {
-		xfree(def);
-		def = readdef(pos + menu);
-		defupd = 0;
-	}
-	showmenu(pos, menu);
-	defsize = showdef(def, defline);
-	curs_set((defmark) ? 0 : 1);
-	wattrset(splitwin, A_BOLD);
-	mvwprintw(splitwin, ysize / 2, 0, (defmark) ? "-->" : "<--");
-	updateall();
+	wnoutrefresh(window_header);
+	wnoutrefresh(window_sep);
+	wnoutrefresh(window_def);
+	wnoutrefresh(window_arrows);
+	wnoutrefresh(window_word);
+	doupdate();
 }
 
-/* przygotowuje okienka */
-void preparewins()
+/**
+ * \brief Creates and configures ncurses windows
+ *
+ * Configuration also means filling the header and separator window
+ */
+void create_windows(void)
 {
-	int x;
+	int i;
 
-	/* je¶li ju¿ istnia³y, to znaczy, ¿e mamy resize */
-	if (wordwin || defwin || headwin || splitwin) {
-		delwin(wordwin);
-		delwin(defwin);
-		delwin(headwin);
-		delwin(splitwin);
-	}
+	/* Destroy windows */
+	if (window_word)
+		delwin(window_word);
+	if (window_def)
+		delwin(window_def);
+	if (window_header)
+		delwin(window_header);
+	if (window_sep)
+		delwin(window_sep);
+	if (window_arrows)
+		delwin(window_arrows);
 	
-	/* utwórz, co trzeba */
-	wordwin = newwin(ysize - 3, 20, 2, 2);
-	defwin = newwin(ysize - 3, xsize - 29, 2, 27);
-	headwin = newwin(1, xsize, 0, 0);
-	splitwin = newwin(ysize - 1, 4, 1, 23);
+	/* Create windows */
+	window_word = newwin(screen_height - 3, 20, 2, 2);
+	window_def = newwin(screen_height - 3, screen_width - 29, 2, 27);
+	window_header = newwin(1, screen_width, 0, 0);
+	window_sep = newwin(screen_height - 1, 4, 1, 23);
+	window_arrows = newwin(screen_height - 1, 1, 1, screen_width - 1);
 
-	if (!wordwin || !defwin || !headwin || !splitwin)
-		showerror(_("Brak pamiêci."));
+	if (!window_word || !window_def || !window_header || !window_sep)
+		show_error(_("Out of memory"));
 	
-	/* teraz je przygotuj */
-	keypad(wordwin, TRUE);
+	/* Configure windows */
+	keypad(window_word, TRUE);
 	halfdelay(100);
-
 	erase();
 
-	/* narysuj cudown± pionow± liniê */
-	for (x = 0; x < ysize; x++) {
-		switch (charset) {
-			case 0:
-				mvwaddstr(splitwin, x, 1, "|");
-				break;
-			case 1:
-				mvwaddch(splitwin, x, 1, ACS_VLINE);
-				break;
-			default: /* unikod */
-				mvwaddstr(splitwin, x, 1, "â”‚");
-		}
-	}
+	/* Draw vertical bar */
+	for (i = 0; i < screen_height; i++)
+		mvwaddch(window_sep, i, 1, ACS_VLINE);
 
-	/* teraz piêkny nag³ówek */
-	wattrset(headwin, A_REVERSE);
+	/* Draw screen header */
+	wattrset(window_header, A_REVERSE);
 
-	{
-		const u_char *hname = HEADER_NAME, *hcopyright = HEADER_COPYRIGHT;
+	for (i = 0; i < screen_width; i++)
+		waddch(window_header, ' ');
 
-		for (x = 0; x < xsize; x++)
-			waddch(headwin, ' ');
+	mvwaddstr(window_header, 0, 1, HEADER_NAME);
 
-		/* na pocz±tku... */
-		for (x = 1; x < xsize && *hname; x++)
-			mvwaddch(headwin, 0, x, *hname++);
-
-		/* ... i na koñcu */
-		for (x = xsize - strlen(hcopyright) - 1; x < xsize && *hcopyright; x++)
-			mvwaddch(headwin, 0, x, *hcopyright++);
-	}
-
+	if (screen_width - strlen(HEADER_COPYRIGHT) - 1 > strlen(HEADER_NAME) + 2);
+		mvwaddstr(window_header, 0, screen_width - strlen(HEADER_COPYRIGHT) - 1, HEADER_COPYRIGHT);
 }
 
-/* rozszerzanie okienka? */
-void sigresize()
+/**
+ * \brief SIGWINCH handler
+ */
+void sigwinch()
 {
 	resized_term = 1;
 }
 
-void resize()
-{
-	endwin();
-	refresh();
-
-	checksize();
-	preparewins();
-
-	resized_term = 0;
-}
-
-void checksize()
+/**
+ * \brief Checks and adjusts word list selection to match the new window size
+ */
+void check_size(void)
 {
 	int newx, newy, fake = 0, diff;
 
 	newx = stdscr->_maxx + 1;
 	newy = stdscr->_maxy + 1;
 
-	/* minimalne rozmiary */
+	/* Minimum size */
 	if (newx < 29)
 		fake = newx = 29;
 	if (newy < 4)
@@ -628,44 +239,64 @@ void checksize()
 	if (fake)
 		resizeterm(newy, newx);
 
-	xsize = newx;
-	ysize = newy;
+	screen_width = newx;
+	screen_height = newy;
 
-	diff = pos + (ysize - 4) - wordcount;
+	diff = list_page + (screen_height - 4) - word_count;
 	if (diff > 0) {
-		pos -= diff;
-		menu += diff;
+		list_page -= diff;
+		list_index += diff;
 	}
-	diff = menu - (ysize - 5);
+	diff = list_index - (screen_height - 5);
 	if (diff > 0) {
-		pos += diff;
-		menu -= diff;
+		list_page += diff;
+		list_index -= diff;
 	}
 }
 
-/* czy podany znaczek da siê wy¶wietliæ i wprowadziæ z klawiatury? */
-int ischar(u_char ch)
+/**
+ * \brief Handles terminal resize
+ */
+void resize(void)
 {
-	return (ch > 31 && ch < 128) || strchr("±æê³ñó¶¿¼¡ÆÊ£ÑÓ¦¯¬", ch);
+	endwin();
+	refresh();
+
+	check_size();
+	create_windows();
+
+	resized_term = 0;
 }
 
-#define is_visible(x) ((ypos >= first && ypos < (ysize - 3) + first) ? x : "")
-#define conv(x, y) ((phon) ? (char*) convert_phonetic(x, y, 0) : (char*) convert_plain(x, y, 0))
+#define is_visible(x) ((ypos >= first && ypos < (screen_height - 3) + first) ? x : "")
 
-int showdef(u_char *def, int first)
+/**
+ * \brief Prints the definition
+ *
+ * \param def Definition RTF source
+ * \param first First line visible on the screen
+ *
+ * \return Total number of lines
+ */
+int def_print(char *def, int first)
 {
 	int attr = color_text, attrs[16], level = 0, lastsp = 1, xpos = 0;
 	int phon = 0, lp = 0, dispword, newline_, newattr, lastnl = 0;
 	int ypos = 0, margin = 0, tp, newphon;
-	u_char token[64], line[80];
+	char token[64], line[80];
 
-	/* wyczy¶æ okienko */
-	werase(defwin);
+	if (!def)
+		return 1;
 
-	/* debug */ if (parse_rtf) { /* debug */
+	werase(window_def);
 
-	/* do parsingu, gotowi, start! */
-	while (*def) {
+	if (def_raw_rtf) {
+		wattrset(window_def, A_NORMAL);
+		waddstr(window_def, def);
+		return 1;
+	}
+
+	while (def && *def) {
 		dispword = 0;
 		newline_ = 0;
 		newattr = attr;
@@ -703,7 +334,7 @@ int showdef(u_char *def, int first)
 				
 				if (!strncmp(token, "sa", 2)) {
 					margin = 1;
-					wprintw(defwin, is_visible("   "));
+					waddstr(window_def, is_visible("   "));
 					xpos = 3;
 				}
 				
@@ -722,7 +353,7 @@ int showdef(u_char *def, int first)
 				if (!strcmp(token, "f1"))
 					newphon = 1;
 				if (!strcmp(token, "qc"))
-					newattr |= 0x8000; /* nie wy¶wietlaæ */
+					newattr |= 0x8000; /* Don't display */
 				
 				if (!strcmp(token, "super")) {
 					line[lp++] = '^';
@@ -740,10 +371,11 @@ int showdef(u_char *def, int first)
 				dispword = 1;
 				newphon = 0;
 				break;
+
 			default:
 				if (attr & 0x8000)
 					break;
-				wattrset(defwin, attr);
+				wattrset(window_def, attr);
 				lastnl = 0;
 				
 				switch (*def) {
@@ -752,7 +384,7 @@ int showdef(u_char *def, int first)
 							break;
 						dispword = 1;
 						lastsp = 1;
-						if (!lp) {		/* baaardzo na oko³o :( */
+						if (!lp) {
 							line[0] = ' ';
 							line[1] = 0;
 							lp = 1;
@@ -773,29 +405,36 @@ int showdef(u_char *def, int first)
 
 		if (dispword && lp) {
 			if (50 - xpos < lp) {
-				wprintw(defwin, is_visible("\n"));
+				waddstr(window_def, is_visible("\n"));
 				ypos++;
 				if (margin)
-					wprintw(defwin, is_visible("   "));
-				waddstr(defwin, is_visible(conv(line, charset)));
+					waddstr(window_def, is_visible("   "));
 				xpos = (margin) ? 3 : 0 + strlen(line);
 			} else {
-				waddstr(defwin, is_visible(conv(line, charset)));
 				xpos += strlen(line);
 			}
+			if (phon) {
+				char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
+				waddstr(window_def, tmp);
+				xfree(tmp);
+			} else {
+				char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
+				waddstr(window_def, tmp);
+				xfree(tmp);
+			}
 			if (lastsp && xpos != 50) {
-				wprintw(defwin, is_visible(" "));
+				waddstr(window_def, is_visible(" "));
 				xpos++;
 			}
 			lp = 0;
 		}
 		
 		if (newline_ && !(attr & 0x8000)) {
-			wprintw(defwin, is_visible("\n"));
+			waddstr(window_def, is_visible("\n"));
 			ypos++;
 			xpos = (margin) ? 3 : 0;
 			if (margin)
-				wprintw(defwin, is_visible("   "));
+				waddstr(window_def, is_visible("   "));
 			lastsp = 1;
 			lastnl = 1;
 		}
@@ -805,165 +444,652 @@ int showdef(u_char *def, int first)
 
 	if (lp) {
 		if (50 - xpos < lp) {
-			wprintw(defwin, is_visible("\n"));
+			waddstr(window_def, is_visible("\n"));
 			ypos++;
 		}
-		waddstr(defwin, is_visible(conv(line, charset)));
+
+		if (phon) {
+			char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
+			waddstr(window_def, tmp);
+			xfree(tmp);
+		} else {
+			char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
+			waddstr(window_def, tmp);
+			xfree(tmp);
+		}
 	}
+
 	ypos++;
 
-	/* debug */ } else wprintw(defwin, def); /* debug */
-	
 	return ypos;
 }
 
-/* update wszystkich okienek */
-void updateall()
+/**
+ * \brief Looks up current input word in the dictionary
+ */
+void input_find(void)
 {
-	wnoutrefresh(headwin);
-	wnoutrefresh(splitwin);
-	wnoutrefresh(defwin);
-	wnoutrefresh(wordwin);
-	doupdate();
-}
+	char dest[64];
+	const wchar_t *src;
+	int i;
 
-/* odszukuje w s³owniku s³owo i od razu na nie wskazuje */
-void findword2()
-{
-	int x = findword(input);
+	if (!dict_open)
+		return;
 	
-	exact = (x == -1) ? 0 : 1;
+	src = input;
 
-	if (exact) {
-		pos = x;
-		menu = 0;
+	wcsrtombs(dest, &src, sizeof(dest), NULL);
+
+	i = ydpdict_find(&dict, dest);
+	
+	input_exact = (i == -1) ? 0 : 1;
+
+	if (input_exact) {
+		list_page = i;
+		list_index = 0;
 	}
 
-	if (pos > wordcount - (ysize - 4)) {
-		pos = wordcount - (ysize - 4);
-		menu = x - pos;
+	if (list_page > word_count - (screen_height - 4)) {
+		list_page = word_count - (screen_height - 4);
+		list_index = i - list_page;
 	}
 }
 
-/* pokazuje cudowne menu */
-void showmenu(int pos, int menu) {
-	u_char buf[32];
+/**
+ * \brief Redraws word list
+ */
+void list_redraw(void)
+{
 	int y;
 
-	werase(wordwin);
+	werase(window_word);
+
+	if (dict_open) {
+		for (y = 0; y < (screen_height - 4); y++) {
+			wattrset(window_word, (y == list_index) ? A_REVERSE : A_NORMAL);
+			mvwaddstr(window_word, y + 1, 0, "                    ");
 	
-	for (y = 0; y < (ysize - 4); y++) {
-		wattrset(wordwin, y == menu ? A_REVERSE : A_NORMAL);
-		mvwprintw(wordwin, y + 1, 0, "                    ");
-
-		if (pos + y >= wordcount)
-			continue;
-
-		mvwprintw(wordwin, y + 1, 1, "%s", convert_plain(strncpy(buf, words[pos + y], sizeof(buf) - 1), charset, 0));
-	}
+			if (list_page + y >= word_count)
+				continue;
 	
-	wattrset(wordwin, exact ? A_BOLD : A_NORMAL);
-	mvwprintw(wordwin, 0, 0, "[__________________]");
-	mvwprintw(wordwin, 0, 1, "%s", convert_plain(strncpy(buf, input, sizeof(buf) - 1), charset, 0));
-	wattrset(wordwin, A_NORMAL);
-
-	wmove(wordwin, 0, menux + 1);
-}
-
-#define xdelwin(x) { if (x) delwin(x); }
-
-/* zamyka ncurses i wywala komunikat o b³êdzie */
-void showerror(const u_char *msg)
-{
-	xdelwin(wordwin);
-	xdelwin(headwin);
-	xdelwin(splitwin);
-	xdelwin(defwin);
-
-	werase(stdscr);
-	wrefresh(stdscr);
-
-	endwin();
-	closedict();
-	xfree(def);
-
-	if (msg)
-		fprintf(stderr, "%s\n\n", msg);
-
-	if (charset == 3) {
-		puts("\033%@");
-		fflush(stdout);
-	}
-
-	exit(msg ? 1 : 0);
-}
-
-/* na wszelki wypadek */
-void sigsegv()
-{
-	signal(SIGSEGV, SIG_IGN);
-	showerror(_("Naruszenie ochrony pamiêci (skontaktuj siê z autorem programu)"));
-}
-
-/* wybiera s³ownik */
-void change_dict(int new_dict)
-{
-	const char *idx, *dat;
-
-	if (!init)
-		closedict();
-
-	curs_set(0);
-	wattrset(defwin, A_NORMAL);
-	werase(defwin);
-	waddstr(defwin, _("Proszê czekaæ, trwa ³adowanie s³ownika..."));
-
-	updateall();
-
-	switch (new_dict) {
-		case 0:
-			idx = DEFINDEX_AP;
-			dat = DEFDICT_AP;
-			break;
-		case 1:
-			idx = DEFINDEX_PA;
-			dat = DEFDICT_PA;
-			break;
-		case 2:
-			idx = DEFINDEX_DP;
-			dat = DEFDICT_DP;
-			break;
-		case 3:
-			idx = DEFINDEX_PD;
-			dat = DEFDICT_PD;
-			break;
-		default:
-			idx = "";
-			dat = "";
-	}
-
-	if (!opendict(filespath, idx, dat)) {
-		switch (ydperror) {
-			case YDP_CANTOPENIDX:
-				showerror(_("Nie mo¿na otworzyæ pliku indeksowego."));
-			case YDP_CANTOPENDEF:
-				showerror(_("Nie mo¿na otworzyæ pliku z definicjami."));
-			case YDP_INVALIDFILE:
-				showerror(_("B³±d podczas czytania plików."));
+			mvwaddstr(window_word, y + 1, 1, (char*) dict.words[list_page + y]);
 		}
 	}
+	
+	wattrset(window_word, input_exact ? A_BOLD : A_NORMAL);
+	mvwaddstr(window_word, 0, 0, "[__________________]");
 
-	dict = new_dict;
-	defline = 0;
-	defupd = 1;
-	menu = 0;
-	menux = 0;
-	pos = 0;
-	if (strlen(input)) {
-		menux = strlen(input);
-		findword2();
+	mvwaddwstr(window_word, 0, 1, input);
+	wattrset(window_word, A_NORMAL);
+
+	wmove(window_word, 0, input_index + 1);
+}
+
+/**
+ * \brief Redraws the definition
+ */
+void def_redraw(void)
+{
+	if (def_update && dict_open) {
+		xfree(def);
+		def = (char*) ydpdict_read_rtf(&dict, list_page + list_index);
+		def_update = 0;
+	}
+	
+	list_redraw();
+
+	def_height = def_print(def, def_index);
+
+	curs_set((focus) ? 0 : 1);
+
+	wattrset(window_sep, A_BOLD);
+	mvwaddstr(window_sep, screen_height / 2, 0, (focus) ? "-->" : "<--");
+
+	wattrset(window_arrows, A_DIM);
+	mvwaddch(window_arrows, 1, 0, (def_index > 0) ? ACS_UARROW : ' ');
+	mvwaddch(window_arrows, screen_height - 3, 0, (def_index < def_height - (screen_height - 3)) ? ACS_DARROW : ' ');
+
+	update_all();
+}
+
+void switch_dict(int new_dict)
+{
+	const char *idx[4] = { DEFAULT_IDX_AP, DEFAULT_IDX_PA, DEFAULT_IDX_DP, DEFAULT_IDX_PD };
+	const char *dat[4] = { DEFAULT_DAT_AP, DEFAULT_DAT_PA, DEFAULT_DAT_DP, DEFAULT_DAT_PD };
+	char full_idx[4096], full_dat[4096];
+
+	if (new_dict < 0 || new_dict > 3)
+		return;
+
+	if (dict_open) {
+		ydpdict_close(&dict);
+		dict_open = 0;
+	}
+
+	curs_set(0);
+	wattrset(window_def, A_NORMAL);
+	werase(window_def);
+	waddstr(window_def, _("Please wait, loading the dictionary..."));
+
+	update_all();
+
+	snprintf(full_idx, sizeof(full_idx), "%s/%s", config_path, idx[new_dict]);
+	snprintf(full_dat, sizeof(full_dat), "%s/%s", config_path, dat[new_dict]);
+
+	if (ydpdict_open(&dict, full_dat, full_idx, YDPDICT_ENCODING_UTF8) == -1) {
+		if (def)
+			free(def);
+		def = xstrdup(_("{\\cf2 Error!}\\par\\pard{Unable to open dictionary. Press F1 or ? for help.}"));
+		word_count = 0;
+	} else {
+		word_count = dict.word_count;
+		def_update = 1;
+		dict_open = 1;
+	}
+
+	config_dict = new_dict;
+	def_index = 0;
+	input_index = 0;
+
+	list_index = 0;
+	list_page = 0;
+
+	if (wcslen(input)) {
+		input_index = wcslen(input);
+		input_find();
 	}
 
 	curs_set(1);
-	updateall();
+	update_all();
 }
+
+int main(int argc, char **argv)
+{
+	MEVENT m_event;
+	int bg;
+
+#ifdef HAVE_LOCALE_H
+	setlocale(LC_ALL, "");
+#endif
+
+#ifdef HAVE_LIBAO
+	ao_initialize();
+#endif
+
+#ifdef SIGWINCH
+	signal(SIGWINCH, sigwinch);
+#endif
+	signal(SIGTERM, sigterm);
+	signal(SIGINT, sigterm);
+	signal(SIGHUP, sigterm);
+
+	read_config(argc, argv);
+
+	initscr();
+	noecho();
+	cbreak();
+
+	if (config_transparent) {
+		bg = COLOR_DEFAULT;
+		use_default_colors();
+	} else
+		bg = COLOR_BLACK;
+
+	/* Prepare colors */
+	if (config_color && has_colors()) {
+		start_color();
+		init_pair(1, config_text & 127, bg);
+		init_pair(2, config_cf1 & 127, bg);
+		init_pair(3, config_cf2 & 127, bg);
+		color_text = COLOR_PAIR(1) | (config_text & A_BOLD);
+		color_cf1 = COLOR_PAIR(2) | (config_cf1 & A_BOLD);
+		color_cf2 = COLOR_PAIR(3) | (config_cf2 & A_BOLD);
+	} else {
+		color_text = A_NORMAL;
+		color_cf1 = A_NORMAL;
+		color_cf2 = A_NORMAL;
+	}
+
+	memset(input, 0, sizeof(input));
+
+	/* Prepare UI */
+	check_size();
+	create_windows();
+
+	/* Load the dictionary */
+	switch_dict(config_dict);
+
+	mousemask(BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED, NULL);
+
+	if (config_word) {
+		const char *src = config_word;
+
+		mbsrtowcs(input, &src, INPUT_LEN, NULL);
+		input_find();
+		input_index = wcslen(input);
+	}
+	
+	for (;;) {
+		int ch;
+
+		if (resized_term)
+			resize();
+
+		def_redraw();
+
+		ch = wgetch(window_word);
+		
+		switch (ch) {
+
+#define __MOUSE_IN(window, event, correct1, correct2, correct3, correct4) (\
+	 event.y > (window->_begy + correct1) && event.y < (window->_begy + window->_maxy + correct2) &&\
+	 event.x > (window->_begx + correct3) && event.x < (window->_begx + window->_maxx + correct4))
+
+			case KEY_MOUSE:
+				if (getmouse(&m_event) == OK) {
+
+					/* Double-click points to the word */
+					if (m_event.bstate & BUTTON1_DOUBLE_CLICKED && __MOUSE_IN(window_def, m_event, -2, 1, -3, 2)) {
+						wchar_t ch, buf[INPUT_LEN + 1];
+						cchar_t cc;
+						int i = 0, x = m_event.x - 27;
+
+						mvwin_wch(window_def, m_event.y - 2, x, &cc);
+						ch = cc.chars[0];
+						
+
+						if (!(iswalpha(ch) || ch == L'-'))
+							break;
+
+						/* Look for first non-letter */
+						do {
+							x--;
+							mvwin_wch(window_def, m_event.y - 2, x, &cc);
+							ch = cc.chars[0];
+						} while ((iswalpha(ch) || ch == L'-') && x >= 0);
+
+						/* And collect characters on the right */
+						do {
+							x++;
+							mvwin_wch(window_def, m_event.y - 2, x, &cc);
+							ch = cc.chars[0];
+							buf[i++] = ch;
+						} while ((iswalpha(ch) || ch == L'-') && x < window_def->_maxx);
+
+						buf[--i] = L'\0';
+
+						/* Did we find anything? */
+						if (wcslen(buf)) {
+							wcsncpy(input, buf, INPUT_LEN);
+							input[INPUT_LEN] = 0;
+							input_index = wcslen(input);
+							input_find();
+							def_update = 1;
+						}
+
+						break;
+					}
+
+					if (m_event.bstate & BUTTON1_CLICKED || m_event.bstate & BUTTON1_DOUBLE_CLICKED) {
+						/* Clicked on the word list */
+						if (__MOUSE_IN(window_word, m_event, -2, 1, -1, 1) && m_event.y > 2) {
+							list_index = m_event.y - 3;
+							memset(input, 0, sizeof(input));
+							input_index = 0;
+							def_index = 0;
+							def_update = 1;
+						}
+
+						/* Header */
+						if (m_event.y == 0) {
+							ungetch(KEY_F(1));
+							break;
+						}
+
+						/* Scrolling */
+						if (m_event.y == screen_height - 1) {
+							ungetch(KEY_NPAGE);
+							break;
+						}
+
+						if (m_event.y <= 1) {
+							ungetch(KEY_PPAGE);
+							break;
+						}
+
+					}
+
+					if (m_event.bstate & BUTTON1_CLICKED) {
+						/* Change of the active window */
+						if (__MOUSE_IN(window_word, m_event, -2, 1, -3, 2) && focus)
+							focus = 0;
+						if (__MOUSE_IN(window_def, m_event, -2, 1, -3, 2) && !focus)
+							focus = 1;
+					}
+				}
+
+				break;
+#undef isalpha_pl_PL
+#undef __MOUSE_IN
+
+			case 10: /* Enter */
+				if (focus) {
+					if (def_index < def_height - (screen_height - 3))
+						def_index++;
+				} else {
+					wchar_t *c = input + wcslen(input) - 1;
+
+					while (wcslen(input) > 1 && *c == L' ')
+						*c-- = 0;
+
+					input_index = wcslen(input);
+
+					input_find();
+					def_update = 1;
+				}
+				break;
+
+			case 27: /* ESC */
+				show_error(NULL);
+				break;
+
+#ifdef KEY_RESIZE
+			case KEY_RESIZE:
+				resized_term = 1;
+				break;
+#endif
+
+			case 9: /* TAB */
+				focus = (focus) ? 0 : 1;
+				break;
+
+			case KEY_F(2):
+			case '`':
+				if (config_dict == 0 || config_dict == 2)
+					play_sample(list_page + list_index);
+
+				break;
+
+			case KEY_F(1):
+			case '?':
+			{
+				const char *tmp = _(
+"{\\cf2 F1} or {\\cf2 ?} - print this help"
+"{\\line{\\cf2 Tab} - change focus}"
+"{\\line{\\cf2 up arrow} lub {\\cf2 down arrow} - scroll up and down}"
+"{\\line{\\cf2 Page Up} lub {\\cf2 Page Down} - scroll pages up and down}"
+"{\\line{\\cf2 F2} or {\\cf2 `} - play pronunciation sample}"
+"{\\line{\\cf2 F3} or {\\cf2 <} - English-Polish dictionary}"
+"{\\line{\\cf2 F4} or {\\cf2 >} - Polish-English dictionary}"
+"{\\line{\\cf2 F5} or {\\cf2 [} - German-Polish dictionary}"
+"{\\line{\\cf2 F6} or {\\cf2 ]} - Polish-German dictionary}"
+"{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} - clear input field}"
+"{\\line{\\cf2 Ctrl-L} - refresh display}"
+"{\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - quit program}"
+"{\\par\\pard}"
+"Contact: {\\b %s}. Current version is always available at {\\b %s}"
+);
+				xfree(def);
+
+				def = malloc(strlen(tmp) + strlen(HELP_EMAIL) + strlen(HELP_WEBSITE));
+				if (def)
+					sprintf(def, tmp, HELP_EMAIL, HELP_WEBSITE);
+
+				def_index = 0;
+				break;
+			}
+
+			case KEY_F(3):
+			case '<':
+				if (config_dict != 0)
+					switch_dict(0);
+
+				break;
+
+			case KEY_F(4):
+			case '>':
+				if (config_dict != 1)
+					switch_dict(1);
+
+				break;
+
+			case KEY_F(5):
+			case '[':
+				if (config_dict != 2)
+					switch_dict(2);
+
+				break;
+
+			case KEY_F(6):
+			case ']':
+				if (config_dict != 3)
+					switch_dict(3);
+
+				break;
+
+			case KEY_UP:
+				if (focus) {
+					if (def_index > 0)
+						def_index--;
+				} else {
+					if (list_index > 0)
+						list_index--;
+					else
+						if (list_page > 0)
+							list_page--;
+					def_index = 0;
+					def_update = 1;
+				}
+				break;
+
+			case KEY_PPAGE:
+				if (focus) {
+	  				if (def_index > screen_height - 4)
+						def_index -= screen_height - 3;
+					else
+						def_index = 0;
+				} else {
+					if (list_index > 0)
+						list_index = 0;
+					else if (list_page > screen_height - 5)
+						list_page -= screen_height - 4;
+					else
+						list_page = 0;
+
+					def_index = 0;
+					def_update = 1;
+				}
+				break;
+
+			case KEY_DOWN:
+				if (focus) {
+					if (def_index < def_height - (screen_height - 3))
+						def_index++;
+				} else {
+					if (list_index < screen_height - 5 && (list_index + 1 < word_count))
+						list_index++;
+					else if (list_page < word_count - (screen_height - 4))
+						list_page++;
+					def_index = 0;
+					def_update = 1;
+				}
+				break;
+
+			case KEY_NPAGE:
+				if (focus) {
+					if (def_index < def_height - (screen_height - 3) * 2 - 1)
+						def_index += screen_height - 3;
+					else
+						def_index = def_height - (screen_height - 3);
+				} else {
+					if (list_index < screen_height - 5)
+						list_index = screen_height - 5;
+					else if (list_page < word_count - (screen_height - 4) * 2 - 1)
+						list_page += screen_height - 4;
+					else
+						list_page = word_count - (screen_height - 4);
+					def_index = 0;
+					def_update = 1;
+				}
+				break;
+
+			case KEY_F(9):
+				def_raw_rtf = !def_raw_rtf;
+				break;
+
+			case KEY_DC:
+				if (!focus) {
+					if (input_index < wcslen(input)) {
+						memmove(input + input_index, input + input_index + 1, (wcslen(input) - input_index + 1) * sizeof(wchar_t));
+						input_find();
+						def_update = 1;
+					} else
+						beep();
+				}
+				break;
+
+			case KEY_BACKSPACE:
+			case 127:
+			case 8:
+				if (focus) {
+					if (def_index > 0)
+						def_index--;
+					break;
+				} else {
+					if (input_index) {
+						memmove(input + input_index - 1, input + input_index, (wcslen(input) - input_index + 1) * sizeof(wchar_t));
+						input_index--;
+						input_find();
+						def_update = 1;
+					} else
+						beep();
+				}
+				break;
+
+			case 12: /* Ctrl-L */
+				resized_term = 1;
+				break;
+				
+			case 21: /* Ctrl-U */
+			case 23: /* Ctrl-W */
+				memset(&input, 0, sizeof(input));
+				list_index = 0;
+				list_page = 0;
+				input_index = 0;
+				def_update = 1;
+				break;
+
+			case 24: /* Ctrl-X */
+				show_error(NULL);
+				break;
+
+			case KEY_HOME:
+			case KEY_FIND:
+				input_index = 0;
+				break;
+
+			case KEY_END:
+			case KEY_SELECT:
+				input_index = wcslen(input);
+				break;
+
+			case KEY_LEFT:
+				if (!input_index || focus)
+					beep();
+				else
+					input_index--;
+				break;
+
+ 			case KEY_RIGHT:
+				if (input_index >= wcslen(input) || focus)
+					beep();
+				else
+					input_index++;
+				break;
+
+			default:
+			{
+				static char mb[5];
+				static int mblen = 0, mbofs = 0;
+				int len;
+				wchar_t wc;
+	
+				if (ch < ' ' || ch > 255)
+					break;
+
+				if ((ch & 0xe0) == 0xc0) {
+					mb[0] = ch;
+					mblen = 2;
+					mbofs = 1;
+					break;
+				}
+
+				if ((ch & 0xf0) == 0xe0) {
+					mb[0] = ch;
+					mblen = 3;
+					mbofs = 1;
+					break;
+				}
+
+				if ((ch & 0xf8) == 0xf0) {
+					mb[0] = ch;
+					mblen = 4;
+					mbofs = 1;
+					break;
+				}
+
+				if ((ch & 0xc0) == 0x80) {
+					if (!mblen)
+						break;
+
+					mb[mbofs++] = ch;
+
+					if (mbofs == mblen) {
+						mb[mbofs] = 0;
+
+						mbrtowc(&wc, mb, strlen(mb), NULL);
+					} else
+						break;
+				} else {
+					wc = ch;
+				}
+
+				if (focus) {
+					memset(input, 0, sizeof(input));
+					input_index = 0;
+				}
+
+				if (wcslen(input) > INPUT_LEN)
+					break;
+
+				if (input_index < wcslen(input))
+					memmove(input + input_index + 1, input + input_index, (wcslen(input) - input_index + 1) * sizeof(wchar_t));
+				
+				input[input_index++] = wc;
+
+				len = wcslen(input);
+
+				if (len >= 2 && !wcscmp(input + len - 2, L":q"))
+					show_error(NULL);
+
+				if (len >= 3 && !wcscmp(input + len - 3, L":wq"))
+					show_error(NULL);
+
+				if (len >= 2 && !wcscmp(input + len - 2, L":x"))
+					show_error(NULL);
+
+				input_find();
+				def_update = 1;
+				focus = 0;
+				def_index = 0;
+				break;
+			}
+		}
+	}
+	
+	show_error(NULL);
+
+	return 0;
+}
+
+
