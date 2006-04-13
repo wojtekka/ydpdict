@@ -1,5 +1,5 @@
 #!/bin/sh
-# Zmienia nazwy plików na pisane du¿ymi literami.
+# Zmienia nazwy plikÃ³w na pisane duÅ¼ymi literami.
 
 find $1 -depth -type d -exec sh -c 'cd {}; \
     for i in *; do mv $i `echo $i | tr [:lower:] [:upper:]`; \
