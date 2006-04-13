@@ -142,7 +142,7 @@ void show_error(const char *msg)
 /**
  * \brief SIGTERM handler.
  */
-static void sigterm(void)
+static void sigterm(int sig)
 {
 	show_error(NULL);
 }
@@ -215,7 +215,7 @@ void create_windows(void)
 /**
  * \brief SIGWINCH handler
  */
-void sigwinch()
+void sigwinch(int sig)
 {
 	resized_term = 1;
 }
