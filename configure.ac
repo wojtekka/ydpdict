@@ -39,10 +39,11 @@ AC_SUBST([YDPDICT_CFLAGS])
 AC_SUBST([YDPDICT_LIBS])
 
 AC_ARG_WITH(libao,
-    [  --without-libao         Compile without libao],
-    [
-	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO)], [])
-    ])
+    [  --without-libao         Compile without libao])
+
+if test "x$with_libao" != "xno"; then
+	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO)])
+fi
 
 AC_SUBST([AO_CFLAGS])
 AC_SUBST([AO_LIBS])
