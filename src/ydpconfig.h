@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2004 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,37 +20,50 @@
 #ifndef __YDPCONFIG_H
 #define __YDPCONFIG_H
 
-#include <curses.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#define VERSION "0.67"
+#define VERSION "0.99.0"
 #define HEADER_NAME "ydpdict-" VERSION
 #define HEADER_COPYRIGHT "(C) Copyright 1998-2006 Wojtek Kaniewski"
+#define HELP_EMAIL "wojtekka@toxygen.net"
+#define HELP_WEBSITE "http://toxygen.net/ydpdict/"
 #define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"
 #define CONFIGFILE_CWD1 "ydpdict.conf"
 #define CONFIGFILE_CWD2 ".ydpdictrc"
 
-/* konfiguracja */
-u_char *filespath, *cdpath, *player, *word;
-int dict, charset, use_color, transparent, config_text, config_cf1, config_cf2;
+#define DEFAULT_PATH "."
+#define DEFAULT_CDPATH "/media/cdrom"
 
-/* g³ówna funkcja */
+#ifndef HAVE_LIBAO
+#define DEFAULT_AUDIO "/dev/dsp"
+#endif
+
+#define DEFAULT_DAT_AP "dict100.dat"
+#define DEFAULT_IDX_AP "dict100.idx"
+#define DEFAULT_DAT_PA "dict101.dat"
+#define DEFAULT_IDX_PA "dict101.idx"
+
+#define DEFAULT_DAT_DP "dict200.dat"
+#define DEFAULT_IDX_DP "dict200.idx"
+#define DEFAULT_DAT_PD "dict201.dat"
+#define DEFAULT_IDX_PD "dict201.idx"
+
+#define INPUT_LEN 17
+
+char *config_path;
+char *config_cdpath;
+char *config_player;
+char *config_word;
+char *config_audio;
+int config_dict;
+int config_color;
+int config_transparent;
+int config_text;
+int config_cf1;
+int config_cf2;
+
 int read_config(int argc, char **argv);
-
-/* jakie s± wpisy w pliku konfiguracyjnym? c:kolor, b:boolean, s:tekst, h:charset */
-#define E_LABELS { "c:Color", "c:DefinitionColor", "c:InformationColor", \
-	"b:UseColor", "h:Charset", "s:Path", "s:CDPath", "s:Player", \
-	"i:DefaultDictionary", "b:UseTransparent", 0 }
-#define E_VALS { &config_text, &config_cf1, &config_cf2, &use_color, &charset, \
-	&filespath, &cdpath, &player, &dict, &transparent, 0 }
-
-/* sta³e okre¶laj±ce, jak nazywa siê dany kolor */
-#define COLOR_DEFS { "Black", "Red", "Green", "Brown", "Blue", "Magenta", \
-	"Cyan", "White", "Gray", "LightRed", "LightGreen", "Yellow", \
-	"LightBlue", "LightMagenta", "LightCyan", "LightWhite", 0 }
-#define COLOR_VALS { COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, \
-	COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE, COLOR_WHITE \
-	| A_DIM, COLOR_RED | A_BOLD, COLOR_GREEN | A_BOLD, COLOR_YELLOW \
-	| A_BOLD, COLOR_BLUE | A_BOLD, COLOR_MAGENTA | A_BOLD, COLOR_CYAN \
-	| A_BOLD, COLOR_WHITE | A_BOLD, 0 }
 
 #endif /* __YDPCONFIG_H */

@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2005 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka@toxygen.net>
  *                          Piotr Domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify

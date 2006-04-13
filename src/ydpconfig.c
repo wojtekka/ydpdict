@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2004 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #include <sys/types.h>
-#include <curses.h>
+#include <ncursesw/ncurses.h>
 #include <fcntl.h>
 #ifdef HAVE_GETOPT_LONG
-#  include <getopt.h>
+#include <getopt.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,11 +33,28 @@
 #include <unistd.h>
 
 #include "ydpconfig.h"
-#include "ydpconvert.h"
 #include "xmalloc.h"
 
+#ifdef HAVE_LIBINTL_H
+#include <libintl.h>
+#define _(x) gettext(x)
+#else
+#define _(x) x
+#endif
+
+char *config_path = NULL;
+char *config_cdpath = NULL;
+char *config_player = NULL;
+char *config_word = NULL;
+int config_dict = 1;
+int config_color = 1;
+int config_transparent = 0;
+int config_text = COLOR_WHITE;
+int config_cf1 = COLOR_CYAN | A_BOLD;
+int config_cf2 = COLOR_GREEN | A_BOLD;
+
 #ifdef HAVE_GETOPT_LONG
-/* informacje dla getopt */
+
 static struct option const longopts[] = {
 	{ "help", no_argument, 0, 'h' },
 	{ "version", no_argument, 0, 'v' },
@@ -44,66 +64,109 @@ static struct option const longopts[] = {
 	{ "niem-pol", no_argument, 0, 'D' },
 	{ "path", required_argument, 0, 't' },
 	{ "cdpath", required_argument, 0, 'c' },
-	{ "nopl", no_argument, 0, 'n' },
-	{ "iso", no_argument, 0, 'i' },
-	{ "unicode", no_argument, 0, 'u' },
-	{ "unicodeset", no_argument, 0, 'U' },
 	{ "player", required_argument, 0, 'P' },
 	{ "word", required_argument, 0, 'w'},
 	{ 0, 0, 0, 0 }
 };
+
 #endif /* HAVE_GETOPT_LONG */
 
-/* instrukcja u¿ycia */
+/**
+ * \brief Prints usage instructions
+ * 
+ * \param argv0 argv[0] from main()
+ */
 void usage(const char *argv0) {
-	printf("\
-U¿ycie: %s [OPCJE]\n\
-  -a, --ang             uruchamia s³ownik angielsko-polski (domy¶lne)\n\
-  -p, --pol             uruchamia s³ownik polsko-angielski\n\
-  -d, --niem-pol        uruchamia s³ownik niemiecko-polski\n\
-  -o, --pol-niem        uruchamia s³ownik polsko-niemiecki\n\
-  -n, --nopl            wy³±cza wy¶wietlanie polskich liter\n\
-  -i, --iso		wy¶wietla polskie literki w standardzie ISO-8859-2\n\
-  -u, --unicode		wy¶wietla polskie literki u¿ywaj±c unikodu\n\
-  -U, --unicodeset	prze³±cza konsolê w tryb unikodu na czas dzia³ania\n\
-  -f, --path=¦CIE¯KA    podaje ¶cie¿kê do plików danych\n\
-  -c, --cdpath=¦CIE¯KA  podaje ¶cie¿kê do p³yty CD\n\
-  -P, --player=¦CIE¯KA  podaje ¶cie¿kê do odtwarzacza plików WAV\n\
-  -w, --word=S£OWO      uruchamia s³ownik i t³umaczy podane s³owo\n\
-      --version		wy¶wietla wersjê programu\n\
-  -h, --help		wy¶wietla ten tekst\n\
-\n", argv0);
+	printf(_(
+"Usage: %s [OPTIONS]\n"
+"  -e, --eng             start with English-Polish dictionary (default)\n"
+"  -p, --pol             start with Polish-English dictionary\n"
+"  -g, --ger-pol         start with German-Polish dictionary\n"
+"  -o, --pol-ger         start with Polish-German dictionary\n"
+"  -f, --path=PATH       set database path\n"
+"  -c, --cdpath=PATH     set CD-ROM path\n"
+"  -P, --player=PATH     set sound player path\n"
+"  -w, --word=WORD       start with selected WORD's definition\n"
+"  -A, --audio=DEVICE    set default audio device\n"
+"      --version         show program version\n"
+"  -h, --help            print this message\n"
+"\n"), argv0);
 }
 
-/* jakie¶tam zmienne */
-char *e_labels[] = E_LABELS;
-void *e_vals[] = E_VALS;
-char *color_defs[] = COLOR_DEFS;
-int color_vals[] = COLOR_VALS;
+enum config_entry_type {
+	ENTRY_COLOR = 1,
+	ENTRY_BOOL,
+	ENTRY_STRING,
+	ENTRY_INT
+};
 
-/* wczytuje konfiguracjê z pliku, a pó¼niej z argumentów wywo³ania */
+struct config_entry {
+	int type;
+	const char *label;
+	void *ptr;
+} entries[] = {
+	{ ENTRY_COLOR, "Color", &config_text },
+	{ ENTRY_COLOR, "DefinitionColor", &config_cf1 },
+	{ ENTRY_COLOR, "InformationColor", &config_cf2 },
+	{ ENTRY_BOOL, "UseColor", &config_color },
+	{ ENTRY_STRING, "Path", &config_path },
+	{ ENTRY_STRING, "CDPath", &config_cdpath },
+	{ ENTRY_STRING, "Player", &config_player },
+	{ ENTRY_STRING, "AudioDevice", &config_audio },
+	{ ENTRY_INT, "DefaultDictionary", &config_dict },
+	{ ENTRY_BOOL, "UseTransparent", &config_transparent },
+	{ 0, NULL, NULL }
+};
+
+struct color_entry {
+	const char *name;
+	int value;
+} colors[] = {
+	{ "Black", COLOR_BLACK },
+	{ "Red", COLOR_RED },
+	{ "Greed", COLOR_GREEN },
+	{ "Brown", COLOR_YELLOW },
+	{ "Blue", COLOR_BLUE },
+	{ "Magenta", COLOR_MAGENTA },
+	{ "Cyan", COLOR_CYAN },
+	{ "White", COLOR_WHITE },
+	{ "Gray", COLOR_WHITE | A_DIM },
+	{ "LightRed", COLOR_RED },
+	{ "LightGreed", COLOR_GREEN | A_BOLD },
+	{ "Yellow", COLOR_YELLOW | A_BOLD },
+	{ "LightBlue", COLOR_BLUE | A_BOLD },
+	{ "LightMagenta", COLOR_MAGENTA | A_BOLD },
+	{ "LightCyan", COLOR_CYAN | A_BOLD },
+	{ "LightWhite", COLOR_WHITE | A_BOLD },
+	{ NULL, 0 }
+};
+
+/**
+ * \brief Reads configuration from file, then handles program arguments
+ *
+ * \param argc argc passed from main()
+ * \param argv argv passed from main()
+ *
+ * \return 0 on success, -1 on failure
+ */
 int read_config(int argc, char **argv)
 {
-	u_char line[256], *par;
-	int optc, l = 0, x, y;
-	FILE *f;
+	char buf[4096], *home;
+	int line = 0, optc;
+	FILE *f = NULL;
 
-	/* warto¶ci pocz±tkowe */
-	filespath = "./";
-	use_color = 1;
-	charset = 1;
-	dict = 1;
-	config_text = COLOR_WHITE;
-	config_cf1 = COLOR_CYAN | A_BOLD;
-	config_cf2 = COLOR_GREEN | A_BOLD;
+	/* Check if any of the config files exist */
 
-	/* sprawd¼, czy plik istnieje */
-	snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD1);
-	f = fopen(line, "r");
+	home = getenv("HOME");
+
+	if (home) {
+		snprintf(buf, sizeof(buf), "%s/%s", home, CONFIGFILE_CWD1);
+		f = fopen(buf, "r");
 	
-	if (!f) {
-		snprintf(line, sizeof(line), "%s/%s", getenv("HOME"), CONFIGFILE_CWD2);
-		f = fopen(line, "r");
+		if (!f) {
+			snprintf(buf, sizeof(buf), "%s/%s", home, CONFIGFILE_CWD2);
+			f = fopen(buf, "r");
+		}
 	}
 	
 	if (!f)
@@ -112,69 +175,67 @@ int read_config(int argc, char **argv)
 	if (!f)
 		return -1;
   
-	/* ka¿d± liniê z osobna */
-	while (fgets(line, sizeof(line), f)) {
-		/* obrób liniê tak, ¿eby¶my nie dostawali ¶mieci */
-		if (line[strlen(line) - 1] == '\n')
-			line[strlen(line) - 1] = '\0';
-		if (line[strlen(line) - 1] == '\r')
-			line[strlen(line) - 1] = '\0';
-		if (line[0] == '#' || line[0] == '\0')
-			continue;
-		l++;
+	/* Parse every line */
 
-		/* sprawd¼, czy co¶ pasuje do zadeklarowanych w³a¶ciwo¶ci */
-		for (x = 0; e_labels[x]; x++) {
-			if (strncasecmp(line, &e_labels[x][2], strlen(e_labels[x]) - 2))
+	while (fgets(buf, sizeof(buf), f)) {
+		int len, i;
+
+		line++;
+
+		len = strlen(buf);
+
+		if (len && buf[len - 1] == '\n')
+			buf[--len] = 0;
+		if (len && buf[len - 1] == '\r')
+			buf[--len] = 0;
+		if (!len || buf[0] == '#')
+			continue;
+
+		for (i = 0; entries[i].label; i++) {
+			const char *value;
+
+			len = strlen(entries[i].label);
+
+			if (strncasecmp(buf, entries[i].label, len) || !buf[len])
 				continue;
 
-			par = &line[strlen(&e_labels[x][2]) + 1];
+			value = buf + len + 1;
 			
-			switch (e_labels[x][0]) {
-				/* jaki¶ ³adny kolorek */
-				case 'c':
-					for (y = 0; color_defs[y]; y++) {
-						if (!strcasecmp(par, color_defs[y]))
-							*(int*)(e_vals[x]) = color_vals[y];
+			switch (entries[i].type) {
+				case ENTRY_COLOR:
+				{
+					int j;
+					
+					for (j = 0; colors[j].name; j++) {
+						if (!strcasecmp(value, colors[j].name))
+							*(int*)(entries[i].ptr) = colors[j].value;
 					}
 					break;
+				}
 					
-				/* warto¶æ bool'owska: on lub off */
-				case 'b':
-					if (!strncasecmp(par, "On", 2))
-						*(int*)(e_vals[x]) = TRUE;
-					if (!strncasecmp(par, "Of", 2))
-						*(int*)(e_vals[x]) = FALSE;
+				case ENTRY_BOOL:
+					if (!strncasecmp(value, "on", 2))
+						*(int*)(entries[i].ptr) = 1;
+					if (!strncasecmp(value, "off", 2))
+						*(int*)(entries[i].ptr) = 0;
 					break;
 					
-				/* warto¶æ ci±gu */
-				case 's':
-					*(char**)e_vals[x] = xstrdup(par);
+				case ENTRY_STRING:
+					if (*(char**)(entries[i].ptr))
+						xfree(*(char**)entries[i].ptr);
+					*(char**)(entries[i].ptr) = xstrdup(value);
 					break;
 
-				/* liczba */
-				case 'i':
-					*(int*)(e_vals[x]) = atoi(par);
-					break;
-
-				/* zestaw znaków */
-				case 'h':
-					if (!strncasecmp(par, "No", 2))
-						charset = 0; /* bez polskich */
-					if (!strncasecmp(par, "ISO", 3))
-						charset = 1; /* iso-8859-2 */
-					if (!strcasecmp(par, "Unicode"))
-						charset = 2; /* unikod */
-					if (!strcasecmp(par, "UnicodeSet"))
-						charset = 3; /* unikod-2 */
+				case ENTRY_INT:
+					*(int*)(entries[i].ptr) = atoi(value);
 					break;
       			}
 
       			break;
 		}
 
-		if (!e_labels[x]) {
-			fprintf(stderr, "B£¡D: plik konfiguracyjny, linia %d: %s\n", l, line);
+		if (!entries[i].label) {
+			fprintf(stderr, _("Error in config file, like %d: %s\n"), line, buf);
 			exit(1);
 		}
 	}
@@ -182,59 +243,83 @@ int read_config(int argc, char **argv)
 	fclose(f);
   
 #ifdef HAVE_GETOPT_LONG
-	while ((optc = getopt_long(argc, argv, "hvVpaodf:c:niuUw:", longopts, (int*) 0)) != -1) {
+	while ((optc = getopt_long(argc, argv, "hvVpeogf:c:w:A:", longopts, (int*) 0)) != -1) {
 #else
-	while ((optc = getopt(argc, argv, "hvVpaodf:c:niuUw:")) != -1) {
+	while ((optc = getopt(argc, argv, "hvVpaogf:c:w:A:")) != -1) {
 #endif
 		switch(optc) {
 			case 'h':
 				usage(argv[0]);
 				exit(0);
+
 			case 'v':
 			case 'V':
 				printf("ydpdict-" VERSION "\n");
 				exit(0);
+
 			case 'a':
-				dict = 0;
+				config_dict = 0;
 				break;
+
 			case 'p':
-				dict = 1;
+				config_dict = 1;
 				break;
-			case 'd':
-				dict = 2;
+
+			case 'g':
+				config_dict = 2;
 				break;
+
 			case 'o':
-				dict = 3;
+				config_dict = 3;
 				break;
-			case 'n':
-				charset = 0;
-				break;
-			case 'i':
-				charset = 1;
-				break;
-			case 'u':
-				charset = 2;
-				break;
-			case 'U':
-				charset = 3;
-				break;
+
 			case 'f':
-				filespath = xstrdup(optarg);
+				if (config_path)
+					xfree(config_path);
+				config_path = xstrdup(optarg);
 				break;
+
 			case 'c':
-				cdpath = xstrdup(optarg);
+				if (config_cdpath)
+					xfree(config_cdpath);
+				config_cdpath = xstrdup(optarg);
 				break;
+
 			case 'P':
-				player = xstrdup(optarg);
+				if (config_path)
+					xfree(config_path);
+				config_path = xstrdup(optarg);
 				break;
+
 			case 'w':
-				word = xstrdup(optarg);
+				if (config_word)
+					xfree(config_word);
+				config_word = xstrdup(optarg);
 				break;
+
+			case 'A':
+				if (config_audio)
+					xfree(config_audio);
+				config_audio = xstrdup(optarg);
+				break;
+
 			default:
 				usage(argv[0]);
 				exit(1);
 		}
 	}
 
+	if (!config_path)
+		config_path = xstrdup(DEFAULT_PATH);
+	
+	if (!config_cdpath)
+		config_cdpath = xstrdup(DEFAULT_CDPATH);
+	
+#ifdef DEFAULT_AUDIO
+	if (!config_audio)
+		config_audio = xstrdup(DEFAULT_AUDIO);
+#endif
+	
 	return 0;
 }
+
