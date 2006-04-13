@@ -1,7 +1,7 @@
 CC = @CC@
-LIBS = @LIBS@
-CFLAGS = @CFLAGS@ -Wall
-OBJS = ydpcore.o ydpconfig.o ydpsound.o ydpconvert.o ydpdict.o xmalloc.o
+LIBS = @LIBS@ @YDPDICT_LIBS@ @AO_LIBS@ -lm
+CFLAGS = @CFLAGS@ @YDPDICT_CFLAGS@ @AO_CFLAGS@ -Wall
+OBJS = ydpconfig.o ydpsound.o ydpdict.o xmalloc.o adpcm.o
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
