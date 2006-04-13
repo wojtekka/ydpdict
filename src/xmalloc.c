@@ -16,58 +16,99 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <sys/types.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
+#include <sys/types.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "ydpconfig.h"
-#include "ydpconvert.h"
+#ifdef HAVE_LIBINTL_H
+#include <libintl.h>
+#define _(x) gettext(x)
+#else
+#define _(x) x
+#endif
 
-extern int showerror(const u_char *msg);
+extern int show_error(const char *msg);
 
+/**
+ * \bried calloc() with error handling
+ *
+ * \param nmemb member count
+ * \param size member size
+ * 
+ * \return Allocated buffer
+ */
 void *xcalloc(size_t nmemb, size_t size)
 {
 	void *tmp = calloc(nmemb, size);
 
 	if (!tmp)
-		showerror(_("Brak pamiêci."));
+		show_error(_("Out of memory"));
 
 	return tmp;
 }
 
+/**
+ * \bried malloc() with error handling and zeroing
+ *
+ * \param size buffer size
+ * 
+ * \return Allocated buffer
+ */
 void *xmalloc(size_t size)
 {
 	void *tmp = malloc(size);
 
 	if (!tmp)
-		showerror(_("Brak pamiêci."));
+		show_error(_("Out of memory"));
 
-	/* na wszelki wypadek wyczy¶æ bufor */
 	memset(tmp, 0, size);
 	
 	return tmp;
 }
 
+/**
+ * \brief free() with error handling
+ *
+ * \param ptr pointer to be freed
+ */
 void xfree(void *ptr)
 {
 	if (ptr)
 		free(ptr);
 }
 
+/**
+ * \brief realloc() with error handling
+ *
+ * \param ptr pointer to be reallocated
+ * \param size new size
+ *
+ * \return Allocated buffer
+ */
 void *xrealloc(void *ptr, size_t size)
 {
 	void *tmp = realloc(ptr, size);
 
 	if (!tmp)
-		showerror(_("Brak pamiêci."));
+		show_error(_("Out of memory"));
 
 	return tmp;
 }
 
+/**
+ * \brief strdup() with error handling
+ *
+ * \param s string to be duplicated
+ *
+ * \return Allocated buffer
+ */
 char *xstrdup(const char *s)
 {
 	char *tmp;
@@ -76,7 +117,7 @@ char *xstrdup(const char *s)
 		return NULL;
 
 	if (!(tmp = strdup(s)))
-		showerror(_("Brak pamiêci."));
+		show_error(_("Out of memory"));
 
 	return tmp;
 }
