@@ -3,7 +3,7 @@ VERSION=@VERSION@
 all:	configure src/Makefile
 	make -C src
 
-configure:	configure.in
+configure:	configure.ac
 	./autogen.sh
 
 src/Makefile:
