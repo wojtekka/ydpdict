@@ -1,7 +1,7 @@
 # Path to dictionary databases. Filenames within the directory MUST be
 # written using lowercase letters.
 
-Path /usr/local/share/ydpdict
+Path @datadir@/ydpdict
 
 # Path to pronuciation samples.
 

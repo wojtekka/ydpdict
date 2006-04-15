@@ -28,7 +28,7 @@
 #define HEADER_COPYRIGHT "(C) Copyright 1998-2006 Wojtek Kaniewski"
 #define HELP_EMAIL "wojtekka@toxygen.net"
 #define HELP_WEBSITE "http://toxygen.net/ydpdict/"
-#define CONFIGFILE_GLOBAL "/etc/ydpdict.conf"
+#define CONFIGFILE_GLOBAL SYSCONFDIR "/ydpdict.conf"
 #define CONFIGFILE_CWD1 "ydpdict.conf"
 #define CONFIGFILE_CWD2 ".ydpdictrc"
 
