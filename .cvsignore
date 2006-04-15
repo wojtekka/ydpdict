@@ -14,4 +14,6 @@ config.sub
 compile
 depcomp
 ltmain.sh
+install-sh
+libtool
 
