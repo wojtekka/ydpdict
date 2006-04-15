@@ -1,9 +1,14 @@
-AC_INIT(src/ydpdict.c)
+dnl $Id$
 
-AC_CONFIG_HEADER(src/config.h)
+AC_INIT(src/ydpdict.c)
+AM_INIT_AUTOMAKE(ydpdict, 0.99.0)
+AC_PREREQ(2.50)
+AC_CONFIG_HEADERS(config.h)
+
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+AC_PROG_LIBTOOL
 AC_WORDS_BIGENDIAN
 
 AC_CHECK_HEADERS([linux/soundcard.h])
@@ -34,7 +39,7 @@ fi
 
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig"
 
-PKG_CHECK_MODULES([YDPDICT], [libydpdict])
+PKG_CHECK_MODULES([YDPDICT], [libydpdict = 0.99.0])
 AC_SUBST([YDPDICT_CFLAGS])
 AC_SUBST([YDPDICT_LIBS])
 
@@ -42,7 +47,7 @@ AC_ARG_WITH(libao,
     [  --without-libao         Compile without libao])
 
 if test "x$with_libao" != "xno"; then
-	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO)])
+	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO, [], [Define to 1 if libao is available.])])
 fi
 
 AC_SUBST([AO_CFLAGS])
@@ -52,6 +57,5 @@ AC_SUBST([HAVE_LIBAO])
 CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 
 AC_SUBST([VERSION])
-VERSION=$(grep '^#define VERSION' src/ydpconfig.h | sed -e 's/^[^"]\+"//' -e 's/".*//')
-AC_OUTPUT([Makefile src/Makefile])
+AC_OUTPUT([Makefile src/Makefile contrib/Makefile])
 
