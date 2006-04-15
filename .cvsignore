@@ -16,4 +16,5 @@ depcomp
 ltmain.sh
 install-sh
 libtool
+ydpdict.conf
 
