@@ -24,7 +24,6 @@
 #include "config.h"
 #endif
 
-#define VERSION "0.99.0"
 #define HEADER_NAME "ydpdict-" VERSION
 #define HEADER_COPYRIGHT "(C) Copyright 1998-2006 Wojtek Kaniewski"
 #define HELP_EMAIL "wojtekka@toxygen.net"
