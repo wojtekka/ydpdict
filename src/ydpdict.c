@@ -73,6 +73,7 @@ int list_page;		///< Word list scroll page
 int focus;		///< Current focus (0 - word list, 1 - word definition)
 
 char *def;		///< Current definition
+int def_encoding;	///< Definition encoding
 int def_index;		///< Definition scroll line index
 int def_height;		///< Definition height in lines
 int def_update;		///< Definition update flag
@@ -413,19 +414,26 @@ int def_print(char *def, int first)
 			} else {
 				xpos += strlen(line);
 			}
-			if (phon) {
-				char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
-				waddstr(window_def, tmp);
-				xfree(tmp);
+
+			if (def_encoding == YDPDICT_ENCODING_UTF8) {
+				waddstr(window_def, is_visible(line));
 			} else {
-				char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
-				waddstr(window_def, tmp);
-				xfree(tmp);
+				if (phon) {
+					char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
+					waddstr(window_def, tmp);
+					xfree(tmp);
+				} else {
+					char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
+					waddstr(window_def, tmp);
+					xfree(tmp);
+				}
 			}
+
 			if (lastsp && xpos != 50) {
 				waddstr(window_def, is_visible(" "));
 				xpos++;
 			}
+
 			lp = 0;
 		}
 		
@@ -433,11 +441,14 @@ int def_print(char *def, int first)
 			waddstr(window_def, is_visible("\n"));
 			ypos++;
 			xpos = (margin) ? 3 : 0;
+
 			if (margin)
 				waddstr(window_def, is_visible("   "));
+
 			lastsp = 1;
 			lastnl = 1;
 		}
+
 		attr = newattr;
 		phon = newphon;
 	}
@@ -448,14 +459,18 @@ int def_print(char *def, int first)
 			ypos++;
 		}
 
-		if (phon) {
-			char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
-			waddstr(window_def, tmp);
-			xfree(tmp);
+		if (def_encoding == YDPDICT_ENCODING_UTF8) {
+			waddstr(window_def, is_visible(line));
 		} else {
-			char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
-			waddstr(window_def, tmp);
-			xfree(tmp);
+			if (phon) {
+				char *tmp = ydpdict_phonetic_to_utf8(is_visible(line));
+				waddstr(window_def, tmp);
+				xfree(tmp);
+			} else {
+				char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
+				waddstr(window_def, tmp);
+				xfree(tmp);
+			}
 		}
 	}
 
@@ -533,6 +548,7 @@ void def_redraw(void)
 	if (def_update && dict_open) {
 		xfree(def);
 		def = (char*) ydpdict_read_rtf(&dict, list_page + list_index);
+		def_encoding = YDPDICT_ENCODING_WINDOWS1250;
 		def_update = 0;
 	}
 	
@@ -580,6 +596,7 @@ void switch_dict(int new_dict)
 		if (def)
 			free(def);
 		def = xstrdup(_("{\\cf2 Error!}\\par\\pard{Unable to open dictionary. Press F1 or ? for help.}"));
+		def_encoding = YDPDICT_ENCODING_UTF8;
 		word_count = 0;
 	} else {
 		word_count = dict.word_count;
@@ -610,6 +627,7 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_LOCALE_H
 	setlocale(LC_ALL, "");
+	textdomain("ydpdict");
 #endif
 
 #ifdef HAVE_LIBAO
@@ -825,17 +843,17 @@ int main(int argc, char **argv)
 "{\\line{\\cf2 F6} or {\\cf2 ]} - Polish-German dictionary}"
 "{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} - clear input field}"
 "{\\line{\\cf2 Ctrl-L} - refresh display}"
-"{\\line{\\cf2 Esc} lub {\\cf2 Ctrl-C} - quit program}"
+"{\\line{\\cf2 Esc} or {\\cf2 Ctrl-C} - quit program}"
 "{\\par\\pard}"
 "Contact: {\\b %s}. Current version is always available at {\\b %s}"
 );
 				xfree(def);
 
-				def = malloc(strlen(tmp) + strlen(HELP_EMAIL) + strlen(HELP_WEBSITE));
-				if (def)
-					sprintf(def, tmp, HELP_EMAIL, HELP_WEBSITE);
-
+				def = xmalloc(strlen(tmp) + strlen(HELP_EMAIL) + strlen(HELP_WEBSITE));
+				sprintf(def, tmp, HELP_EMAIL, HELP_WEBSITE);
+				def_encoding = YDPDICT_ENCODING_UTF8;
 				def_index = 0;
+
 				break;
 			}
 
