@@ -35,7 +35,7 @@
 #include "ydpconfig.h"
 #include "xmalloc.h"
 
-#ifdef HAVE_LIBINTL_H
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(x) gettext(x)
 #else
@@ -57,15 +57,16 @@ int config_cf2 = COLOR_GREEN | A_BOLD;
 
 static struct option const longopts[] = {
 	{ "help", no_argument, 0, 'h' },
-	{ "version", no_argument, 0, 'v' },
+	{ "version", no_argument, 0, 'V' },
+	{ "eng", no_argument, 0, 'e' },
 	{ "pol", no_argument, 0, 'p' },
-	{ "ang", no_argument, 0, 'a' },
-	{ "pol-niem", no_argument, 0, 'P' },
-	{ "niem-pol", no_argument, 0, 'D' },
+	{ "pol-ger", no_argument, 0, 'o' },
+	{ "ger-pol", no_argument, 0, 'g' },
 	{ "path", required_argument, 0, 't' },
 	{ "cdpath", required_argument, 0, 'c' },
 	{ "player", required_argument, 0, 'P' },
 	{ "word", required_argument, 0, 'w'},
+	{ "audio", required_argument, 0, 'A'},
 	{ 0, 0, 0, 0 }
 };
 
@@ -88,7 +89,7 @@ void usage(const char *argv0) {
 "  -P, --player=PATH     set sound player path\n"
 "  -w, --word=WORD       start with selected WORD's definition\n"
 "  -A, --audio=DEVICE    set default audio device\n"
-"      --version         show program version\n"
+"  -V, --version         print program version\n"
 "  -h, --help            print this message\n"
 "\n"), argv0);
 }

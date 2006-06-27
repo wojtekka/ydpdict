@@ -37,7 +37,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#ifdef HAVE_LIBINTL_H
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(x) gettext(x)
 #else
@@ -814,10 +814,10 @@ int main(int argc, char **argv)
 			case '?':
 			{
 				const char *tmp = _(
-"{\\cf2 F1} or {\\cf2 ?} - print this help"
+"{\\cf2 F1} or {\\cf2 ?} - this help"
 "{\\line{\\cf2 Tab} - change focus}"
-"{\\line{\\cf2 up arrow} lub {\\cf2 down arrow} - scroll up and down}"
-"{\\line{\\cf2 Page Up} lub {\\cf2 Page Down} - scroll pages up and down}"
+"{\\line{\\cf2 Up} and {\\cf2 Down} - scroll up and down}"
+"{\\line{\\cf2 Page Up} and {\\cf2 Page Down} - scroll page up and down}"
 "{\\line{\\cf2 F2} or {\\cf2 `} - play pronunciation sample}"
 "{\\line{\\cf2 F3} or {\\cf2 <} - English-Polish dictionary}"
 "{\\line{\\cf2 F4} or {\\cf2 >} - Polish-English dictionary}"

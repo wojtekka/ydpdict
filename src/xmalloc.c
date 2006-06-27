@@ -27,7 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#ifdef HAVE_LIBINTL_H
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(x) gettext(x)
 #else
