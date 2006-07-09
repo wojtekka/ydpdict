@@ -1,0 +1,96 @@
+# Polish translations for ydpdict package
+# Polskie tłumaczenia dla pakietu ydpdict.
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the ydpdict package.
+# Wojtek Kaniewski <wojtekka@toxygen.net>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ydpdict 0.99.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-06-27 20:17+0200\n"
+"PO-Revision-Date: 2006-04-18 00:38+0200\n"
+"Last-Translator: Wojtek Kaniewski <wojtekka@toxygen.net>\n"
+"Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: src/xmalloc.c:52 src/xmalloc.c:69 src/xmalloc.c:100 src/xmalloc.c:120
+#: src/ydpdict.c:193
+msgid "Out of memory"
+msgstr "Brak pamięci"
+
+#: src/ydpconfig.c:82
+#, c-format
+msgid ""
+"Usage: %s [OPTIONS]\n"
+"  -e, --eng             start with English-Polish dictionary (default)\n"
+"  -p, --pol             start with Polish-English dictionary\n"
+"  -g, --ger-pol         start with German-Polish dictionary\n"
+"  -o, --pol-ger         start with Polish-German dictionary\n"
+"  -f, --path=PATH       set database path\n"
+"  -c, --cdpath=PATH     set CD-ROM path\n"
+"  -P, --player=PATH     set sound player path\n"
+"  -w, --word=WORD       start with selected WORD's definition\n"
+"  -A, --audio=DEVICE    set default audio device\n"
+"  -V, --version         print program version\n"
+"  -h, --help            print this message\n"
+"\n"
+msgstr ""
+"Użycie: %s [OPCJE]\n"
+"  -e, --eng               włącza słownik angielsko-polski (domyślnie)\n"
+"  -p, --pol               włącza słownik polsko-angielski\n"
+"  -g, --ger-pol           włącza słownik niemiecko-polski\n"
+"  -o, --pol-ger           włącza słownik polsko-niemiecki\n"
+"  -f, --path=ŚCIEŻKA      określa ścieżkę bazy danych\n"
+"  -c, --cdpath=ŚCIEŻKA    określa ścieżkę napędu CD\n"
+"  -P, --player=ŚCIEŻKA    określa ścieżkę do otwarzacza plików dźwiękowych\n"
+"  -w, --word=SŁOWO        rozpoczyna pracę od definicji danego słowa\n"
+"  -A, --audio=URZĄDZENIE  określa domyślne urządzenie dźwiękowe\n"
+"  -V, --version           wyświetla wersję programu\n"
+"  -h, --help              wyświetla tą informację\n"
+"\n"
+
+#: src/ydpconfig.c:239
+#, c-format
+msgid "Error in config file, like %d: %s\n"
+msgstr "Błąd w pliku konfiguracyjnym, linia %d: %s\n"
+
+#: src/ydpdict.c:588
+msgid "Please wait, loading the dictionary..."
+msgstr "Proszę czekać, trwa ładowanie..."
+
+#: src/ydpdict.c:598
+msgid ""
+"{\\cf2 Error!}\\par\\pard{Unable to open dictionary. Press F1 or ? for help.}"
+msgstr ""
+"{\\cf2 Błąd!)\\par\\pard{Nie można otworzyć słownika. Pomoc dostępna pod "
+"klawiszami F1 lub ?.}"
+
+#: src/ydpdict.c:835
+#, c-format
+msgid ""
+"{\\cf2 F1} or {\\cf2 ?} - this help{\\line{\\cf2 Tab} - change focus}{\\line"
+"{\\cf2 Up} and {\\cf2 Down} - scroll up and down}{\\line{\\cf2 Page Up} and "
+"{\\cf2 Page Down} - scroll page up and down}{\\line{\\cf2 F2} or {\\cf2 `} - "
+"play pronunciation sample}{\\line{\\cf2 F3} or {\\cf2 <} - English-Polish "
+"dictionary}{\\line{\\cf2 F4} or {\\cf2 >} - Polish-English dictionary}{\\line"
+"{\\cf2 F5} or {\\cf2 [} - German-Polish dictionary}{\\line{\\cf2 F6} or "
+"{\\cf2 ]} - Polish-German dictionary}{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} "
+"- clear input field}{\\line{\\cf2 Ctrl-L} - refresh display}{\\line{\\cf2 "
+"Esc} or {\\cf2 Ctrl-C} - quit program}{\\par\\pard}Contact: {\\b %s}. "
+"Current version is always available at {\\b %s}"
+msgstr ""
+"{\\cf2 F1} lub {\\cf2 ?} - wyświetl pomoc{\\line{\\cf2 Tab} - przełącz panel}"
+"{\\line{\\cf2 Up} i {\\cf2 Down} - przewiń w górę i w dół}{\\line{\\cf2 Page "
+"Up} i {\\cf2 Page Down} - przewiń stronę}{\\line{\\cf2 F2} lub {\\cf2 `} - "
+"odtwórz próbkę wymowy}{\\line{\\cf2 F3} or {\\cf2 <} - słownik angielsko-"
+"polski}{\\line{\\cf2 F4} lub {\\cf2 >} - słownik polsko-angielski}{\\line"
+"{\\cf2 F5} lub {\\cf2 [} - słownik niemiecko-polski}{\\line{\\cf2 F6} lub "
+"{\\cf2 ]} - słownik polsko-niemiecki}{\\line{\\cf2 Ctrl-U} lub {\\cf2 Ctrl-"
+"W} - wyczyść pole tekstowe}{\\line{\\cf2 Ctrl-L} - odśwież ekran}{\\line"
+"{\\cf2 Esc} lub {\\cf2 Ctrl-C} - zakończ program}{\\par\\pard}Kontakt: {\\b %"
+"s}. Aktualna wersja dostępna pod adresem {\\b %s}"

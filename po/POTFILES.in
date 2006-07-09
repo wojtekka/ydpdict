@@ -1,0 +1,5 @@
+# List of source files which contain translatable strings.
+src/xmalloc.c
+src/ydpconfig.c
+src/ydpdict.c
+src/ydpsound.c
