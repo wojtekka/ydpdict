@@ -19,7 +19,7 @@
     make
     make install
 
-  Ze względu na zmianę zachowania autoconfa, strony manuali będą instalowane
+  Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
   w katalogu $(prefix)/man, zamiast $(prefix)/share/man. Jeśli chcesz je
   zainstalować w odpowiednim miejscu, wpisz:
 
@@ -65,13 +65,7 @@
   niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji będzie
   traktowany jak przyjęcie licencji kodu, który jest poprawiany.
 
-  Najnowszą wersję można pobrać z http://toxygen.net/ydpdict/
-
-  Znane błędy:
-  - Przełączenie na słownik niemiecko-polski lub polsko-niemiecki, gdy nie
-    są one zainstalowane, spowoduje wyjście z programu z komunikatem błędu,
-    zamiast poinformować o błędzie i pozostać w słowniku angielsko-polskim
-    lub polsko-angielskim.
+  Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
   - 0.99.0 (2006-04-xx): Całkowita zmiana architektury -- wydzielenie
