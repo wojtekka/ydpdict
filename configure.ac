@@ -13,7 +13,7 @@ AC_WORDS_BIGENDIAN
 
 AC_CHECK_HEADERS([linux/soundcard.h])
 AC_CHECK_HEADERS([locale.h])
-AC_CHECK_HEADERS([libintl.h])
+AM_GNU_GETTEXT([external])
 
 AC_CHECK_FUNCS([getopt_long])
 
@@ -57,5 +57,5 @@ AC_SUBST([HAVE_LIBAO])
 CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 
 AC_SUBST([VERSION])
-AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf])
+AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in])
 
