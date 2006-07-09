@@ -7,5 +7,5 @@ ACLOCAL_AMFLAGS = -I m4
 install-data-local:
 	sed -s "s,\@datadir\@,$(datadir)," < $(srcdir)/ydpdict.conf.in > $(srcdir)/ydpdict.conf
 	$(INSTALL_DATA) $(srcdir)/ydpdict.conf $(DESTDIR)$(sysconfdir)/ydpdict.conf
-	$(INSTALL_DATA) -d $(DESTDIR)$(datadir)/ydpdict
+	$(MKINSTALLDIRS) $(DESTDIR)$(datadir)/ydpdict
 
