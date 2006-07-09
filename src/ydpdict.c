@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <ydpdict.h>
+#include <ydpdict/ydpdict.h>
 #include <wchar.h>
 #include <wctype.h>
 
