@@ -1,5 +1,5 @@
-SUBDIRS = src contrib
-DIST_SUBDIRS = src contrib
+SUBDIRS = src contrib po
+DIST_SUBDIRS = src contrib po
 EXTRA_DIST = autogen.sh autoclean.sh configure.ac ydpdict.1 ydpdict.pl.1 ydpdict.conf.in
 man_MANS = ydpdict.1
 ACLOCAL_AMFLAGS = -I m4

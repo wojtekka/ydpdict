@@ -57,5 +57,5 @@ AC_SUBST([HAVE_LIBAO])
 CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 
 AC_SUBST([VERSION])
-AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in po/Makefile.in])
+AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in])
 
