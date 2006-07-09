@@ -593,10 +593,20 @@ void switch_dict(int new_dict)
 	snprintf(full_dat, sizeof(full_dat), "%s/%s", config_path, dat[new_dict]);
 
 	if (ydpdict_open(&dict, full_dat, full_idx, YDPDICT_ENCODING_UTF8) == -1) {
-		if (def)
-			free(def);
-		def = xstrdup(_("{\\cf2 Error!}\\par\\pard{Unable to open dictionary. Press F1 or ? for help.}"));
+		const char *tmp, *err;
+		
+		if (!errno)
+			err = _("Invalid file format");
+		else
+			err = strerror(errno);
+
+		tmp = _("{\\cf2 Error!}\\par\\pard{Unable to open dictionary: %s. Press F1 or ? for help.}");
+
+		xfree(def);
+		def = xmalloc(strlen(tmp) + strlen(err));
+		sprintf(def, tmp, err);
 		def_encoding = YDPDICT_ENCODING_UTF8;
+		def_index = 0;
 		word_count = 0;
 	} else {
 		word_count = dict.word_count;
