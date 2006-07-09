@@ -1,6 +1,6 @@
 #!/bin/sh
 echo "aclocal"
-aclocal || exit 1
+aclocal -I m4 || exit 1
 echo "autoheader"
 autoheader || exit 1
 echo "libtoolize"
