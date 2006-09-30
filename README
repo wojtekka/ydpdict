@@ -27,22 +27,23 @@
     make
     make install
 
-  Potem teraz wystarczy skopiować cztery pliki z oryginalnego pakietu:
+  Potem teraz wystarczy skopiować cztery pliki z katalogu "database"
+  oryginalnego pakietu:
 
-    database/dict100.dat
-    database/dict100.idx
-    database/dict101.dat
-    database/dict101.idx
+    dict100.dat
+    dict100.idx
+    dict101.dat
+    dict101.idx
 
   dla słownika angielsko-polskiego i polsko-angielskiego, lub:
 
-    database/dict200.dat
-    database/dict200.idx
-    database/dict201.dat
-    database/dict201.idx
+    dict200.dat
+    dict200.idx
+    dict201.dat
+    dict201.idx
 
   dla słownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
-  w którym znajduje się program. można też podać ścieżkę, w której się
+  w którym znajduje się program. Można też podać ścieżkę, w której się
   one znajdują w parametrze "Path" pliku konfiguracyjnego. Należy również
   zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się podmountowana
   płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
