@@ -1,6 +1,6 @@
 
   ydpdict 0.99.0
-  (C) Copyright 1998-2006 Wojtek Kaniewski <wojtekka%toxygen.net>
+  (C) Copyright 1998-2007 Wojtek Kaniewski <wojtekka%toxygen.net>
 
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
   multimedialnych słowników angielsko-polskiego, polsko-angielskiego,
@@ -69,7 +69,7 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 0.99.0 (2006-04-xx): Całkowita zmiana architektury -- wydzielenie
+  - 0.99.0 (2007-02-26): Całkowita zmiana architektury -- wydzielenie
     biblioteki obsługującej słowniki, modyfikacja kodu do poprawnej pracy
     w unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.
 
