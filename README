@@ -70,7 +70,7 @@
 
   Lista zmian:
   - 0.99.1 (2007-02-xx): Poprawka błędu kompilacji bez libao zgłoszonego
-    przez Piotra Jaroszyńskiego.
+    przez Piotra Jaroszyńskiego (peper%gentoo.org).
   - 0.99.0 (2007-02-26): Całkowita zmiana architektury -- wydzielenie
     biblioteki obsługującej słowniki, modyfikacja kodu do poprawnej pracy
     w unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.
