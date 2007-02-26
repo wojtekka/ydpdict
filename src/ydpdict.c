@@ -36,6 +36,7 @@
 #include <ydpdict/ydpdict.h>
 #include <wchar.h>
 #include <wctype.h>
+#include <errno.h>
 
 #ifdef ENABLE_NLS
 #include <libintl.h>
