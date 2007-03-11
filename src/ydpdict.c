@@ -26,7 +26,13 @@
 #include <sys/types.h>
 #include <ctype.h>
 #define _XOPEN_SOURCE_EXTENDED
-#include <ncursesw/ncurses.h>
+#ifdef HAVE_NCURSESW_NCURSES_H
+#  include <ncursesw/ncurses.h>
+#else
+#  ifdef HAVE_CURSES_H
+#    include <curses.h>
+#  endif
+#endif
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>

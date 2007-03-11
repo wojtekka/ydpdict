@@ -22,7 +22,14 @@
 #endif
 
 #include <sys/types.h>
-#include <ncursesw/ncurses.h>
+#define _XOPEN_SOURCE_EXTENDED
+#ifdef HAVE_NCURSESW_NCURSES_H
+#  include <ncursesw/ncurses.h>
+#else
+#  ifdef HAVE_CURSES_H
+#    include <curses.h>
+#  endif
+#endif
 #include <fcntl.h>
 #ifdef HAVE_GETOPT_LONG
 #include <getopt.h>

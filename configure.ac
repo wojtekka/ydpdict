@@ -19,22 +19,32 @@ AC_CHECK_FUNCS([getopt_long])
 
 AC_ARG_WITH(ncurses,
     [  --with-ncurses[=dir]    Compile with ncurses base directory],
-    [CFLAGS="-I$dir/include/ncursesw" LIBS="-L$dir/lib"])
+    [CFLAGS="-I$dir/include" LIBS="-L$dir/lib"])
 
 AC_CHECK_HEADER([ncursesw/ncurses.h], [have_ncursesw_ncurses_h=yes])
-AC_CHECK_LIB([ncursesw], [initscr], [have_ncursesw=yes])
+AC_CHECK_HEADER([curses.h], [have_curses_h=yes])
+AC_CHECK_LIB([ncursesw], [initscr], [have_libncursesw=yes])
 
 AC_MSG_CHECKING([for Unicode-aware ncurses])
 
-if test "x$have_ncursesw_ncurses_h" = "xyes" ; then
-	if test "x$have_ncursesw" = "xyes" ; then
-		LIBS="$LIBS -lncursesw"
+if test "x$have_libncursesw" = "xyes" ; then
+	if test "x$have_ncursesw_ncurses_h" = "xyes" ; then
+		AC_DEFINE([HAVE_NCURSESW_NCURSES_H], [], [Define to 1 if you have the <ncursesw/ncurses.h> header file.])
 		AC_MSG_RESULT([yes])
+		LIBS="$LIBS -lncursesw"
 	else
-		AC_MSG_ERROR([no])
+		if test "x$have_curses_h" = "xyes" ; then
+			AC_DEFINE([HAVE_CURSES_H], [], [Define to 1 if you have the <curses.h> header file.])
+			AC_MSG_RESULT([maybe])
+			LIBS="$LIBS -lncursesw"
+			AC_MSG_WARN([<ncursesw.h> not found, but some Linux distributions provide unicode-away <ncurses.h>, so let's try])
+			ncurses_warning=yes
+		else
+			AC_MSG_ERROR([no])
+		fi
 	fi
 else
-	AC_MSG_ERROR([no])
+	AC_MSG_RESULT([no])
 fi
 
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig"
@@ -59,3 +69,6 @@ CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 AC_SUBST([VERSION])
 AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in])
 
+if test "x$ncurses_warning" = "xyes" ; then
+	AC_MSG_WARN([Build may fail because of ncurses headers ambiguity in some Linux distributions.])
+fi
