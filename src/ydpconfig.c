@@ -69,7 +69,7 @@ static struct option const longopts[] = {
 	{ "pol", no_argument, 0, 'p' },
 	{ "pol-ger", no_argument, 0, 'o' },
 	{ "ger-pol", no_argument, 0, 'g' },
-	{ "path", required_argument, 0, 't' },
+	{ "path", required_argument, 0, 'f' },
 	{ "cdpath", required_argument, 0, 'c' },
 	{ "player", required_argument, 0, 'P' },
 	{ "word", required_argument, 0, 'w'},
