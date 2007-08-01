@@ -1,6 +1,6 @@
-.TH YDPDICT 1 "13 kwietnia 2006"
+.TH YDPDICT 1 "1 sierpnia 2007"
 .SH NAZWA
-ydpdict \- interfejs słowników Collinsa
+ydpdict \- interfejs słowników Collinsa i Langenscheidt
 .SH SKŁADNIA
 .B ydpdict [
 .BI opcje
@@ -9,8 +9,9 @@ ydpdict \- interfejs słowników Collinsa
 .SH OPIS
 .B ydpdict
 jest korzystającym z biblioteki ncurses interfejsem służącym do obsługi
-multimedialnych słowników: angielsko-polskiego, polsko-angielskiego, 
-niemiecko-polskiego i polsko-niemieckiego Collinsa.
+multimedialnych słowników: angielsko-polskiego, polsko-angielskiego Collinsa,
+oraz niemiecko-polskiego i polsko-niemieckiego Langenscheidt, wydanych przez
+Young Digital Planet.
 .PP
 .B ydpdict
 szuka pliku konfiguracyjnego w następujących miejscach (czytany jest tylko pierwszy znaleziony plik):
@@ -49,6 +50,9 @@ Podaje ścieżkę do odtwarzacza plików WAV.
 .TP
 .BI \-w\ [\-\-word=SŁOWO]
 Uruchamia słownik i tłumaczy podane słowo.
+.TP
+.BI \-A\ [\-\-audio=URZĄDZENIE]
+Określa domyślne urządzenie dźwiękowe.
 .TP
 .BI \-\-version
 Wyświetla wersję programu.

@@ -1,6 +1,6 @@
-.TH YDPDICT 1 "April 13, 2006"
+.TH YDPDICT 1 "July 1, 2007"
 .SH NAME
-ydpdict \- an interface for Collins dictionaries
+ydpdict \- an interface for Collins and Langenscheidt dictionaries
 .SH SYNOPSIS
 .B ydpdict [
 .BI options
@@ -8,9 +8,9 @@ ydpdict \- an interface for Collins dictionaries
 
 .SH DESCRIPTION
 .B ydpdict
-is an ncurses interface for English-Polish, Polish-English, German-Polish and
-Polish-German Collins dictionaries, which are distributed by Young Digital
-Poland.
+is an ncurses interface for English-Polish and Polish-English Collins
+dictionaries, as well as German-Polish and Polish-German Langenscheidt
+dictionaries, which are distributed by Young Digital Planet.
 .PP
 .B ydpdict
 tries to load the configuration file from the following locations (reads only
@@ -50,6 +50,9 @@ Sets the path to the WAV file player.
 .TP
 .BI \-w\ [\-\-word=WORD]
 Starts the dictionary and translates the specified word.
+.TP
+.BI \-A\ [\-\-audio=DEVICE]
+Sets the default audio device.
 .TP
 .BI \-\-version
 Displays the version of the program.
