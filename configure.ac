@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(src/ydpdict.c)
-AM_INIT_AUTOMAKE(ydpdict, 0.99.0)
+AM_INIT_AUTOMAKE(ydpdict, 0.99.1)
 AC_PREREQ(2.50)
 AC_CONFIG_HEADERS(config.h)
 
@@ -49,9 +49,32 @@ fi
 
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig"
 
-PKG_CHECK_MODULES([YDPDICT], [libydpdict = 0.99.0])
+PKG_CHECK_MODULES([YDPDICT], [libydpdict >= 0.99.0])
 AC_SUBST([YDPDICT_CFLAGS])
 AC_SUBST([YDPDICT_LIBS])
+
+AC_ARG_WITH(dictdir,
+    [  --with-dictdir=DIR      Databases are in DIR])
+
+if test "x$with_dictdir" != "x"; then
+	dictdir="$with_dictdir"
+else
+	# Substitute ${datarootdir}, ${prefix} etc.
+
+	dictdir="${datadir}/ydpdict"
+
+	save_prefix="$prefix"
+	if test "X$prefix" = "XNONE"; then
+		prefix="$ac_default_prefix"
+	fi
+	eval dictdir="$dictdir"
+	eval dictdir="$dictdir"
+	eval dictdir="$dictdir"
+	eval dictdir="$dictdir"
+	prefix="$save_prefix"
+fi
+
+AC_SUBST([dictdir])
 
 AC_ARG_WITH(libao,
     [  --without-libao         Compile without libao])
