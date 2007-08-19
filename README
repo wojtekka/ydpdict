@@ -69,8 +69,13 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 0.99.1 (2007-02-xx): Poprawka błędu kompilacji bez libao zgłoszonego
-    przez Piotra Jaroszyńskiego (peper%gentoo.org).
+  - 0.99.2 (2007-08-19): Uniezależnienie od wielkości liter w nazwach
+    plików słownika na podstawie poprawki Marcina Owsianego
+    (marcin%owsiany.pl).
+  - 0.99.1 (2007-07-30): Poprawka błędu kompilacji bez libao zgłoszonego
+    przez Piotra Jaroszyńskiego (peper%gentoo.org). Poprawki dokumentacji,
+    dodanie parametru skryptu configure określającego domyślny katalog
+    słownika (marcin%owsiany.pl).
   - 0.99.0 (2007-02-26): Całkowita zmiana architektury -- wydzielenie
     biblioteki obsługującej słowniki, modyfikacja kodu do poprawnej pracy
     w unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.
