@@ -24,6 +24,7 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <ctype.h>
 #define _XOPEN_SOURCE_EXTENDED
 #ifdef HAVE_NCURSESW_NCURSES_H
@@ -579,7 +580,9 @@ void switch_dict(int new_dict)
 {
 	const char *idx[4] = { DEFAULT_IDX_AP, DEFAULT_IDX_PA, DEFAULT_IDX_DP, DEFAULT_IDX_PD };
 	const char *dat[4] = { DEFAULT_DAT_AP, DEFAULT_DAT_PA, DEFAULT_DAT_DP, DEFAULT_DAT_PD };
-	char full_idx[4096], full_dat[4096];
+	char full_idx[4096] = "", full_dat[4096] = "";
+	struct dirent *de;
+	DIR *dh;
 
 	if (new_dict < 0 || new_dict > 3)
 		return;
@@ -596,10 +599,20 @@ void switch_dict(int new_dict)
 
 	update_all();
 
-	snprintf(full_idx, sizeof(full_idx), "%s/%s", config_path, idx[new_dict]);
-	snprintf(full_dat, sizeof(full_dat), "%s/%s", config_path, dat[new_dict]);
+	errno = ENOENT;
 
-	if (ydpdict_open(&dict, full_dat, full_idx, YDPDICT_ENCODING_UTF8) == -1) {
+	if ((dh = opendir(config_path))) {
+		while ((de = readdir(dh))) {
+			if (!strcasecmp(de->d_name, idx[new_dict]))
+				snprintf(full_idx, sizeof(full_idx), "%s/%s", config_path, de->d_name);
+			if (!strcasecmp(de->d_name, dat[new_dict]))
+				snprintf(full_dat, sizeof(full_dat), "%s/%s", config_path, de->d_name);
+		}
+
+		closedir(dh);
+	}
+
+	if (strlen(full_idx) == 0 || strlen(full_dat) == 0 || ydpdict_open(&dict, full_dat, full_idx, YDPDICT_ENCODING_UTF8) == -1) {
 		const char *tmp, *err;
 		
 		if (!errno)
