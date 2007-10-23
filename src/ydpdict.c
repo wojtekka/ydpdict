@@ -600,8 +600,8 @@ void switch_dict(int new_dict)
 	update_all();
 
 	errno = ENOENT;
-
-	if ((dh = opendir(config_path))) {
+	
+	if (config_path && (dh = opendir(config_path))) {
 		while ((de = readdir(dh))) {
 			if (!strcasecmp(de->d_name, idx[new_dict]))
 				snprintf(full_idx, sizeof(full_idx), "%s/%s", config_path, de->d_name);
