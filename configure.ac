@@ -44,7 +44,7 @@ if test "x$have_libncursesw" = "xyes" ; then
 		fi
 	fi
 else
-	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([no])
 fi
 
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig"
