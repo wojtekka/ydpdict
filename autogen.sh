@@ -5,6 +5,8 @@ echo "autoheader"
 autoheader || exit 1
 echo "libtoolize"
 libtoolize -c -f || exit 1
+echo "gettextize"
+cp /usr/share/gettext/config.rpath . || exit 1
 echo "automake"
 automake -a -c -f --foreign || exit 1
 echo "autoconf"
