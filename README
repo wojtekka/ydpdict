@@ -1,5 +1,5 @@
 
-  ydpdict 0.99.0
+  ydpdict 0.99.3
   (C) Copyright 1998-2007 Wojtek Kaniewski <wojtekka%toxygen.net>
 
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
@@ -69,6 +69,8 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
+  - 0.99.3 (2007-12-06): Poprawki parametrów wywołania programu Tomasza
+    Kojma (tkojm%clamav.net).
   - 0.99.2 (2007-08-19): Uniezależnienie od wielkości liter w nazwach
     plików słownika na podstawie poprawki Marcina Owsianego
     (marcin%owsiany.pl).

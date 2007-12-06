@@ -53,7 +53,7 @@ char *config_path = NULL;
 char *config_cdpath = NULL;
 char *config_player = NULL;
 char *config_word = NULL;
-int config_dict = 1;
+int config_dict = 0;
 int config_color = 1;
 int config_transparent = 0;
 int config_text = COLOR_WHITE;
@@ -243,7 +243,7 @@ int read_config(int argc, char **argv)
 		}
 
 		if (!entries[i].label) {
-			fprintf(stderr, _("Error in config file, like %d: %s\n"), line, buf);
+			fprintf(stderr, _("Error in config file, line %d: %s\n"), line, buf);
 			exit(1);
 		}
 	}
@@ -253,7 +253,7 @@ int read_config(int argc, char **argv)
 #ifdef HAVE_GETOPT_LONG
 	while ((optc = getopt_long(argc, argv, "hvVpeogf:c:w:A:", longopts, (int*) 0)) != -1) {
 #else
-	while ((optc = getopt(argc, argv, "hvVpaogf:c:w:A:")) != -1) {
+	while ((optc = getopt(argc, argv, "hvVpeogf:c:w:A:")) != -1) {
 #endif
 		switch(optc) {
 			case 'h':
@@ -265,7 +265,7 @@ int read_config(int argc, char **argv)
 				printf("ydpdict-" VERSION "\n");
 				exit(0);
 
-			case 'a':
+			case 'e':
 				config_dict = 0;
 				break;
 
