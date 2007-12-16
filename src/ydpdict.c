@@ -68,8 +68,7 @@
 #define COLOR_DEFAULT (-1)
 #endif
 
-ydpdict_t dict;		///< Dictionary handle
-int dict_open;		///< Dictionary open flag
+ydpdict_t *dict;	///< Dictionary handle
 int word_count;		///< Dictionary word count
 
 wchar_t input[INPUT_LEN + 1];	///< Input word
@@ -131,9 +130,9 @@ void show_error(const char *msg)
 
 	endwin();
 
-	if (dict_open) {
-		ydpdict_close(&dict);
-		dict_open = 0;
+	if (dict) {
+		ydpdict_close(dict);
+		dict = NULL;
 	}
 
 	xfree(def);
@@ -496,14 +495,14 @@ void input_find(void)
 	const wchar_t *src;
 	int i;
 
-	if (!dict_open)
+	if (!dict)
 		return;
 	
 	src = input;
 
 	wcsrtombs(dest, &src, sizeof(dest), NULL);
 
-	i = ydpdict_find(&dict, dest);
+	i = ydpdict_find_word(dict, dest);
 	
 	input_exact = (i == -1) ? 0 : 1;
 
@@ -527,7 +526,7 @@ void list_redraw(void)
 
 	werase(window_word);
 
-	if (dict_open) {
+	if (dict) {
 		for (y = 0; y < (screen_height - 4); y++) {
 			wattrset(window_word, (y == list_index) ? A_REVERSE : A_NORMAL);
 			mvwaddstr(window_word, y + 1, 0, "                    ");
@@ -535,7 +534,7 @@ void list_redraw(void)
 			if (list_page + y >= word_count)
 				continue;
 	
-			mvwaddstr(window_word, y + 1, 1, (char*) dict.words[list_page + y]);
+			mvwaddstr(window_word, y + 1, 1, ydpdict_get_word(dict, list_page + y));
 		}
 	}
 	
@@ -553,9 +552,9 @@ void list_redraw(void)
  */
 void def_redraw(void)
 {
-	if (def_update && dict_open) {
+	if (def_update && dict) {
 		xfree(def);
-		def = (char*) ydpdict_read_rtf(&dict, list_page + list_index);
+		def = (char*) ydpdict_read_rtf(dict, list_page + list_index);
 		def_encoding = YDPDICT_ENCODING_WINDOWS1250;
 		def_update = 0;
 	}
@@ -587,9 +586,9 @@ void switch_dict(int new_dict)
 	if (new_dict < 0 || new_dict > 3)
 		return;
 
-	if (dict_open) {
-		ydpdict_close(&dict);
-		dict_open = 0;
+	if (dict) {
+		ydpdict_close(dict);
+		dict = NULL;
 	}
 
 	curs_set(0);
@@ -612,7 +611,7 @@ void switch_dict(int new_dict)
 		closedir(dh);
 	}
 
-	if (strlen(full_idx) == 0 || strlen(full_dat) == 0 || ydpdict_open(&dict, full_dat, full_idx, YDPDICT_ENCODING_UTF8) == -1) {
+	if (strlen(full_idx) == 0 || strlen(full_dat) == 0 || !(dict = ydpdict_open(full_dat, full_idx, YDPDICT_ENCODING_UTF8))) {
 		const char *tmp, *err;
 		
 		if (!errno)
@@ -629,9 +628,8 @@ void switch_dict(int new_dict)
 		def_index = 0;
 		word_count = 0;
 	} else {
-		word_count = dict.word_count;
+		word_count = ydpdict_get_count(dict);
 		def_update = 1;
-		dict_open = 1;
 	}
 
 	config_dict = new_dict;
