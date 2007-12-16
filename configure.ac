@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(src/ydpdict.c)
-AM_INIT_AUTOMAKE(ydpdict, 0.99.2)
+AM_INIT_AUTOMAKE(ydpdict, 0.99.3)
 AC_PREREQ(2.50)
 AC_CONFIG_HEADERS(config.h)
 
@@ -49,7 +49,7 @@ fi
 
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig"
 
-PKG_CHECK_MODULES([YDPDICT], [libydpdict >= 0.99.0])
+PKG_CHECK_MODULES([YDPDICT], [libydpdict >= 0.99.3])
 AC_SUBST([YDPDICT_CFLAGS])
 AC_SUBST([YDPDICT_LIBS])
 
