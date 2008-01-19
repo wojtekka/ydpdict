@@ -56,7 +56,7 @@ msgstr ""
 
 #: src/ydpconfig.c:246
 #, c-format
-msgid "Error in config file, like %d: %s\n"
+msgid "Error in config file, line %d: %s\n"
 msgstr "Błąd w pliku konfiguracyjnym, linia %d: %s\n"
 
 #: src/ydpdict.c:598
