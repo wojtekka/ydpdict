@@ -417,7 +417,7 @@ int def_print(char *def, int first)
 				ypos++;
 				if (margin)
 					waddstr(window_def, is_visible("   "));
-				xpos = (margin) ? 3 : 0 + strlen(line);
+				xpos = ((margin) ? 3 : 0) + strlen(line);
 			} else {
 				xpos += strlen(line);
 			}
