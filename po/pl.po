@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ydpdict 0.99.0\n"
 "Report-Msgid-Bugs-To: wojtekka@toxygen.net\n"
-"POT-Creation-Date: 2007-08-19 18:23+0200\n"
+"POT-Creation-Date: 2008-02-26 22:47+0100\n"
 "PO-Revision-Date: 2006-04-18 00:38+0200\n"
 "Last-Translator: Wojtek Kaniewski <wojtekka@toxygen.net>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "|| n%100>=20) ? 1 : 2);\n"
 
 #: src/xmalloc.c:52 src/xmalloc.c:69 src/xmalloc.c:100 src/xmalloc.c:120
-#: src/ydpdict.c:201
+#: src/ydpdict.c:200
 msgid "Out of memory"
 msgstr "Brak pamięci"
 
@@ -59,15 +59,15 @@ msgstr ""
 msgid "Error in config file, line %d: %s\n"
 msgstr "Błąd w pliku konfiguracyjnym, linia %d: %s\n"
 
-#: src/ydpdict.c:598
+#: src/ydpdict.c:597
 msgid "Please wait, loading the dictionary..."
 msgstr "Proszę czekać, trwa ładowanie..."
 
-#: src/ydpdict.c:619
+#: src/ydpdict.c:618
 msgid "Invalid file format"
 msgstr "Niepoprawny format pliku"
 
-#: src/ydpdict.c:623
+#: src/ydpdict.c:622
 #, c-format
 msgid ""
 "{\\cf2 Error!}\\par\\pard{Unable to open dictionary: %s. Press F1 or ? for "
@@ -76,7 +76,7 @@ msgstr ""
 "{\\cf2 Błąd!}\\par\\pard{Nie można otworzyć słownika: %s. Pomoc dostępna pod "
 "klawiszami F1 lub ?.}"
 
-#: src/ydpdict.c:865
+#: src/ydpdict.c:863
 #, c-format
 msgid ""
 "{\\cf2 F1} or {\\cf2 ?} - this help{\\line{\\cf2 Tab} - change focus}{\\line"
