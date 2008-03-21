@@ -5,19 +5,21 @@
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
   multimedialnych słowników angielsko-polskiego, polsko-angielskiego,
   niemiecko-polskiego i polsko-niemieckiego Collinsa. Oryginalne pakiety
-  zawierają jedynie programy windowsowowe, co uniemożliwia korzystanie
+  zawierają jedynie programy dla systemu Windows, co uniemożliwia korzystanie
   z nich pod innymi systemami. Niniejszy program pozwala korzystać ze
   słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod innymi
   systemami, ponieważ jest pisany w miarę możliwości przenośnie.
 
-  Program jest rozwijany głównie dla PLD Linux (http://www.pld-linux.org/),
-  ale każdy system z obsługą unikodu i biblioteką ncurses wspierającą unikod
-  powinien sobie poradzić. Aby skompilować i zainstalować pakiet, należy
-  wykonać polecenia:
+  Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
+  uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
+  biblioteka libydpdict (dostępna na stronie projektu). W przypadku systemu
+  operacyjnego, który nie wspiera Unikodu, należy użyć wersji wcześniejszej
+  niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać polecenia
+  (ostatnie z nich z uprawnieniami administratora):
 
     ./configure
     make
-    make install
+    make install 
 
   Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
   w katalogu $(prefix)/man, zamiast $(prefix)/share/man. Jeśli chcesz je
@@ -27,8 +29,8 @@
     make
     make install
 
-  Potem teraz wystarczy skopiować cztery pliki z katalogu "database"
-  oryginalnego pakietu:
+  Następnie należy skopiować cztery pliki z katalogu "database" oryginalnego,
+  pracującego pod systemem Windows programu:
 
     dict100.dat
     dict100.idx
@@ -70,7 +72,7 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 1.0.1 (2008-03-xx): Poprawki dokumentacji.
+  - 1.0.1 (2008-03-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza
@@ -84,7 +86,7 @@
     słownika (marcin%owsiany.pl).
   - 0.99.0 (2007-02-26): Całkowita zmiana architektury -- wydzielenie
     biblioteki obsługującej słowniki, modyfikacja kodu do poprawnej pracy
-    w unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.
+    w Unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.
 
   Lista zmian starej gałęzi kodu:
   - 0.67 (2006-xx-xx): Dodanie $(DESTDIR) przy instalacji przez Stanisława
