@@ -9,7 +9,7 @@
   z nich pod innymi systemami. Niniejszy program pozwala korzystać ze
   słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod innymi
   systemami, ponieważ jest pisany w miarę możliwości przenośnie.
-		      
+
   Program jest rozwijany głównie dla PLD Linux (http://www.pld-linux.org/),
   ale każdy system z obsługą unikodu i biblioteką ncurses wspierającą unikod
   powinien sobie poradzić. Aby skompilować i zainstalować pakiet, należy
@@ -47,10 +47,7 @@
   one znajdują w parametrze "Path" pliku konfiguracyjnego. Należy również
   zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się podmountowana
   płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
- 
-  UWAGA! NAZWY PLIKÓW MUSZĄ BYĆ PISANE MAŁYMI LITERAMI, INACZEJ PROGRAM
-  ICH NIE ZNAJDZIE.
- 
+
   Obsługa programu jest bajecznie prosta. Wystarczy wpisać szukane słowo
   lub wybrać je klawiszami kursorów. Do przemieszania się między listą
   słów, a definicją służy klawisz Tab. Odtwarzanie próbek to F2. Zmiana na
@@ -61,14 +58,19 @@
   krawędzie ekranu, można przewijać listę lub opis. Jeśli klikniemy dwukrotnie
   na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
 
-  ydpdict jest wydany na licencji GPL w wersji 2, która jest dostępna
-  w pliku COPYING. Wszelkie poprawki wysłane do autora na licencji innej
-  niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji będzie
-  traktowany jak przyjęcie licencji kodu, który jest poprawiany.
+  ydpdict jest wydany na licencji GPL w wersji 2 (treść w języku angielskim
+  dostępna w pliku COPYING). Wszelkie poprawki wysłane do autora na licencji
+  innej niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji
+  będzie traktowany jak przyjęcie licencji kodu, który jest poprawiany.
+  Wyjątkiem są pliki adpcm.c i adpcm.h autorstwa Stanley'a J. Brooksa wydane
+  na licencji LGPL w wersji 2:
+  
+    Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
+  - 1.0.1 (2008-03-xx): Poprawki dokumentacji.
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza
