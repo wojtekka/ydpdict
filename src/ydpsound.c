@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) Copyright 1998-2007 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (c) Copyright 1998-2008 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -205,12 +205,12 @@ int play_sample(int def)
 	short *samples = NULL, *coefs = NULL;
 
 	for (i = 0; exts[i]; i++) {
-		snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.%s", config_cdpath, def / 1000, def + 1, exts[i]);
+		snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
 		if (!access(buf, R_OK))
 			break;
 		
-		snprintf(buf, sizeof(buf), "%s/s%.3d/%.6d.%s", config_cdpath, def / 1000, def + 1, exts[i]);
+		snprintf(buf, sizeof(buf), "%s/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
 		if (!access(buf, R_OK))
 			break;
