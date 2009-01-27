@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (c) Copyright 1998-2008 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (c) Copyright 1998-2009 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -188,11 +188,12 @@ static int play_linux(char *sample, int size, int freq, int bits, int chans)
 /**
  * \brief Plays sample for pronunciation
  * 
+ * \param dict Dictionary type
  * \param def Word index
  *
  * \return 0 on success, -1 on invalid file format, -2 on invalid file codec, -3 on playback error
  */
-int play_sample(int def)
+int play_sample(int dict, int def)
 {
 	char *exts[] = { "WAV", "wav", "MP3", "mp3", "OGG", "ogg", NULL };
 	struct riff_header_type riff_header;
@@ -200,19 +201,43 @@ int play_sample(int def)
 	struct wave_fmt_type wave_fmt;
 	struct wave_adpcm_type wave_adpcm;
 	int i, fd = -1, rd, result;
-	char buf[4096], *sample = NULL;
+	char path[4096], *sample = NULL;
 	int bytesPerBlock;
 	short *samples = NULL, *coefs = NULL;
 
 	for (i = 0; exts[i]; i++) {
-		snprintf(buf, sizeof(buf), "%s/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+		if (dict == 0) {
+			snprintf(path, sizeof(path), "%s/en/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
-		if (!access(buf, R_OK))
+			if (!access(path, R_OK))
+				break;
+
+			snprintf(path, sizeof(path), "%s/en/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+	
+			if (!access(path, R_OK))
+				break;
+		}
+
+		if (dict == 2) {
+			snprintf(path, sizeof(path), "%s/de/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+	
+			if (!access(path, R_OK))
+				break;
+
+			snprintf(path, sizeof(path), "%s/de/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+	
+			if (!access(path, R_OK))
+				break;
+		}
+
+		snprintf(path, sizeof(path), "%s/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+	
+		if (!access(path, R_OK))
 			break;
 		
-		snprintf(buf, sizeof(buf), "%s/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+		snprintf(path, sizeof(path), "%s/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
-		if (!access(buf, R_OK))
+		if (!access(path, R_OK))
 			break;
 	}
 
@@ -220,15 +245,13 @@ int play_sample(int def)
 		return 0;
 
 	if (config_player) {
-		char buf2[4096];
+		char command[4096];
     
-		snprintf(buf2, sizeof(buf2), "%s %s 2> /dev/null", config_player, buf);
-		system(buf2);
-
-		return 0;
+		snprintf(command, sizeof(command), "%s %s 2> /dev/null", config_player, path);
+		return system(command);
 	}
 
-	if ((fd = open(buf, O_RDONLY)) == -1) {
+	if ((fd = open(path, O_RDONLY)) == -1) {
 		result = 0;
 		goto failure;
 	}

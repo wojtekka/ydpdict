@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2007 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2009 Wojtek Kaniewski <wojtekka@toxygen.net>
  *                          Piotr Domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -852,7 +852,7 @@ int main(int argc, char **argv)
 			case KEY_F(2):
 			case '`':
 				if (config_dict == 0 || config_dict == 2)
-					play_sample(list_page + list_index);
+					play_sample(config_dict, list_page + list_index);
 
 				break;
 

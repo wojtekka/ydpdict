@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2007 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2009 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,6 +53,6 @@ struct wave_adpcm_type {
 	uint16_t wCoefs;
 } __attribute__ ((packed));
 
-int play_sample(int def);
+int play_sample(int dict, int def);
 
 #endif /* __YDPSOUND_H */

@@ -1,6 +1,6 @@
  
-  ydpdict 1.0.0
-  (C) Copyright 1998-2008 Wojtek Kaniewski <wojtekka%toxygen.net>
+  ydpdict 1.x.x
+  (C) Copyright 1998-2009 Wojtek Kaniewski <wojtekka%toxygen.net>
 
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
   multimedialnych słowników angielsko-polskiego, polsko-angielskiego,
@@ -47,8 +47,12 @@
   dla słownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
   w którym znajduje się program. Można też podać ścieżkę, w której się
   one znajdują w parametrze "Path" pliku konfiguracyjnego. Należy również
-  zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się podmountowana
-  płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
+  zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się podmontowana
+  płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych. Aby móc
+  odtwarzać próbki ze słownika angielsko-polskiego i niemiecko-polskiego,
+  należy utworzyć katalog, a w nim katalog "en" z zawartością płyty CD
+  słownika angielsko-polskiego oraz katalog "de" z plikami słownika
+  niemiecko-polskiego.
 
   Obsługa programu jest bajecznie prosta. Wystarczy wpisać szukane słowo
   lub wybrać je klawiszami kursorów. Do przemieszania się między listą
@@ -72,7 +76,10 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 1.0.1 (2008-03-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
+  - 1.x.x (2009-xx-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
+    Poprawka odtwarzania niektórych próbek dźwiękowych Pawła Sobczaka
+    (psobcza%o2.pl). Dodanie obsługi próbek dźwiękowych słownika angielskiego
+    i niemieckiego wg pomysłu Mateusza B. (incusiek%gmail.com).
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza
