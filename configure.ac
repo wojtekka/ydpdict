@@ -80,7 +80,7 @@ AC_ARG_WITH(libao,
     [  --without-libao         Compile without libao])
 
 if test "x$with_libao" != "xno"; then
-	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO, [], [Define to 1 if libao is available.])])
+	PKG_CHECK_MODULES([AO], [ao], [AC_DEFINE(HAVE_LIBAO, [], [Define to 1 if libao is available.])], [:])
 fi
 
 AC_SUBST([AO_CFLAGS])

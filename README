@@ -79,7 +79,9 @@
   - 1.x.x (2009-xx-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
     Poprawka odtwarzania niektórych próbek dźwiękowych Pawła Sobczaka
     (psobcza%o2.pl). Dodanie obsługi próbek dźwiękowych słownika angielskiego
-    i niemieckiego wg pomysłu Mateusza B. (incusiek%gmail.com).
+    i niemieckiego wg pomysłu Mateusza B. (incusiek%gmail.com). Poprawka błędu
+    odtwarzania niemieckich próbek zgłoszonego przez Krzysztofa Sucheckiego
+    (hetteh%life.pl). Poprawka kompilacji bez libao.
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza

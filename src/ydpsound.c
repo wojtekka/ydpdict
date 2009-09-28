@@ -219,12 +219,12 @@ int play_sample(int dict, int def)
 		}
 
 		if (dict == 2) {
-			snprintf(path, sizeof(path), "%s/de/S%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+			snprintf(path, sizeof(path), "%s/de/sg%.3d/sg%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
 			if (!access(path, R_OK))
 				break;
 
-			snprintf(path, sizeof(path), "%s/de/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+			snprintf(path, sizeof(path), "%s/de/SG%.3d/SG%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
 			if (!access(path, R_OK))
 				break;
@@ -236,6 +236,16 @@ int play_sample(int dict, int def)
 			break;
 		
 		snprintf(path, sizeof(path), "%s/s%.3d/%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+
+		if (!access(path, R_OK))
+			break;
+	
+		snprintf(path, sizeof(path), "%s/sg%.3d/sg%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
+	
+		if (!access(path, R_OK))
+			break;
+
+		snprintf(path, sizeof(path), "%s/SG%.3d/SG%.6d.%s", config_cdpath, (def + 1) / 1000, def + 1, exts[i]);
 	
 		if (!access(path, R_OK))
 			break;
