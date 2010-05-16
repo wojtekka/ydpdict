@@ -64,6 +64,12 @@
 #include "ydpsound.h"
 #include "xmalloc.h"
 
+#if defined(YDPDICT_VERSION) && defined(YDPDICT_MAKE_VERSION)
+#if YDPDICT_VERSION >= YDPDICT_MAKE_VERSION(1,0,3)
+#define YDPDICT_HAS_SUPERSCRIPT
+#endif
+#endif
+
 #ifndef COLOR_DEFAULT
 #define COLOR_DEFAULT (-1)
 #endif
@@ -96,6 +102,10 @@ WINDOW *window_def;	///< Definition window
 WINDOW *window_header;	///< Header window
 WINDOW *window_sep;	///< Separator window
 WINDOW *window_arrows;	///< Arrows window
+
+#define ATTR_HIDE 0x10000	///< Private attribute to indicate hidden text
+#define ATTR_SUPER 0x20000	///< Private attribute to indicate superscript
+#define ATTR_MASK 0x30000
 
 int color_text;
 int color_cf1;
@@ -361,11 +371,13 @@ int def_print(char *def, int first)
 				if (!strcmp(token, "f1"))
 					newphon = 1;
 				if (!strcmp(token, "qc"))
-					newattr |= 0x8000; /* Don't display */
-				
+					newattr |= ATTR_HIDE;
 				if (!strcmp(token, "super")) {
+#ifndef YDPDICT_HAS_SUPERSCRIPT
 					line[lp++] = '^';
 					line[lp] = 0;
+#endif
+					newattr |= ATTR_SUPER;
 				}
 				
 				def--;
@@ -381,9 +393,15 @@ int def_print(char *def, int first)
 				break;
 
 			default:
-				if (attr & 0x8000)
+				if (attr & ATTR_HIDE)
 					break;
-				wattrset(window_def, attr);
+
+#ifdef YDPDICT_HAS_SUPERSCRIPT
+				if ((attr & ATTR_SUPER) && isdigit(*def))
+					*def -= '0';
+#endif
+
+				wattrset(window_def, attr & ~ATTR_MASK);
 				lastnl = 0;
 				
 				switch (*def) {
@@ -430,7 +448,11 @@ int def_print(char *def, int first)
 					waddstr(window_def, tmp);
 					xfree(tmp);
 				} else {
+#ifndef YDPDICT_HAS_SUPERSCRIPT
 					char *tmp = ydpdict_windows1250_to_utf8(is_visible(line));
+#else
+					char *tmp = ydpdict_windows1250_super_to_utf8(is_visible(line));
+#endif
 					waddstr(window_def, tmp);
 					xfree(tmp);
 				}
@@ -444,7 +466,7 @@ int def_print(char *def, int first)
 			lp = 0;
 		}
 		
-		if (newline_ && !(attr & 0x8000)) {
+		if (newline_ && !(attr & ATTR_HIDE)) {
 			waddstr(window_def, is_visible("\n"));
 			ypos++;
 			xpos = (margin) ? 3 : 0;
