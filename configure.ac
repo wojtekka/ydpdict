@@ -1,7 +1,7 @@
 dnl $Id$
 
 AC_INIT(src/ydpdict.c)
-AM_INIT_AUTOMAKE(ydpdict, 1.0.0)
+AM_INIT_AUTOMAKE(ydpdict, 1.0.1)
 AC_PREREQ(2.50)
 AC_CONFIG_HEADERS(config.h)
 
