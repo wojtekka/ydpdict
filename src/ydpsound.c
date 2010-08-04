@@ -109,6 +109,7 @@ static int play_libao(char *sample, int size, int freq, int bits, int chans)
 	if (driver == -1)
 		return -1;
 
+	memset(&format, 0, sizeof(format));
 	format.bits = bits;
 	format.channels = chans;
 	format.rate = freq;

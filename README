@@ -76,14 +76,15 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 1.0.1 (2010-05-16): Poprawki dokumentacji. Poprawka roku copyrightów.
+  - 1.0.1 (2010-xx-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
     Poprawka odtwarzania niektórych próbek dźwiękowych Pawła Sobczaka
     (psobcza%o2.pl). Dodanie obsługi próbek dźwiękowych słownika angielskiego
     i niemieckiego wg pomysłu Mateusza B. (incusiek%gmail.com). Poprawka błędu
     odtwarzania niemieckich próbek zgłoszonego przez Krzysztofa Sucheckiego
     (hetteh%life.pl). Poprawka kompilacji bez libao. Lepsze wyświetlanie
     indeksów górnych (¹, ²... zamiast ^1, ^2...), jeśli libydpdict jest
-    w wersji 1.0.3 lub nowszej.
+    w wersji 1.0.3 lub nowszej. Poprawka błędu współpracy z nowymi wersjami
+    libao zgłoszonego przez Pawła Sobczaka.
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza
