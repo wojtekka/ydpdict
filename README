@@ -1,14 +1,15 @@
- 
+
   ydpdict 1.0.1
-  (C) Copyright 1998-2010 Wojtek Kaniewski <wojtekka%toxygen.net>
+  (C) Copyright 1998-2011 Wojtek Kaniewski <wojtekka@toxygen.net>
 
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
-  multimedialnych słowników angielsko-polskiego, polsko-angielskiego,
-  niemiecko-polskiego i polsko-niemieckiego Collinsa. Oryginalne pakiety
-  zawierają jedynie programy dla systemu Windows, co uniemożliwia korzystanie
-  z nich pod innymi systemami. Niniejszy program pozwala korzystać ze
-  słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod innymi
-  systemami, ponieważ jest pisany w miarę możliwości przenośnie.
+  multimedialnych słowników angielsko-polskiego i polsko-angielskiego Collinsa
+  oraz niemiecko-polskiego i polsko-niemieckiego Langenscheidta. Oryginalne
+  pakiety oferowane przez firmę Young Digital Planet (http://www.ydp.com.pl)
+  zawierają jedynie programy dla systemu Windows, co uniemożliwia
+  korzystanie z nich pod innymi systemami. Niniejszy program pozwala korzystać
+  z tych słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod
+  innymi systemami, ponieważ jest pisany w miarę możliwości przenośnie.
 
   Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
   uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
@@ -19,7 +20,7 @@
 
     ./configure
     make
-    make install 
+    make install
 
   Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
   w katalogu $(prefix)/man, zamiast $(prefix)/share/man. Jeśli chcesz je
@@ -60,7 +61,7 @@
   inny słownik to F3, F4, F5, F6.
 
   Program obsługiwać można częściowo za pomocą myszki. Kliknięcie na słowo
-  z listy, spowoduje wyświetlenie jego tłumaczenia. Klikająć na dolne i górne
+  z listy, spowoduje wyświetlenie jego tłumaczenia. Klikając na dolne i górne
   krawędzie ekranu, można przewijać listę lub opis. Jeśli klikniemy dwukrotnie
   na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
 
@@ -70,32 +71,36 @@
   będzie traktowany jak przyjęcie licencji kodu, który jest poprawiany.
   Wyjątkiem są pliki adpcm.c i adpcm.h autorstwa Stanley'a J. Brooksa wydane
   na licencji LGPL w wersji 2:
-  
+
     Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
-  - 1.0.1 (2010-xx-xx): Poprawki dokumentacji. Poprawka roku copyrightów.
-    Poprawka odtwarzania niektórych próbek dźwiękowych Pawła Sobczaka
-    (psobcza%o2.pl). Dodanie obsługi próbek dźwiękowych słownika angielskiego
-    i niemieckiego wg pomysłu Mateusza B. (incusiek%gmail.com). Poprawka błędu
-    odtwarzania niemieckich próbek zgłoszonego przez Krzysztofa Sucheckiego
-    (hetteh%life.pl). Poprawka kompilacji bez libao. Lepsze wyświetlanie
-    indeksów górnych (¹, ²... zamiast ^1, ^2...), jeśli libydpdict jest
-    w wersji 1.0.3 lub nowszej. Poprawka błędu współpracy z nowymi wersjami
-    libao zgłoszonego przez Pawła Sobczaka.
+  - 1.0.1 (2011-xx-xx): Rozszerzenie pomocy o oznaczenia kwalifikatorów
+    gramatycznych, dwie wersje językowe pomocy (anglo- i polskojęzyczna) oraz
+    zmiana sposobu działania klawisza Esc (trzy funkcje zależne od kontekstu):
+    wszystkie modyfikacje autorstwa Cezarego M. Kruka (c.kruk@bigfoot.com).
+    Poprawki dokumentacji. Poprawka roku copyrightów. Poprawka odtwarzania
+    niektórych próbek dźwiękowych Pawła Sobczaka (psobcza@o2.pl). Dodanie
+    obsługi próbek dźwiękowych słownika angielskiego i niemieckiego wg pomysłu
+    Mateusza B. (incusiek@gmail.com). Poprawka błędu odtwarzania niemieckich
+    próbek zgłoszonego przez Krzysztofa Sucheckiego (hetteh@life.pl). Poprawka
+    kompilacji bez libao. Lepsze wyświetlanie indeksów górnych (¹, ²...
+    zamiast ^1, ^2...), jeśli libydpdict jest w wersji 1.0.3 lub nowszej.
+    Poprawka błędu współpracy z nowymi wersjami libao zgłoszonego przez Pawła
+    Sobczaka.
   - 1.0.0 (2008-02-26): Poprawka błędu zawijania zgłoszonego przez
     Marcina Owsianego. Aktualizacja pliku z tłumaczeniem.
   - 0.99.3 (2007-12-16): Poprawki parametrów wywołania programu Tomasza
-    Kojma (tkojm%clamav.net). Dostosowanie do API libydpdict-0.99.3.
+    Kojma (tkojm@clamav.net). Dostosowanie do API libydpdict-0.99.3.
   - 0.99.2 (2007-08-19): Uniezależnienie od wielkości liter w nazwach
     plików słownika na podstawie poprawki Marcina Owsianego
-    (marcin%owsiany.pl).
+    (marcin@owsiany.pl).
   - 0.99.1 (2007-08-09): Poprawka błędu kompilacji bez libao zgłoszonego
-    przez Piotra Jaroszyńskiego (peper%gentoo.org). Poprawki dokumentacji,
+    przez Piotra Jaroszyńskiego (peper@gentoo.org). Poprawki dokumentacji,
     dodanie parametru skryptu configure określającego domyślny katalog
-    słownika (marcin%owsiany.pl).
+    słownika (marcin@owsiany.pl).
   - 0.99.0 (2007-02-26): Całkowita zmiana architektury -- wydzielenie
     biblioteki obsługującej słowniki, modyfikacja kodu do poprawnej pracy
     w Unikodzie, dodanie obsługi próbek dźwiękowych w formacie ADPCM.

@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2009 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2011 Wojtek Kaniewski <wojtekka@toxygen.net>
  *                          Piotr Domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@
 #else
 #define _(x) x
 #endif
+#define N_(x) x
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -83,7 +84,7 @@ int input_exact = 1;		///< Input word Exact match flag
 
 int list_index;		///< Word list scroll line index
 int list_page;		///< Word list scroll page
-int focus;		///< Current focus (0 - word list, 1 - word definition)
+int focus;		///< Current focus (0 - word list, 1 - word definition, 2 - help screen)
 
 char *def;		///< Current definition
 int def_encoding;	///< Definition encoding
@@ -110,6 +111,100 @@ WINDOW *window_arrows;	///< Arrows window
 int color_text;
 int color_cf1;
 int color_cf2;
+
+const char *qualifiers_header = N_("{\\b Grammatical qualifiers}{\\par\\pard}");
+
+const char *qualifiers[][2] =
+{
+	{ "abbr", N_("abbreviation") },
+	{ "acc", N_("accusative") },
+	{ "adj", N_("adjective") },
+	{ "adv", N_("adverb") },
+	{ "art", N_("article") },
+	{ "attr", N_("attribute") },
+	{ "aux", N_("auxiliary") },
+	{ "comp", N_("comparative degree") },
+	{ "compl.", N_("complement") },
+	{ "conj", N_("conjunction") },
+	{ "cpd", N_("compound") },
+	{ "dat", N_("dative") },
+	{ "def", N_("definite") },
+	{ "decl", N_("declined") },
+	{ "dimin", N_("diminutive") },
+	{ "excl", N_("exclamation") },
+	{ "f", N_("feminine") },
+	{ "fig", N_("figurative") },
+	{ "fml", N_("formal") },
+	{ "fus", N_("fused") },
+	{ "gen", N_("genitive") },
+	{ "imp", N_("imperfective") },
+	{ "imperf", N_("imperfective") },
+	{ "impers", N_("impersonal") },
+	{ "indef", N_("indefinite") },
+	{ "inf", N_("informal") },
+	{ "infin", N_("infinitive") },
+	{ "instr", N_("instrumental") },
+	{ "inv", N_("invariable") },
+	{ "irreg", N_("irregular") },
+	{ "ksi", N_("literary") },
+	{ "liter.", N_("literary") },
+	{ "loc", N_("locative") },
+	{ "m", N_("masculine") },
+	{ "modal", N_("modal") },
+	{ "n", N_("noun") },
+	{ "nom", N_("nominative") },
+	{ "npl", N_("noun plural") },
+	{ "nt", N_("neuter") },
+	{ "num", N_("numeral") },
+	{ "nvir", N_("non-virile gender") },
+	{ "old", N_("old") },
+	{ "part", N_("particle") },
+	{ "pej", N_("pejorative") },
+	{ "perf", N_("perfective") },
+	{ "pl", N_("plural") },
+	{ "polite", N_("polite") },
+	{ "poss.", N_("possesive") },
+	{ "post", N_("postposition") },
+	{ "pot", N_("informal") },
+	{ "pp", N_("past participle") },
+	{ "pref", N_("prefix") },
+	{ "pred", N_("predicate") },
+	{ "prep", N_("preposition") },
+	{ "pron", N_("pronoun") },
+	{ "pt", N_("past simple") },
+	{ "sg", N_("singular") },
+	{ "suff", N_("suffix") },
+	{ "superl", N_("superlative degree") },
+	{ "vb", N_("verb") },
+	{ "vi", N_("intransitive verb") },
+	{ "vir", N_("virile gender") },
+	{ "voc", N_("vocative") },
+	{ "vr", N_("reflexive verb") },
+	{ "vt", N_("transitive verb") },
+};
+
+const char *qualifiers_format = "{\\line{\\cf2 %s} {%s}}";
+
+const char *help[] =
+{
+	N_("{\\b Help}{\\pard\\pard}"),
+	N_("{\\cf2 F1} or {\\cf2 ?} - this help"),
+	N_("{\\line{\\cf2 Tab} - change focus}"),
+	N_("{\\line{\\cf2 Up} and {\\cf2 Down} - scroll up and down}"),
+	N_("{\\line{\\cf2 Page Up} and {\\cf2 Page Down} - scroll page up and down}"),
+	N_("{\\line{\\cf2 F2} or {\\cf2 `} - play pronunciation sample}"),
+	N_("{\\line{\\cf2 F3} or {\\cf2 <} - English-Polish dictionary}"),
+	N_("{\\line{\\cf2 F4} or {\\cf2 >} - Polish-English dictionary}"),
+	N_("{\\line{\\cf2 F5} or {\\cf2 [} - German-Polish dictionary}"),
+	N_("{\\line{\\cf2 F6} or {\\cf2 ]} - Polish-German dictionary}"),
+	N_("{\\line{\\cf2 F7} or {\\cf2 !} - grammatical qualifiers}"),
+	N_("{\\line{\\cf2 Esc} - go back one step or quit program}"),
+	N_("{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} - clear input field}"),
+	N_("{\\line{\\cf2 Ctrl-L} - refresh display}"),
+	N_("{\\line{\\cf2 Ctrl-C} or {\\cf2 Ctrl-X} - quit program}"),
+};
+
+const char *help_footer = N_("{\\par\\pard}Contact: {\\b %s}. Current version is always available at {\\b %s}");
 
 /**
  * \brief Exits program
@@ -588,7 +683,15 @@ void def_redraw(void)
 	curs_set((focus) ? 0 : 1);
 
 	wattrset(window_sep, A_BOLD);
-	mvwaddstr(window_sep, screen_height / 2, 0, (focus) ? "-->" : "<--");
+	if (focus) {
+		mvwaddch(window_sep, screen_height / 2, 0, ACS_HLINE);
+		mvwaddch(window_sep, screen_height / 2, 1, ACS_HLINE);
+		mvwaddch(window_sep, screen_height / 2, 2, ACS_RARROW);
+	} else {
+		mvwaddch(window_sep, screen_height / 2, 0, ACS_LARROW);
+		mvwaddch(window_sep, screen_height / 2, 1, ACS_HLINE);
+		mvwaddch(window_sep, screen_height / 2, 2, ACS_HLINE);
+	}
 
 	wattrset(window_arrows, A_DIM);
 	mvwaddch(window_arrows, 1, 0, (def_index > 0) ? ACS_UARROW : ' ');
@@ -601,7 +704,7 @@ void switch_dict(int new_dict)
 {
 	const char *idx[4] = { DEFAULT_IDX_AP, DEFAULT_IDX_PA, DEFAULT_IDX_DP, DEFAULT_IDX_PD };
 	const char *dat[4] = { DEFAULT_DAT_AP, DEFAULT_DAT_PA, DEFAULT_DAT_DP, DEFAULT_DAT_PD };
-	char full_idx[4096] = "", full_dat[4096] = "";
+	char *full_idx = NULL, *full_dat = NULL;
 	struct dirent *de;
 	DIR *dh;
 
@@ -624,24 +727,29 @@ void switch_dict(int new_dict)
 	
 	if (config_path && (dh = opendir(config_path))) {
 		while ((de = readdir(dh))) {
-			if (!strcasecmp(de->d_name, idx[new_dict]))
-				snprintf(full_idx, sizeof(full_idx), "%s/%s", config_path, de->d_name);
-			if (!strcasecmp(de->d_name, dat[new_dict]))
-				snprintf(full_dat, sizeof(full_dat), "%s/%s", config_path, de->d_name);
+			if (strcasecmp(de->d_name, idx[new_dict]) == 0 && full_idx == NULL) {
+				full_idx = xmalloc(strlen(config_path) + 1 + strlen(de->d_name) + 1);
+				sprintf(full_idx, "%s/%s", config_path, de->d_name);
+			}
+			if (strcasecmp(de->d_name, dat[new_dict]) == 0 && full_dat == NULL) {
+				full_dat = xmalloc(strlen(config_path) + 1 + strlen(de->d_name) + 1);
+				sprintf(full_dat, "%s/%s", config_path, de->d_name);
+			}
 		}
 
 		closedir(dh);
 	}
 
-	if (strlen(full_idx) == 0 || strlen(full_dat) == 0 || !(dict = ydpdict_open(full_dat, full_idx, YDPDICT_ENCODING_UTF8))) {
+	if (full_idx == NULL || full_dat == NULL || !(dict = ydpdict_open(full_dat, full_idx, YDPDICT_ENCODING_UTF8))) {
 		const char *tmp, *err;
 		
+		/* errno is set to ENOENT above for missing dictionary files */
 		if (!errno)
 			err = _("Invalid file format");
 		else
 			err = strerror(errno);
 
-		tmp = _("{\\cf2 Error!}\\par\\pard{Unable to open dictionary: %s. Press F1 or ? for help.}");
+		tmp = _("{\\cf2 Error!}\\par\\pard{Unable to open dictionary: %s. Press {\\cf2 F1} or {\\cf2 ?} for help.}");
 
 		xfree(def);
 		def = xmalloc(strlen(tmp) + strlen(err));
@@ -653,6 +761,9 @@ void switch_dict(int new_dict)
 		word_count = ydpdict_get_count(dict);
 		def_update = 1;
 	}
+
+	xfree(full_idx);
+	xfree(full_dat);
 
 	config_dict = new_dict;
 	def_index = 0;
@@ -829,8 +940,12 @@ int main(int argc, char **argv)
 
 					if (m_event.bstate & BUTTON1_CLICKED) {
 						/* Change of the active window */
-						if (__MOUSE_IN(window_word, m_event, -2, 1, -3, 2) && focus)
+						if (__MOUSE_IN(window_word, m_event, -2, 1, -3, 2) && focus) {
+							if (focus == 2)
+								def_update = 1;
 							focus = 0;
+						}
+
 						if (__MOUSE_IN(window_def, m_event, -2, 1, -3, 2) && !focus)
 							focus = 1;
 					}
@@ -858,6 +973,24 @@ int main(int argc, char **argv)
 				break;
 
 			case 27: /* ESC */
+				if (focus == 2) {
+					focus = 0;
+					def_update = 1;
+				} else if (focus == 1) {
+					focus = 0;
+				} else if (wcslen(input) != 0 || list_index != 0 || list_page != 0 || input_index != 0 || def_index != 0) {
+					memset(&input, 0, sizeof(input));
+					list_index = 0;
+					list_page = 0;
+					input_index = 0;
+					def_index = 0;
+					def_update = 1;
+				} else {
+					show_error(NULL);
+				}
+				break;
+
+			case 24: /* Ctrl-X */
 				show_error(NULL);
 				break;
 
@@ -868,6 +1001,8 @@ int main(int argc, char **argv)
 #endif
 
 			case 9: /* TAB */
+				if (focus == 2)
+					def_update = 1;
 				focus = (focus) ? 0 : 1;
 				break;
 
@@ -881,28 +1016,26 @@ int main(int argc, char **argv)
 			case KEY_F(1):
 			case '?':
 			{
-				const char *tmp = _(
-"{\\cf2 F1} or {\\cf2 ?} - this help"
-"{\\line{\\cf2 Tab} - change focus}"
-"{\\line{\\cf2 Up} and {\\cf2 Down} - scroll up and down}"
-"{\\line{\\cf2 Page Up} and {\\cf2 Page Down} - scroll page up and down}"
-"{\\line{\\cf2 F2} or {\\cf2 `} - play pronunciation sample}"
-"{\\line{\\cf2 F3} or {\\cf2 <} - English-Polish dictionary}"
-"{\\line{\\cf2 F4} or {\\cf2 >} - Polish-English dictionary}"
-"{\\line{\\cf2 F5} or {\\cf2 [} - German-Polish dictionary}"
-"{\\line{\\cf2 F6} or {\\cf2 ]} - Polish-German dictionary}"
-"{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} - clear input field}"
-"{\\line{\\cf2 Ctrl-L} - refresh display}"
-"{\\line{\\cf2 Esc} or {\\cf2 Ctrl-C} - quit program}"
-"{\\par\\pard}"
-"Contact: {\\b %s}. Current version is always available at {\\b %s}"
-);
+				unsigned int len = 0;
+				int i;
+
+				for (i = 0; i < sizeof(help) / sizeof(help[0]); i++)
+					len += strlen(gettext(help[i]));
+
+				len += strlen(gettext(help_footer));
+
 				xfree(def);
 
-				def = xmalloc(strlen(tmp) + strlen(HELP_EMAIL) + strlen(HELP_WEBSITE));
-				sprintf(def, tmp, HELP_EMAIL, HELP_WEBSITE);
+				def = xmalloc(len + strlen(HELP_EMAIL) + strlen(HELP_WEBSITE) + 1);
+				def[0] = 0;
+
+				for (i = 0; i < sizeof(help) / sizeof(help[0]); i++)
+					strcat(def, gettext(help[i]));
+
+				sprintf(def + strlen(def), gettext(help_footer), HELP_EMAIL, HELP_WEBSITE);
+
 				def_encoding = YDPDICT_ENCODING_UTF8;
-				def_index = 0;
+				focus = 2;
 
 				break;
 			}
@@ -934,6 +1067,36 @@ int main(int argc, char **argv)
 					switch_dict(3);
 
 				break;
+
+			case KEY_F(7):
+			case '!':
+			{
+				unsigned int len = 0;
+				int i;
+
+				len += strlen(gettext(qualifiers_header));
+
+				for (i = 0; i < sizeof(qualifiers) / sizeof(qualifiers[0]); i++) {
+					len += strlen(qualifiers_format);
+					len += strlen(qualifiers[i][0]);
+					len += strlen(gettext(qualifiers[i][1]));
+				}
+
+				xfree(def);
+
+				def = xmalloc(len);
+
+				strcpy(def, gettext(qualifiers_header));
+
+				for (i = 0; i < sizeof(qualifiers) / sizeof(qualifiers[0]); i++)
+					sprintf(def + strlen(def), qualifiers_format, qualifiers[i][0], gettext(qualifiers[i][1]));
+
+				def_encoding = YDPDICT_ENCODING_UTF8;
+				focus = 2;
+
+				break;
+			}
+				
 
 			case KEY_UP:
 				if (focus) {
@@ -1044,11 +1207,9 @@ int main(int argc, char **argv)
 				list_index = 0;
 				list_page = 0;
 				input_index = 0;
+				def_index = 0;
 				def_update = 1;
-				break;
-
-			case 24: /* Ctrl-X */
-				show_error(NULL);
+				focus = 0;
 				break;
 
 			case KEY_HOME:

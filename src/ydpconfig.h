@@ -25,7 +25,7 @@
 #endif
 
 #define HEADER_NAME "ydpdict-" VERSION
-#define HEADER_COPYRIGHT "(C) Copyright 1998-2008 Wojtek Kaniewski"
+#define HEADER_COPYRIGHT "(C) Copyright 1998-2011 Wojtek Kaniewski"
 #define HELP_EMAIL "wojtekka@toxygen.net"
 #define HELP_WEBSITE "http://toxygen.net/ydpdict/"
 #define CONFIGFILE_GLOBAL SYSCONFDIR "/ydpdict.conf"
