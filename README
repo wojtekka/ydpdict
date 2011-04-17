@@ -78,14 +78,13 @@
 
   Lista zmian:
   - 1.0.1 (2011-xx-xx): Rozszerzenie pomocy o oznaczenia kwalifikatorów
-    gramatycznych, dwie wersje językowe pomocy (anglo- i polskojęzyczna) oraz
-    zmiana sposobu działania klawisza Esc (trzy funkcje zależne od kontekstu):
-    wszystkie modyfikacje autorstwa Cezarego M. Kruka (c.kruk@bigfoot.com).
-    Poprawki dokumentacji. Poprawka roku copyrightów. Poprawka odtwarzania
-    niektórych próbek dźwiękowych Pawła Sobczaka (psobcza@o2.pl). Dodanie
-    obsługi próbek dźwiękowych słownika angielskiego i niemieckiego wg pomysłu
-    Mateusza B. (incusiek@gmail.com). Poprawka błędu odtwarzania niemieckich
-    próbek zgłoszonego przez Krzysztofa Sucheckiego (hetteh@life.pl). Poprawka
+    gramatycznych oraz zmiana sposobu działania klawisza Esc: obie modyfikacje
+    autorstwa Cezarego M. Kruka (c.kruk@bigfoot.com). Poprawki dokumentacji.
+    Poprawka roku copyrightów. Poprawka odtwarzania niektórych próbek
+    dźwiękowych Pawła Sobczaka (psobcza@o2.pl). Dodanie obsługi próbek
+    dźwiękowych słownika angielskiego i niemieckiego wg pomysłu Mateusza B.
+    (incusiek@gmail.com). Poprawka błędu odtwarzania niemieckich próbek
+    zgłoszonego przez Krzysztofa Sucheckiego (hetteh@life.pl). Poprawka
     kompilacji bez libao. Lepsze wyświetlanie indeksów górnych (¹, ²...
     zamiast ^1, ^2...), jeśli libydpdict jest w wersji 1.0.3 lub nowszej.
     Poprawka błędu współpracy z nowymi wersjami libao zgłoszonego przez Pawła
