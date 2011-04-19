@@ -204,7 +204,7 @@ int play_sample(int dict, int def)
 	int i, fd = -1, rd, result;
 	char path[4096], *sample = NULL;
 	int bytesPerBlock;
-	short *samples = NULL, *coefs = NULL;
+	short *coefs = NULL;
 
 	for (i = 0; exts[i]; i++) {
 		if (dict == 0) {
@@ -374,6 +374,7 @@ int play_sample(int dict, int def)
 				{
 					int res, count, bytes;
 					char *packet;
+					short *samples;
 					
 					packet = xmalloc(wave_fmt.wBlockAlign);
 					samples = xmalloc(wave_adpcm.wSamplesPerBlock * sizeof(short));
@@ -408,7 +409,6 @@ int play_sample(int dict, int def)
 
 					xfree(packet);
 					xfree(samples);
-					xfree(coefs);
 
 					break;
 				}
@@ -442,7 +442,6 @@ int play_sample(int dict, int def)
 		
 failure:
 	xfree(sample);
-	xfree(samples);
 	xfree(coefs);
 	
 	if (fd != -1)
