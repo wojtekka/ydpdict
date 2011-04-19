@@ -976,6 +976,7 @@ int main(int argc, char **argv)
 				if (focus == 2) {
 					focus = 0;
 					def_update = 1;
+					def_index = 0;
 				} else if (focus == 1) {
 					focus = 0;
 				} else if (wcslen(input) != 0 || list_index != 0 || list_page != 0 || input_index != 0 || def_index != 0) {
@@ -1001,8 +1002,10 @@ int main(int argc, char **argv)
 #endif
 
 			case 9: /* TAB */
-				if (focus == 2)
+				if (focus == 2) {
 					def_update = 1;
+					def_index = 0;
+				}
 				focus = (focus) ? 0 : 1;
 				break;
 
