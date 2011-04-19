@@ -7,4 +7,6 @@ sysconf_DATA = ydpdict.conf
 
 install-data-local:
 	$(MKINSTALLDIRS) $(DESTDIR)$(dictdir)
+	test -d $(DESTDIR)$(mandir)/pl/man1 || mkdir -p $(DESTDIR)$(mandir)/pl/man1
+	$(INSTALL_DATA) ydpdict.pl.1 $(DESTDIR)$(mandir)/pl/man1/ydpdict.1
 
