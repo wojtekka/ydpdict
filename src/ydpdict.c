@@ -609,23 +609,32 @@ int def_print(char *def, int first)
 void input_find(void)
 {
 	char dest[64];
+	wchar_t src_buf[64];
 	const wchar_t *src;
+	int idx;
 	int i;
 
 	if (!dict)
 		return;
 	
-	src = input;
+	input_exact = 1;
 
-	wcsrtombs(dest, &src, sizeof(dest), NULL);
+	for (i = wcslen(input); i > 0; i--) {
+		wcsncpy(src_buf, input, i);
+		src_buf[i] = 0;
+		src = src_buf;
 
-	i = ydpdict_find_word(dict, dest);
+		wcsrtombs(dest, &src, sizeof(dest), NULL);
+
+		idx = ydpdict_find_word(dict, dest);
 	
-	input_exact = (i == -1) ? 0 : 1;
+		if (idx != -1) {
+			list_page = idx;
+			list_index = 0;
+			break;
+		}
 
-	if (input_exact) {
-		list_page = i;
-		list_index = 0;
+		input_exact = 0;
 	}
 
 	if (list_page > word_count - (screen_height - 4)) {
