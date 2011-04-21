@@ -354,7 +354,7 @@ msgstr "{\\line{\\cf2 F6} lub {\\cf2 ]} - słownik polsko-niemiecki}"
 
 #: src/ydpdict.c:200
 msgid "{\\line{\\cf2 F7} or {\\cf2 !} - grammatical qualifiers}"
-msgstr "{\\line{\\cf2 F7} or {\\cf2 !} - kwalifikatory gramatyczne}"
+msgstr "{\\line{\\cf2 F7} lub {\\cf2 !} - kwalifikatory gramatyczne}"
 
 #: src/ydpdict.c:201
 msgid "{\\line{\\cf2 Esc} - go back one step or quit program}"
