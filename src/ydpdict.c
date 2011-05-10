@@ -198,7 +198,7 @@ const char *help[] =
 	N_("{\\line{\\cf2 F5} or {\\cf2 [} - German-Polish dictionary}"),
 	N_("{\\line{\\cf2 F6} or {\\cf2 ]} - Polish-German dictionary}"),
 	N_("{\\line{\\cf2 F7} or {\\cf2 !} - grammatical qualifiers}"),
-	N_("{\\line{\\cf2 Esc} - go back one step or quit program}"),
+	N_("{\\line{\\cf2 Esc} - go back}"),
 	N_("{\\line{\\cf2 Ctrl-U} or {\\cf2 Ctrl-W} - clear input field}"),
 	N_("{\\line{\\cf2 Ctrl-L} - refresh display}"),
 	N_("{\\line{\\cf2 Ctrl-C} or {\\cf2 Ctrl-X} - quit program}"),
@@ -988,15 +988,13 @@ int main(int argc, char **argv)
 					def_index = 0;
 				} else if (focus == 1) {
 					focus = 0;
-				} else if (wcslen(input) != 0 || list_index != 0 || list_page != 0 || input_index != 0 || def_index != 0) {
+				} else {
 					memset(&input, 0, sizeof(input));
 					list_index = 0;
 					list_page = 0;
 					input_index = 0;
 					def_index = 0;
 					def_update = 1;
-				} else {
-					show_error(NULL);
 				}
 				break;
 
