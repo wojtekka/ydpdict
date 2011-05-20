@@ -85,10 +85,12 @@ int input_exact = 1;		///< Input word Exact match flag
 int list_index;		///< Word list scroll line index
 int list_page;		///< Word list scroll page
 int focus;		///< Current focus (0 - word list, 1 - word definition, 2 - help screen)
+int saved_focus;	///< focus stored while showing help etc.
 
 char *def;		///< Current definition
 int def_encoding;	///< Definition encoding
 int def_index;		///< Definition scroll line index
+int def_saved_index;	///< def_index stored while showing help etc.
 int def_height;		///< Definition height in lines
 int def_update;		///< Definition update flag
 int def_raw_rtf;	///< Display raw RTF flag
@@ -983,9 +985,9 @@ int main(int argc, char **argv)
 
 			case 27: /* ESC */
 				if (focus == 2) {
-					focus = 0;
+					focus = saved_focus;
 					def_update = 1;
-					def_index = 0;
+					def_index = def_saved_index;
 				} else if (focus == 1) {
 					focus = 0;
 				} else {
@@ -1044,7 +1046,10 @@ int main(int argc, char **argv)
 
 				sprintf(def + strlen(def), gettext(help_footer), HELP_EMAIL, HELP_WEBSITE);
 
+				def_saved_index = def_index;
+				def_index = 0;
 				def_encoding = YDPDICT_ENCODING_UTF8;
+				saved_focus = focus;
 				focus = 2;
 
 				break;
@@ -1101,7 +1106,10 @@ int main(int argc, char **argv)
 				for (i = 0; i < sizeof(qualifiers) / sizeof(qualifiers[0]); i++)
 					sprintf(def + strlen(def), qualifiers_format, qualifiers[i][0], gettext(qualifiers[i][1]));
 
+				def_saved_index = def_index;
+				def_index = 0;
 				def_encoding = YDPDICT_ENCODING_UTF8;
+				saved_focus = focus;
 				focus = 2;
 
 				break;
