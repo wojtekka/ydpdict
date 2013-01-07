@@ -633,15 +633,16 @@ void input_find(void)
 		if (idx != -1) {
 			list_page = idx;
 			list_index = 0;
+
+			if (list_page > word_count - (screen_height - 4)) {
+				list_page = word_count - (screen_height - 4);
+				list_index = idx - list_page;
+			}
+
 			break;
 		}
 
 		input_exact = 0;
-	}
-
-	if (list_page > word_count - (screen_height - 4)) {
-		list_page = word_count - (screen_height - 4);
-		list_index = i - list_page;
 	}
 }
 
