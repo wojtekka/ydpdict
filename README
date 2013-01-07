@@ -1,6 +1,6 @@
 
-  ydpdict 1.0.1
-  (C) Copyright 1998-2011 Wojtek Kaniewski <wojtekka@toxygen.net>
+  ydpdict 1.0.2
+  (C) Copyright 1998-2013 Wojtek Kaniewski <wojtekka@toxygen.net>
 
   Program, którego dokumentację w tej chwili czytasz, służy do obsługi
   multimedialnych słowników angielsko-polskiego i polsko-angielskiego Collinsa
@@ -77,6 +77,8 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
+  - 1.0.3 (2013-01-08): Poprawka błędnego wyświetlania słów z końca słownika
+    zgłoszone przez Jakuba Wilka.
   - 1.0.1 (2011-05-10): Rozszerzenie pomocy o oznaczenia kwalifikatorów
     gramatycznych oraz zmiana sposobu działania klawisza Esc: obie modyfikacje
     autorstwa Cezarego M. Kruka (c.kruk@bigfoot.com). Poprawki dokumentacji.
