@@ -46,14 +46,17 @@
     dict201.idx
 
   dla słownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
-  w którym znajduje się program. Można też podać ścieżkę, w której się
-  one znajdują w parametrze "Path" pliku konfiguracyjnego. Należy również
-  zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się podmontowana
-  płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych. Aby móc
-  odtwarzać próbki ze słownika angielsko-polskiego i niemiecko-polskiego,
-  należy utworzyć katalog, a w nim katalog "en" z zawartością płyty CD
-  słownika angielsko-polskiego oraz katalog "de" z plikami słownika
-  niemiecko-polskiego.
+  w którym znajduje się program. Dodatkowo program będzie szukał plików
+  słownika w systemowym katalogu, np. /usr/local/share/ydpdict jeśli do
+  skryptu ./configure nie przekazano parametru --prefix lub /usr/share/ydpdict
+  jeśli program pochodzi pakietu dystrybucji). Można też podać ścieżkę,
+  w której się one znajdują w parametrze "Path" pliku konfiguracyjnego.
+  Należy również zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się
+  podmontowana płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
+  Aby móc odtwarzać próbki ze słownika angielsko-polskiego
+  i niemiecko-polskiego, należy utworzyć katalog, a w nim katalog "en"
+  z zawartością płyty CD słownika angielsko-polskiego oraz katalog "de"
+  z plikami słownika niemiecko-polskiego.  
 
   Obsługa programu jest bajecznie prosta. Wystarczy wpisać szukane słowo
   lub wybrać je klawiszami kursorów. Do przemieszania się między listą
@@ -77,6 +80,7 @@
   Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
 
   Lista zmian:
+  - 1.0.3 (2013-12-xx): Dodanie informacji o katalogu z plikami słownika.
   - 1.0.2 (2013-01-11): Poprawka błędnego wyświetlania słów z końca słownika
     zgłoszone przez Jakuba Wilka.
   - 1.0.1 (2011-05-10): Rozszerzenie pomocy o oznaczenia kwalifikatorów
