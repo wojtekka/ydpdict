@@ -116,7 +116,7 @@
   - 0.66 (2006-01-02): Poprawka odtwarzania próbek Tomasza Jakuba Skrynnyka
                        (skrynnyk%post.pl). Poprawka obsługi parametrów Jasia
 		       (jasiu%tool.eu.org). Poprawka skryptów budowania.
-  - 0.65 (2005-11-16): Poprawki Jakuba Wilka (ubanus%users.sf.net): usunięcie
+  - 0.65 (2005-11-16): Poprawki Jakuba Wilka (jwilk%jwilk.net): usunięcie
                        złych zachowań prowadzących do segfaultów. Dodanie
 		       informacji o licencji poprawek. Kosmetyka dokumentacji.
   - 0.64 (2005-10-18): Poprawki strony manuala Kamila Jarosławskiego
