@@ -1,0 +1,105 @@
+.TH YDPDICT 1 "13 grudnia 2013"
+.SH NAZWA
+ydpdict \- interfejs słowników Collinsa i Langenscheidt
+.SH SKŁADNIA
+.B ydpdict [
+.BI opcje
+.B ]
+.SH OPIS
+.B ydpdict
+jest korzystającym z biblioteki ncurses interfejsem służącym do obsługi
+multimedialnych słowników: angielsko-polskiego, polsko-angielskiego Collinsa,
+oraz niemiecko-polskiego i polsko-niemieckiego Langenscheidt, wydanych przez
+Young Digital Planet.
+.PP
+.B ydpdict
+szuka pliku konfiguracyjnego w następujących miejscach (czytany jest tylko pierwszy znaleziony plik):
+.TP
+1)
+.BI ~/ydpdict.conf
+.TP
+2)
+.BI ~/.ydpdictrc
+.TP
+3)
+.BI /etc/ydpdict.conf
+.PP
+.B ydpdict
+szuka plików słowinka w bieżącym katalogu oraz
+.I @dictdir@
+.PP
+Próbki wymowy są domyślnie czytane z katalogu
+.I /media/cdrom
+By odtwarzać próbki wymowy angielskiej i niemieckiej, należy utworzyć katalogi
+.I en
+oraz
+.I de
+i umieścić w nich próbki wymowy odpowiednich słowników.
+.SH OPCJE
+.TP
+.BI \-e\ [\-\-eng]
+Uruchamia słownik angielsko-polski (domyślne).
+.TP
+.BI \-p\ [\-\-pol]
+Uruchamia słownik polsko-angielski.
+.TP
+.BI \-g\ [\-\-ger-pol]
+Uruchamia słownik niemiecko-polski.
+.TP
+.BI \-o\ [\-\-pol-ger]
+Uruchamia słownik polsko-niemiecki.
+.TP
+.BI \-f\ [\-\-path=ŚCIEŻKA]
+Podaje ścieżkę do plików danych.
+.TP
+.BI \-c\ [\-\-cdpath=ŚCIEŻKA]
+Podaje ścieżkę do płyty CD z próbkami wymowy.
+.TP
+.BI \-P\ [\-\-player=ŚCIEŻKA]
+Podaje ścieżkę do odtwarzacza plików dźwiękowych.
+.TP
+.BI \-w\ [\-\-word=SŁOWO]
+Uruchamia słownik i tłumaczy podane słowo.
+.TP
+.BI \-A\ [\-\-audio=URZĄDZENIE]
+Określa domyślne urządzenie dźwiękowe.
+.TP
+.BI \-\-version
+Wyświetla wersję programu.
+.TP
+.BI \-h\ [\-\-help]
+Wyświetla tekst pomocy.
+.SH OPCJE KONFIGURACJI
+.TP
+.BI Path\ \fiŚCIEŻKA\fR
+Podaje ścieżkę do plików danych.
+.TP
+.BI CDPath\ \fiŚCIEŻKA\fR
+Podaje ścieżkę do płyty CD z próbkami wymowy.
+.TP
+.BI Player\ \fiCOMMAND\fR
+Podaje ścieżkę do odtwarzacza plików dźwiękowych. 
+.TP
+.BI DefaultDictionary\ \fiRODZAJ\fR
+Domyślny słownik (0 - angielsko-polski, 1 - polsko-angielski, 2 - niemiecko-polski, 3 - polsko-niemiecki.
+.TP
+.BI UseColor\ \fiBOOLEAN\fR
+Dostępność koloru jest wykrywana, ale można wymusić ją tą opcją (On, Off).
+.TP
+.BI UseTransparent\ \fiBOOLEAN\fR
+Przezroczystość terminala (On, Off).
+.TP
+.BI Color\ \fiKOLOR\fR
+.TP
+.BI DefinitionColor\ \fiKOLOR\fR
+.TP
+.BI InformationColor\ \fiKOLOR\fR
+Kolory używane do wyświetlania definicji mogą być ustawione na jeden z następujących:
+Black, Red, Green, Brown, Blue, Magenta, Cyan, White, Gray, Yellow,
+LightRed, LightGreen, LightBlue, LightMagenta, LightCyan, LightWhite.
+Uwaga: przy kolorach z przedrostkiem "Light", wyróżnienie tekstu nie będzie widoczne.
+.SH AUTOR
+.B ydpdict
+został napisany przez Wojtka Kaniewskiego <wojtekka@toxygen.net>. Najnowszą
+wersję można znaleźć pod adresem
+.I http://toxygen.net/ydpdict/

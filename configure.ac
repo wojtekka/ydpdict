@@ -90,7 +90,7 @@ AC_SUBST([HAVE_LIBAO])
 CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 
 AC_SUBST([VERSION])
-AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in])
+AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in ydpdict.1 ydpdict.pl.1])
 
 if test "x$ncurses_warning" = "xyes" ; then
 	AC_MSG_WARN([Build may fail because of ncurses headers ambiguity in some Linux distributions.])

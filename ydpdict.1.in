@@ -1,11 +1,10 @@
-.TH YDPDICT 1 "July 1, 2007"
+.TH YDPDICT 1 "December 13, 2013"
 .SH NAME
 ydpdict \- an interface for Collins and Langenscheidt dictionaries
 .SH SYNOPSIS
 .B ydpdict [
 .BI options
 .B ]
-
 .SH DESCRIPTION
 .B ydpdict
 is an ncurses interface for English-Polish and Polish-English Collins
@@ -24,7 +23,18 @@ the first one found):
 .TP
 3)
 .BI /etc/ydpdict.conf
-
+.PP
+.B ydpdict
+searches for dictionary files in current directory and
+.I @dictdir@.
+.PP
+Pronunciation samples are read from
+.I /media/cdrom
+by default. To play samples of both english and german words, one shall create
+.I en
+and
+.I de
+subdirectiories with respective content.
 .SH OPTIONS
 .TP
 .BI \-e\ [\-\-eng]
@@ -43,10 +53,10 @@ Starts the Polish-German dictionary.
 Sets the path to data files.
 .TP
 .BI \-c\ [\-\-cdpath=PATH]
-Sets the path to the CD. (For audio sample files).
+Sets the path to the CD with pronunciation samples.
 .TP
 .BI \-P\ [\-\-player=PATH]
-Sets the path to the WAV file player.
+Sets the path to the sound player.
 .TP
 .BI \-w\ [\-\-word=WORD]
 Starts the dictionary and translates the specified word.
@@ -59,6 +69,35 @@ Displays the version of the program.
 .TP
 .BI \-h\ [\-\-help]
 Shows command line options.
+.SH CONFIGURATION OPTIONS
+.TP
+.BI Path\ \fiPATH\fR
+Sets the path to data files.
+.TP
+.BI CDPath\ \fiPATH\fR
+Sets the path to the CD with pronunciation samples.
+.TP
+.BI Player\ \fiCOMMAND\fR
+Sets the path to the sound player.
+.TP
+.BI DefaultDictionary\ \fiTYPE\fR
+Default dictionary (0 - English-Polish, 1 - Polish-English, 2 - German-Polish, 3 - Polish-German).
+.TP
+.BI UseColor\ \fiBOOLEAN\fR
+Color support is autodetected, but color display can be forced with this option (On, Off).
+.TP
+.BI UseTransparent\ \fiBOOLEAN\fR
+Terminal transparency (On, Off).
+.TP
+.BI Color\ \fiCOLOR\fR
+.TP
+.BI DefinitionColor\ \fiCOLOR\fR
+.TP
+.BI InformationColor\ \fiCOLOR\fR
+Colors used to display definitions can be set to one of the following:
+Black, Red, Green, Brown, Blue, Magenta, Cyan, White, Gray, Yellow,
+LightRed, LightGreen, LightBlue, LightMagenta, LightCyan, LightWhite.
+Note: for colors with "Light" prefix, emphasis will be invisible.
 .SH AUTHOR
 .B ydpdict
 was written by Wojtek Kaniewski <wojtekka@toxygen.net>. Latest version can be
