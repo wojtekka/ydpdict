@@ -10,12 +10,14 @@ korzystanie z nich pod innymi systemami. Niniejszy program pozwala korzystać
 z tych słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod
 innymi systemami, ponieważ jest pisany w miarę możliwości przenośnie.
 
+![Zrzut ekranu](doc/ydpdict.png)
+
 Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
 uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
-biblioteka libydpdict (dostępna na stronie projektu). W przypadku systemu
-operacyjnego, który nie wspiera Unikodu, należy użyć wersji wcześniejszej
-niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać polecenia
-(ostatnie z nich z uprawnieniami administratora):
+biblioteka [libydpdict](https://github.com/wojtekka/libydpdict). W przypadku
+systemu operacyjnego, który nie wspiera Unikodu, należy użyć wersji
+wcześniejszej niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać
+polecenia (ostatnie z nich z uprawnieniami administratora):
 
     ./configure
     make
