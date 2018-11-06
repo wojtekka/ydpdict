@@ -1,86 +1,91 @@
+ydpdict
+=======
 
-  ydpdict 1.0.3
-  (C) Copyright 1998-2013 Wojtek Kaniewski <wojtekka@toxygen.net>
+Program, którego dokumentację w tej chwili czytasz, służy do obsługi
+multimedialnych słowników angielsko-polskiego i polsko-angielskiego Collinsa
+oraz niemiecko-polskiego i polsko-niemieckiego Langenscheidta. Oryginalne
+pakiety oferowane przez firmę [Young Digital Planet](http://www.ydp.com.pl)
+zawierają jedynie programy dla systemu Windows, co uniemożliwia
+korzystanie z nich pod innymi systemami. Niniejszy program pozwala korzystać
+z tych słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod
+innymi systemami, ponieważ jest pisany w miarę możliwości przenośnie.
 
-  Program, którego dokumentację w tej chwili czytasz, służy do obsługi
-  multimedialnych słowników angielsko-polskiego i polsko-angielskiego Collinsa
-  oraz niemiecko-polskiego i polsko-niemieckiego Langenscheidta. Oryginalne
-  pakiety oferowane przez firmę Young Digital Planet (http://www.ydp.com.pl)
-  zawierają jedynie programy dla systemu Windows, co uniemożliwia
-  korzystanie z nich pod innymi systemami. Niniejszy program pozwala korzystać
-  z tych słowników pod kontrolą Linuksa. Możliwe, że zadziała również pod
-  innymi systemami, ponieważ jest pisany w miarę możliwości przenośnie.
-
-  Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
-  uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
-  biblioteka libydpdict (dostępna na stronie projektu). W przypadku systemu
-  operacyjnego, który nie wspiera Unikodu, należy użyć wersji wcześniejszej
-  niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać polecenia
-  (ostatnie z nich z uprawnieniami administratora):
+Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
+uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
+biblioteka libydpdict (dostępna na stronie projektu). W przypadku systemu
+operacyjnego, który nie wspiera Unikodu, należy użyć wersji wcześniejszej
+niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać polecenia
+(ostatnie z nich z uprawnieniami administratora):
 
     ./configure
     make
     make install
 
-  Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
-  w katalogu $(prefix)/man, zamiast $(prefix)/share/man. Jeśli chcesz je
-  zainstalować w odpowiednim miejscu, wpisz:
+Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
+w katalogu `$(prefix)/man`, zamiast `$(prefix)/share/man`. Jeśli chcesz je
+zainstalować w odpowiednim miejscu, wpisz:
 
     ./configure --mandir=/usr/local/share/man
     make
     make install
 
-  Następnie należy skopiować cztery pliki z katalogu "database" oryginalnego,
-  pracującego pod systemem Windows programu:
+Następnie należy skopiować cztery pliki z katalogu `database` oryginalnego,
+pracującego pod systemem Windows programu:
 
-    dict100.dat
-    dict100.idx
-    dict101.dat
-    dict101.idx
+* dict100.dat
+* dict100.idx
+* dict101.dat
+* dict101.idx
 
-  dla słownika angielsko-polskiego i polsko-angielskiego, lub:
+dla słownika angielsko-polskiego i polsko-angielskiego, lub:
 
-    dict200.dat
-    dict200.idx
-    dict201.dat
-    dict201.idx
+* dict200.dat
+* dict200.idx
+* dict201.dat
+* dict201.idx
 
-  dla słownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
-  w którym znajduje się program. Dodatkowo program będzie szukał plików
-  słownika w systemowym katalogu, np. /usr/local/share/ydpdict jeśli do
-  skryptu ./configure nie przekazano parametru --prefix lub /usr/share/ydpdict
-  jeśli program pochodzi pakietu dystrybucji). Można też podać ścieżkę,
-  w której się one znajdują w parametrze "Path" pliku konfiguracyjnego.
-  Należy również zmienić parametr "CDPath" na ścieżkę, gdzie znajduje się
-  podmontowana płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
-  Aby móc odtwarzać próbki ze słownika angielsko-polskiego
-  i niemiecko-polskiego, należy utworzyć katalog, a w nim katalog "en"
-  z zawartością płyty CD słownika angielsko-polskiego oraz katalog "de"
-  z plikami słownika niemiecko-polskiego.  
+dla słownika niemiecko-polskiego i polsko-niemieckiego, do katalogu,
+w którym znajduje się program. Dodatkowo program będzie szukał plików
+słownika w systemowym katalogu, np. `/usr/local/share/ydpdict` jeśli do
+skryptu `./configure` nie przekazano parametru `--prefix` lub `/usr/share/ydpdict`
+jeśli program pochodzi z pakietu dystrybucji). Można też podać ścieżkę,
+w której się one znajdują w parametrze `Path` pliku konfiguracyjnego.
+Należy również zmienić parametr `CDPath` na ścieżkę, gdzie znajduje się
+podmontowana płyta CD. Jego brak uniemożliwi odtwarzanie próbek dźwiękowych.
+Aby móc odtwarzać próbki ze słownika angielsko-polskiego
+i niemiecko-polskiego, należy utworzyć katalog, a w nim katalog `en`
+z zawartością płyty CD słownika angielsko-polskiego oraz katalog `de`
+z plikami słownika niemiecko-polskiego.  
 
-  Obsługa programu jest bajecznie prosta. Wystarczy wpisać szukane słowo
-  lub wybrać je klawiszami kursorów. Do przemieszania się między listą
-  słów, a definicją służy klawisz Tab. Odtwarzanie próbek to F2. Zmiana na
-  inny słownik to F3, F4, F5, F6.
+Obsługa programu jest bajecznie prosta. Wystarczy wpisać szukane słowo
+lub wybrać je klawiszami kursorów. Do przemieszania się między listą
+słów, a definicją służy klawisz Tab. Odtwarzanie próbek to F2. Zmiana na
+inny słownik to F3, F4, F5, F6.
 
-  Program obsługiwać można częściowo za pomocą myszki. Kliknięcie na słowo
-  z listy, spowoduje wyświetlenie jego tłumaczenia. Klikając na dolne i górne
-  krawędzie ekranu, można przewijać listę lub opis. Jeśli klikniemy dwukrotnie
-  na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
+Program obsługiwać można częściowo za pomocą myszki. Kliknięcie na słowo
+z listy, spowoduje wyświetlenie jego tłumaczenia. Klikając na dolne i górne
+krawędzie ekranu, można przewijać listę lub opis. Jeśli klikniemy dwukrotnie
+na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
 
-  ydpdict jest wydany na licencji GPL w wersji 2 (treść w języku angielskim
-  dostępna w pliku COPYING). Wszelkie poprawki wysłane do autora na licencji
-  innej niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji
-  będzie traktowany jak przyjęcie licencji kodu, który jest poprawiany.
-  Wyjątkiem są pliki adpcm.c i adpcm.h autorstwa Stanley'a J. Brooksa wydane
-  na licencji LGPL w wersji 2:
+Licencja
+--------
 
-    Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
+(C) Copyright 1998-2013 Wojtek Kaniewski <wojtekka@toxygen.net>
 
-  Najnowszą wersję można znaleźć pod adresem http://toxygen.net/ydpdict/
+ydpdict jest wydany na licencji GPL w wersji 2 (treść w języku angielskim
+dostępna w pliku COPYING). Wszelkie poprawki wysłane do autora na licencji
+innej niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji
+będzie traktowany jak przyjęcie licencji kodu, który jest poprawiany.
+Wyjątkiem są pliki adpcm.c i adpcm.h autorstwa Stanley'a J. Brooksa wydane
+na licencji LGPL w wersji 2:
 
-  Lista zmian:
-  - 1.0.3 (2013-12-xx): Dodanie informacji o katalogu z plikami słownika.
+Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
+
+Lista zmian
+-----------
+
+  - 1.0.3 (2013-12-xx): Uzupełnienie dokumentacji o domyślne katalogi z plikami
+    słownika zgodnie z sugestiami Adriana Mroczkowskiego (athek@o2.pl)
   - 1.0.2 (2013-01-11): Poprawka błędnego wyświetlania słów z końca słownika
     zgłoszone przez Jakuba Wilka.
   - 1.0.1 (2011-05-10): Rozszerzenie pomocy o oznaczenia kwalifikatorów
