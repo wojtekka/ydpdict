@@ -16,12 +16,18 @@ Do prawidłowej pracy niezbędna jest dystrybucja Linuksa (lub innego systemu
 uniksowego) z biblioteką ncurses wspierającą Unikod oraz zainstalowana
 biblioteka [libydpdict](https://github.com/wojtekka/libydpdict). W przypadku
 systemu operacyjnego, który nie wspiera Unikodu, należy użyć wersji
-wcześniejszej niż 0.99. Aby skompilować i zainstalować pakiet, należy wykonać
-polecenia (ostatnie z nich z uprawnieniami administratora):
+wcześniejszej niż 0.99. Aby skompilować i zainstalować oficjalne wydanie,
+należy po rozpakowaniu wykonać polecenia (ostatnie z nich z uprawnieniami
+administratora, np. przez `sudo`):
 
     ./configure
     make
     make install
+
+Przy kompilacji źródeł pobranych z repozytorium należy wcześniej wykonać
+jeszcze polecenie:
+
+    ./autogen.sh
 
 Ze względu na domyślne zachowanie autoconfa, strony manuali będą instalowane
 w katalogu `$(prefix)/man`, zamiast `$(prefix)/share/man`. Jeśli chcesz je
