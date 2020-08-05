@@ -92,8 +92,10 @@ Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 Lista zmian
 -----------
 
-  - 1.0.3 (2013-12-xx): Uzupełnienie dokumentacji o domyślne katalogi z plikami
-    słownika zgodnie z sugestiami Adriana Mroczkowskiego (athek@o2.pl)
+  - 1.0.3 (2020-08-xx): Uzupełnienie dokumentacji o domyślne katalogi z plikami
+    słownika zgodnie z sugestiami Adriana Mroczkowskiego (athek@o2.pl).
+    Poprawka budowania z nowymi wersjami GCC po zgłoszeniu problemu przez
+    Marcina Owsianego.
   - 1.0.2 (2013-01-11): Poprawka błędnego wyświetlania słów z końca słownika
     zgłoszone przez Jakuba Wilka.
   - 1.0.1 (2011-05-10): Rozszerzenie pomocy o oznaczenia kwalifikatorów

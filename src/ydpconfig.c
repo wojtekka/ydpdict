@@ -53,6 +53,7 @@ char *config_path = NULL;
 char *config_cdpath = NULL;
 char *config_player = NULL;
 char *config_word = NULL;
+char *config_audio = NULL;
 int config_dict = 0;
 int config_color = 1;
 int config_transparent = 0;

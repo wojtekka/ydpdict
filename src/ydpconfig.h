@@ -51,17 +51,17 @@
 
 #define INPUT_LEN 17
 
-char *config_path;
-char *config_cdpath;
-char *config_player;
-char *config_word;
-char *config_audio;
-int config_dict;
-int config_color;
-int config_transparent;
-int config_text;
-int config_cf1;
-int config_cf2;
+extern char *config_path;
+extern char *config_cdpath;
+extern char *config_player;
+extern char *config_word;
+extern char *config_audio;
+extern int config_dict;
+extern int config_color;
+extern int config_transparent;
+extern int config_text;
+extern int config_cf1;
+extern int config_cf2;
 
 int read_config(int argc, char **argv);
 

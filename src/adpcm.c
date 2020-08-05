@@ -32,6 +32,11 @@
  *
  */
 
+/*
+ * 2020-08-05: Changed inline to static inline functions to fix build with
+ * recent GCC versions.
+ */
+
 #include <sys/types.h>
 #include <math.h>
 #include <stdio.h>
@@ -78,7 +83,7 @@ const short iCoef[7][2] = {
                         { 392,-232}
 };
 
-inline st_sample_t AdpcmDecode(st_sample_t c, MsState_t *state,
+static inline st_sample_t AdpcmDecode(st_sample_t c, MsState_t *state,
                                st_sample_t sample1, st_sample_t sample2)
 {
         st_sample_t vlin;
@@ -309,7 +314,7 @@ static long ReAvgDelta(int ch, int chans, const SAMPL *ibuff, int n, int step)
 
 #endif
 
-inline void AdpcmMashChannel(
+static inline void AdpcmMashChannel(
         int ch,             /* channel number to encode, REQUIRE 0 <= ch < chans  */
         int chans,          /* total channels */
         const SAMPL *ip,    /* ip[] is interleaved input samples */
