@@ -256,7 +256,7 @@ int play_sample(int dict, int def)
 		return 0;
 
 	if (config_player) {
-		char command[4096];
+		char command[strlen(config_player) + strlen(path) + 32];
     
 		snprintf(command, sizeof(command), "%s %s > /dev/null 2> /dev/null", config_player, path);
 		return system(command);
