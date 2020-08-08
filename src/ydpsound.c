@@ -57,13 +57,15 @@
  * 
  * \return machine-endian value
  */
-static inline void fix32(uint32_t *value)
+static inline uint32_t fix32(uint32_t value)
 {
 #ifdef WORDS_BIGENDIAN
-	*value = (uint32_t) (((*value & (uint32_t) 0x000000ffU) << 24) |
-		((*value & (uint32_t) 0x0000ff00U) << 8) |
-		((*value & (uint32_t) 0x00ff0000U) >> 8) |
-		((*value & (uint32_t) 0xff000000U) >> 24));
+	return (uint32_t) (((value & (uint32_t) 0x000000ffU) << 24) |
+		((value & (uint32_t) 0x0000ff00U) << 8) |
+		((value & (uint32_t) 0x00ff0000U) >> 8) |
+		((value & (uint32_t) 0xff000000U) >> 24));
+#else
+	return value;
 #endif		
 }
 
@@ -74,11 +76,13 @@ static inline void fix32(uint32_t *value)
  * 
  * \return machine-endian value
  */
-static inline void fix16(uint16_t *value)
+static inline uint16_t fix16(uint16_t value)
 {
 #ifdef WORDS_BIGENDIAN
-	*value = (uint16_t) (((*value & (uint16_t) 0x00ffU) << 8) |
-		((*value & (uint16_t) 0xff00U) >> 8));
+	return (uint16_t) (((value & (uint16_t) 0x00ffU) << 8) |
+		((value & (uint16_t) 0xff00U) >> 8));
+#else
+	return value;
 #endif
 }
 
@@ -272,7 +276,7 @@ int play_sample(int dict, int def)
 		goto failure;
 	}
 
-	fix32(&riff_header.size);
+	riff_header.size = fix32(riff_header.size);
 
 	if (strncmp(riff_header.id, "RIFF", sizeof(riff_header.id))) {
 		result = -1;
@@ -290,7 +294,7 @@ int play_sample(int dict, int def)
 			goto failure;
 		}
 
-		fix32(&riff_block.size);
+		riff_block.size = fix32(riff_block.size);
 
 		rd = lseek(fd, 0, SEEK_CUR);
 			
@@ -300,12 +304,12 @@ int play_sample(int dict, int def)
 				goto failure;
 			}
 
-			fix16(&wave_fmt.wFormatTag);
-			fix16(&wave_fmt.wChannels);
-			fix32(&wave_fmt.dwSamplesPerSec);
-			fix32(&wave_fmt.dwAvgBytesPerSec);
-			fix16(&wave_fmt.wBlockAlign);
-			fix16(&wave_fmt.wBitsPerSample);
+			wave_fmt.wFormatTag = fix16(wave_fmt.wFormatTag);
+			wave_fmt.wChannels = fix16(wave_fmt.wChannels);
+			wave_fmt.dwSamplesPerSec = fix32(wave_fmt.dwSamplesPerSec);
+			wave_fmt.dwAvgBytesPerSec = fix32(wave_fmt.dwAvgBytesPerSec);
+			wave_fmt.wBlockAlign = fix16(wave_fmt.wBlockAlign);
+			wave_fmt.wBitsPerSample = fix16(wave_fmt.wBitsPerSample);
 
 			switch (wave_fmt.wFormatTag) {
 				case WAVE_FORMAT_PCM:
@@ -323,9 +327,9 @@ int play_sample(int dict, int def)
 						goto failure;
 					}
 
-					fix16(&wave_adpcm.wExtSize);
-					fix16(&wave_adpcm.wSamplesPerBlock);
-					fix16(&wave_adpcm.wCoefs);
+					wave_adpcm.wExtSize = fix16(wave_adpcm.wExtSize);
+					wave_adpcm.wSamplesPerBlock = fix16(wave_adpcm.wSamplesPerBlock);
+					wave_adpcm.wCoefs = fix16(wave_adpcm.wCoefs);
 
 					bytesPerBlock = 7 * wave_fmt.wChannels;
 					
@@ -345,7 +349,7 @@ int play_sample(int dict, int def)
 					}
 
 					for (i = 0; i < wave_adpcm.wCoefs; i++)
-						fix16((unsigned short*) &coefs[i]);
+						coefs[i] = (short) fix16((unsigned short) coefs[i]);
 
 					lseek(fd, riff_block.size - sizeof(wave_fmt) - sizeof(wave_adpcm) - 4 * wave_adpcm.wCoefs, SEEK_CUR);
 
