@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ydpdict 0.99.0\n"
 "Report-Msgid-Bugs-To: wojtekka@toxygen.net\n"
-"POT-Creation-Date: 2013-12-13 23:12+0100\n"
+"POT-Creation-Date: 2020-08-09 09:52+0200\n"
 "PO-Revision-Date: 2006-04-18 00:38+0200\n"
 "Last-Translator: Wojtek Kaniewski <wojtekka@toxygen.net>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "Out of memory"
 msgstr "Brak pamięci"
 
-#: src/ydpconfig.c:89
+#: src/ydpconfig.c:90
 #, c-format
 msgid ""
 "Usage: %s [OPTIONS]\n"
@@ -55,7 +55,7 @@ msgstr ""
 "  -h, --help              wyświetla tą informację\n"
 "\n"
 
-#: src/ydpconfig.c:246
+#: src/ydpconfig.c:247
 #, c-format
 msgid "Error in config file, line %d: %s\n"
 msgstr "Błąd w pliku konfiguracyjnym, linia %d: %s\n"

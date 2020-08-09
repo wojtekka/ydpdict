@@ -78,21 +78,21 @@ na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
 Licencja
 --------
 
-(C) Copyright 1998-2013 Wojtek Kaniewski <wojtekka@toxygen.net>
+(C) Copyright 1998-2020 Wojtek Kaniewski <wojtekka@toxygen.net>
 
 ydpdict jest wydany na licencji GPL w wersji 2 (treść w języku angielskim
 dostępna w pliku COPYING). Wszelkie poprawki wysłane do autora na licencji
 innej niż GPL w wersji 2 zostaną odrzucone. Brak informacji o licencji
 będzie traktowany jak przyjęcie licencji kodu, który jest poprawiany.
 Wyjątkiem są pliki adpcm.c i adpcm.h autorstwa Stanley'a J. Brooksa wydane
-na licencji LGPL w wersji 2:
+na licencji LGPL w wersji 2 i dostosowane do współczesnych kompilatorów:
 
 Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 
 Lista zmian
 -----------
 
-  - 1.0.3 (2020-08-xx): Uzupełnienie dokumentacji o domyślne katalogi z plikami
+  - 1.0.3 (2020-08-09): Uzupełnienie dokumentacji o domyślne katalogi z plikami
     słownika zgodnie z sugestiami Adriana Mroczkowskiego (athek@o2.pl).
     Poprawka budowania z nowymi wersjami GCC po zgłoszeniu problemu przez
     Marcina Owsianego.
