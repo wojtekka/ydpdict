@@ -419,6 +419,7 @@ int play_sample(int dict, int def)
 			}
       
 			close(fd);
+			fd = -1;
 
 #ifdef HAVE_LIBAO
 			if (play_libao(sample, rd, wave_fmt.dwSamplesPerSec, bits, wave_fmt.wChannels) == -1) {
