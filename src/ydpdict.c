@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2011 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2023 Wojtek Kaniewski <wojtekka@toxygen.net>
  *                          Piotr Domagalski <szalik@szalik.net>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -800,6 +800,8 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_LOCALE_H
 	setlocale(LC_ALL, "");
+#endif
+#ifdef ENABLE_NLS
 	textdomain("ydpdict");
 #endif
 
