@@ -1,6 +1,6 @@
 /*
  *  ydpdict
- *  (C) Copyright 1998-2020 Wojtek Kaniewski <wojtekka@toxygen.net>
+ *  (C) Copyright 1998-2023 Wojtek Kaniewski <wojtekka@toxygen.net>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -160,17 +160,31 @@ struct color_entry {
  */
 int read_config(int argc, char **argv)
 {
-	char buf[4096], *home;
+	char buf[4096], *home, *xdg_config_dir;
 	int line = 0, optc;
 	FILE *f = NULL;
 
 	/* Check if any of the config files exist */
 
+	xdg_config_dir = getenv("XDG_CONFIG_HOME");
+
+	if (xdg_config_dir) {
+		snprintf(buf, sizeof(buf), "%s/%s", xdg_config_dir, CONFIGFILE_CWD1);
+		f = fopen(buf, "r");
+	}
+
 	home = getenv("HOME");
 
 	if (home) {
-		snprintf(buf, sizeof(buf), "%s/%s", home, CONFIGFILE_CWD1);
-		f = fopen(buf, "r");
+		if (!f) {
+			snprintf(buf, sizeof(buf), "%s/.config/%s", home, CONFIGFILE_CWD1);
+			f = fopen(buf, "r");
+		}
+
+		if (!f) {
+			snprintf(buf, sizeof(buf), "%s/%s", home, CONFIGFILE_CWD1);
+			f = fopen(buf, "r");
+		}
 	
 		if (!f) {
 			snprintf(buf, sizeof(buf), "%s/%s", home, CONFIGFILE_CWD2);
@@ -238,9 +252,9 @@ int read_config(int argc, char **argv)
 				case ENTRY_INT:
 					*(int*)(entries[i].ptr) = atoi(value);
 					break;
-      			}
+			}
 
-      			break;
+			break;
 		}
 
 		if (!entries[i].label) {
