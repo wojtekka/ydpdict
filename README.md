@@ -78,7 +78,7 @@ na słowo z okienka tłumaczenia, zostanie ono automatycznie wyszukane.
 Licencja
 --------
 
-(C) Copyright 1998-2020 Wojtek Kaniewski <wojtekka@toxygen.net>
+(C) Copyright 1998-2023 Wojtek Kaniewski <wojtekka@toxygen.net>
 
 ydpdict jest wydany na licencji GPL w wersji 2 (treść w języku angielskim
 dostępna w pliku COPYING). Wszelkie poprawki wysłane do autora na licencji
@@ -92,6 +92,13 @@ Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 Lista zmian
 -----------
 
+  - 1.0.4 (2023-08-01): Usunięcie nagłówka z wersją i copyrightami. Szerokość
+    definicji będzie wypełniać szerokość terminala. Poprawka budowania
+    z libintl. Szukanie pliku konfiguracyjnego najpierw zgodnie ze
+    specyfikacją XDG Base Directory ($XDG_CONFIG_HOME/ydpdict.conf lub
+    $HOME/.config/ydpdict.conf), następnie tak jak poprzednie wersje
+    w ~/ydpdict.conf, ~/.ydpdictrc oraz /etc/ydpdict.conf. Poprawka kompilacji
+    gettext.
   - 1.0.3 (2020-08-09): Uzupełnienie dokumentacji o domyślne katalogi z plikami
     słownika zgodnie z sugestiami Adriana Mroczkowskiego (athek@o2.pl).
     Poprawka budowania z nowymi wersjami GCC po zgłoszeniu problemu przez
