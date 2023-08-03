@@ -102,7 +102,6 @@ int resized_term;	///< Terminal resize flag
 
 WINDOW *window_word;	///< Wordlist window
 WINDOW *window_def;	///< Definition window
-WINDOW *window_header;	///< Header window
 WINDOW *window_sep;	///< Separator window
 WINDOW *window_arrows;	///< Arrows window
 
@@ -189,7 +188,8 @@ const char *qualifiers_format = "{\\line{\\cf2 %s} {%s}}";
 
 const char *help[] =
 {
-	N_("{\\b Help}{\\pard\\pard}"),
+	"{\\b " HEADER_NAME "}",
+	"{\\line{\\b " HEADER_COPYRIGHT "}}{\\pard\\pard}",
 	N_("{\\cf2 F1} or {\\cf2 ?} - this help"),
 	N_("{\\line{\\cf2 Tab} - change focus}"),
 	N_("{\\line{\\cf2 Up} and {\\cf2 Down} - scroll up and down}"),
@@ -219,9 +219,6 @@ void show_error(const char *msg)
 {
 	if (window_word)
 		delwin(window_word);
-
-	if (window_header)
-		delwin(window_header);
 
 	if (window_sep)
 		delwin(window_sep);
@@ -267,7 +264,6 @@ static void sigterm(int sig)
  */
 void update_all(void)
 {
-	wnoutrefresh(window_header);
 	wnoutrefresh(window_sep);
 	wnoutrefresh(window_def);
 	wnoutrefresh(window_arrows);
@@ -289,21 +285,18 @@ void create_windows(void)
 		delwin(window_word);
 	if (window_def)
 		delwin(window_def);
-	if (window_header)
-		delwin(window_header);
 	if (window_sep)
 		delwin(window_sep);
 	if (window_arrows)
 		delwin(window_arrows);
 	
 	/* Create windows */
-	window_word = newwin(screen_height - 3, 20, 2, 2);
-	window_def = newwin(screen_height - 3, screen_width - 29, 2, 27);
-	window_header = newwin(1, screen_width, 0, 0);
-	window_sep = newwin(screen_height - 1, 4, 1, 23);
-	window_arrows = newwin(screen_height - 1, 1, 1, screen_width - 1);
+	window_word = newwin(screen_height - 2, 20, 1, 2);
+	window_def = newwin(screen_height - 2, screen_width - 29, 1, 27);
+	window_sep = newwin(screen_height, 4, 0, 23);
+	window_arrows = newwin(screen_height, 1, 0, screen_width - 1);
 
-	if (!window_word || !window_def || !window_header || !window_sep)
+	if (!window_word || !window_def || !window_sep)
 		show_error(_("Out of memory"));
 	
 	/* Configure windows */
@@ -314,17 +307,6 @@ void create_windows(void)
 	/* Draw vertical bar */
 	for (i = 0; i < screen_height; i++)
 		mvwaddch(window_sep, i, 1, ACS_VLINE);
-
-	/* Draw screen header */
-	wattrset(window_header, A_REVERSE);
-
-	for (i = 0; i < screen_width; i++)
-		waddch(window_header, ' ');
-
-	mvwaddstr(window_header, 0, 1, HEADER_NAME);
-
-	if (screen_width - strlen(HEADER_COPYRIGHT) - 1 > strlen(HEADER_NAME) + 2);
-		mvwaddstr(window_header, 0, screen_width - strlen(HEADER_COPYRIGHT) - 1, HEADER_COPYRIGHT);
 }
 
 /**
@@ -357,12 +339,12 @@ void check_size(void)
 	screen_width = newx;
 	screen_height = newy;
 
-	diff = list_page + (screen_height - 4) - word_count;
+	diff = list_page + (screen_height - 3) - word_count;
 	if (diff > 0) {
 		list_page -= diff;
 		list_index += diff;
 	}
-	diff = list_index - (screen_height - 5);
+	diff = list_index - (screen_height - 4);
 	if (diff > 0) {
 		list_page += diff;
 		list_index -= diff;
@@ -383,7 +365,7 @@ void resize(void)
 	resized_term = 0;
 }
 
-#define is_visible(x) ((ypos >= first && ypos < (screen_height - 3) + first) ? x : "")
+#define is_visible(x) ((ypos >= first && ypos < (screen_height - 2) + first) ? x : "")
 
 /**
  * \brief Prints the definition
@@ -634,8 +616,8 @@ void input_find(void)
 			list_page = idx;
 			list_index = 0;
 
-			if (list_page > word_count - (screen_height - 4)) {
-				list_page = word_count - (screen_height - 4);
+			if (list_page > word_count - (screen_height - 3)) {
+				list_page = word_count - (screen_height - 3);
 				list_index = idx - list_page;
 			}
 
@@ -656,7 +638,7 @@ void list_redraw(void)
 	werase(window_word);
 
 	if (dict) {
-		for (y = 0; y < (screen_height - 4); y++) {
+		for (y = 0; y < (screen_height - 3); y++) {
 			wattrset(window_word, (y == list_index) ? A_REVERSE : A_NORMAL);
 			mvwaddstr(window_word, y + 1, 0, "                    ");
 	
@@ -707,7 +689,7 @@ void def_redraw(void)
 
 	wattrset(window_arrows, A_DIM);
 	mvwaddch(window_arrows, 1, 0, (def_index > 0) ? ACS_UARROW : ' ');
-	mvwaddch(window_arrows, screen_height - 3, 0, (def_index < def_height - (screen_height - 3)) ? ACS_DARROW : ' ');
+	mvwaddch(window_arrows, screen_height - 2, 0, (def_index < def_height - (screen_height - 2)) ? ACS_DARROW : ' ');
 
 	update_all();
 }
@@ -971,7 +953,7 @@ int main(int argc, char **argv)
 
 			case 10: /* Enter */
 				if (focus) {
-					if (def_index < def_height - (screen_height - 3))
+					if (def_index < def_height - (screen_height - 2))
 						def_index++;
 				} else {
 					wchar_t *c = input + wcslen(input) - 1;
@@ -1136,15 +1118,15 @@ int main(int argc, char **argv)
 
 			case KEY_PPAGE:
 				if (focus) {
-	  				if (def_index > screen_height - 4)
-						def_index -= screen_height - 3;
+					if (def_index > screen_height - 3)
+						def_index -= screen_height - 2;
 					else
 						def_index = 0;
 				} else {
 					if (list_index > 0)
 						list_index = 0;
-					else if (list_page > screen_height - 5)
-						list_page -= screen_height - 4;
+					else if (list_page > screen_height - 4)
+						list_page -= screen_height - 3;
 					else
 						list_page = 0;
 
@@ -1155,12 +1137,12 @@ int main(int argc, char **argv)
 
 			case KEY_DOWN:
 				if (focus) {
-					if (def_index < def_height - (screen_height - 3))
+					if (def_index < def_height - (screen_height - 2))
 						def_index++;
 				} else {
-					if (list_index < screen_height - 5 && (list_index + 1 < word_count))
+					if (list_index < screen_height - 4 && (list_index + 1 < word_count))
 						list_index++;
-					else if (list_page < word_count - (screen_height - 4))
+					else if (list_page < word_count - (screen_height - 3))
 						list_page++;
 					def_index = 0;
 					def_update = 1;
@@ -1169,17 +1151,17 @@ int main(int argc, char **argv)
 
 			case KEY_NPAGE:
 				if (focus) {
-					if (def_index < def_height - (screen_height - 3) * 2 - 1)
-						def_index += screen_height - 3;
+					if (def_index < def_height - (screen_height - 2) * 2 - 1)
+						def_index += screen_height - 2;
 					else
-						def_index = def_height - (screen_height - 3);
+						def_index = def_height - (screen_height - 2);
 				} else {
-					if (list_index < screen_height - 5)
-						list_index = screen_height - 5;
-					else if (list_page < word_count - (screen_height - 4) * 2 - 1)
-						list_page += screen_height - 4;
+					if (list_index < screen_height - 4)
+						list_index = screen_height - 4;
+					else if (list_page < word_count - (screen_height - 3) * 2 - 1)
+						list_page += screen_height - 3;
 					else
-						list_page = word_count - (screen_height - 4);
+						list_page = word_count - (screen_height - 3);
 					def_index = 0;
 					def_update = 1;
 				}
