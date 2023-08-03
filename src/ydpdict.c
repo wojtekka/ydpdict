@@ -380,7 +380,7 @@ int def_print(char *def, int first)
 	int attr = color_text, attrs[16], level = 0, lastsp = 1, xpos = 0;
 	int phon = 0, lp = 0, dispword, newline_, newattr, lastnl = 0;
 	int ypos = 0, margin = 0, tp, newphon;
-	char token[64], line[80];
+	char token[64], line[screen_width];
 
 	if (!def)
 		return 1;
@@ -509,7 +509,7 @@ int def_print(char *def, int first)
 		def++;
 
 		if (dispword && lp) {
-			if (50 - xpos < lp) {
+			if (screen_width - 30 - xpos < lp) {
 				waddstr(window_def, is_visible("\n"));
 				ypos++;
 				if (margin)
@@ -537,7 +537,7 @@ int def_print(char *def, int first)
 				}
 			}
 
-			if (lastsp && xpos != 50) {
+			if (lastsp && xpos != screen_width - 30) {
 				waddstr(window_def, is_visible(" "));
 				xpos++;
 			}
@@ -562,7 +562,7 @@ int def_print(char *def, int first)
 	}
 
 	if (lp) {
-		if (50 - xpos < lp) {
+		if (screen_width - 30 - xpos < lp) {
 			waddstr(window_def, is_visible("\n"));
 			ypos++;
 		}
