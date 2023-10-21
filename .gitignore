@@ -2,10 +2,12 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
+compile
 config.guess
 config.h
 config.h.in
 config.log
+config.rpath
 config.status
 config.sub
 configure
@@ -36,3 +38,4 @@ src/*.o
 *~
 *.gmo
 *.pot
+*.tar.gz
