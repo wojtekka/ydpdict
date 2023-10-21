@@ -1,19 +1,21 @@
 dnl $Id$
 
-AC_INIT(src/ydpdict.c)
-AM_INIT_AUTOMAKE(ydpdict, 1.0.4)
-AC_PREREQ(2.50)
-AC_CONFIG_HEADERS(config.h)
+AC_INIT([ydpdict], [1.0.4])
+AC_CONFIG_SRCDIR([src/ydpdict.c])
+AM_INIT_AUTOMAKE
+AC_PREREQ([2.71])
+AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
-AC_WORDS_BIGENDIAN
+LT_INIT
+AC_C_BIGENDIAN
 
 AC_CHECK_HEADERS([linux/soundcard.h])
-AC_CHECK_HEADERS([locale.h])
 AM_GNU_GETTEXT([external])
+
+AC_CONFIG_MACRO_DIRS([m4])
 
 AC_CHECK_FUNCS([getopt_long])
 
@@ -90,7 +92,8 @@ AC_SUBST([HAVE_LIBAO])
 CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
 
 AC_SUBST([VERSION])
-AC_OUTPUT([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in ydpdict.1 ydpdict.pl.1])
+AC_CONFIG_FILES([Makefile src/Makefile contrib/Makefile ydpdict.conf po/Makefile.in ydpdict.1 ydpdict.pl.1])
+AC_OUTPUT
 
 if test "x$ncurses_warning" = "xyes" ; then
 	AC_MSG_WARN([Build may fail because of ncurses headers ambiguity in some Linux distributions.])

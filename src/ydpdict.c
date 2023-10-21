@@ -47,15 +47,12 @@
 
 #ifdef ENABLE_NLS
 #include <libintl.h>
+#include <locale.h>
 #define _(x) gettext(x)
 #else
 #define _(x) x
 #endif
 #define N_(x) x
-
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
 
 #ifdef HAVE_LIBAO
 #include <ao/ao.h>
@@ -780,10 +777,8 @@ int main(int argc, char **argv)
 	MEVENT m_event;
 	int bg;
 
-#ifdef HAVE_LOCALE_H
-	setlocale(LC_ALL, "");
-#endif
 #ifdef ENABLE_NLS
+	setlocale(LC_ALL, "");
 	textdomain("ydpdict");
 #endif
 
