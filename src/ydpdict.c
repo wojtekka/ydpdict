@@ -1017,9 +1017,9 @@ int main(int argc, char **argv)
 				int i;
 
 				for (i = 0; i < sizeof(help) / sizeof(help[0]); i++)
-					len += strlen(gettext(help[i]));
+					len += strlen(N_(help[i]));
 
-				len += strlen(gettext(help_footer));
+				len += strlen(N_(help_footer));
 
 				xfree(def);
 
@@ -1027,9 +1027,9 @@ int main(int argc, char **argv)
 				def[0] = 0;
 
 				for (i = 0; i < sizeof(help) / sizeof(help[0]); i++)
-					strcat(def, gettext(help[i]));
+					strcat(def, N_(help[i]));
 
-				sprintf(def + strlen(def), gettext(help_footer), HELP_EMAIL, HELP_WEBSITE);
+				sprintf(def + strlen(def), N_(help_footer), HELP_EMAIL, HELP_WEBSITE);
 
 				def_saved_index = def_index;
 				def_index = 0;
@@ -1074,22 +1074,22 @@ int main(int argc, char **argv)
 				unsigned int len = 0;
 				int i;
 
-				len += strlen(gettext(qualifiers_header));
+				len += strlen(N_(qualifiers_header));
 
 				for (i = 0; i < sizeof(qualifiers) / sizeof(qualifiers[0]); i++) {
 					len += strlen(qualifiers_format);
 					len += strlen(qualifiers[i][0]);
-					len += strlen(gettext(qualifiers[i][1]));
+					len += strlen(N_(qualifiers[i][1]));
 				}
 
 				xfree(def);
 
 				def = xmalloc(len);
 
-				strcpy(def, gettext(qualifiers_header));
+				strcpy(def, N_(qualifiers_header));
 
 				for (i = 0; i < sizeof(qualifiers) / sizeof(qualifiers[0]); i++)
-					sprintf(def + strlen(def), qualifiers_format, qualifiers[i][0], gettext(qualifiers[i][1]));
+					sprintf(def + strlen(def), qualifiers_format, qualifiers[i][0], N_(qualifiers[i][1]));
 
 				def_saved_index = def_index;
 				def_index = 0;
