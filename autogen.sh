@@ -1,16 +1,14 @@
-#!/bin/sh
+#!/bin/sh -e
 echo "aclocal"
-aclocal -I m4 || exit 1
+aclocal -I m4
 echo "autoheader"
-autoheader || exit 1
+autoheader
 echo "libtoolize"
-libtoolize -c -f || exit 1
-echo "gettextize"
-cp /usr/share/gettext/config.rpath . || exit 1
+libtoolize -c -f
 echo "automake"
-automake -a -c -f --foreign || exit 1
+automake -a -c -f --foreign
 echo "autoconf"
-autoconf || exit 1
+autoconf
 
 test x$NOCONFIGURE = x && ./configure $*
 
