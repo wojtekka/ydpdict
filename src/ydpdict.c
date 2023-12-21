@@ -321,8 +321,8 @@ void check_size(void)
 {
 	int newx, newy, fake = 0, diff;
 
-	newx = stdscr->_maxx + 1;
-	newy = stdscr->_maxy + 1;
+	newx = getmaxx(stdscr);
+	newy = getmaxy(stdscr);
 
 	/* Minimum size */
 	if (newx < 29)
@@ -853,8 +853,8 @@ int main(int argc, char **argv)
 		switch (ch) {
 
 #define __MOUSE_IN(window, event, correct1, correct2, correct3, correct4) (\
-	 event.y > (window->_begy + correct1) && event.y < (window->_begy + window->_maxy + correct2) &&\
-	 event.x > (window->_begx + correct3) && event.x < (window->_begx + window->_maxx + correct4))
+	 event.y > (getbegy(window) + correct1) && event.y < (getbegy(window) + getmaxy(window) - 1 + correct2) &&\
+	 event.x > (getbegx(window) + correct3) && event.x < (getbegx(window) + getmaxx(window) - 1 + correct4))
 
 			case KEY_MOUSE:
 				if (getmouse(&m_event) == OK) {
@@ -885,7 +885,7 @@ int main(int argc, char **argv)
 							mvwin_wch(window_def, m_event.y - 2, x, &cc);
 							ch = cc.chars[0];
 							buf[i++] = ch;
-						} while ((iswalpha(ch) || ch == L'-') && x < window_def->_maxx);
+						} while ((iswalpha(ch) || ch == L'-') && x < getmaxx(window_def) - 1);
 
 						buf[--i] = L'\0';
 

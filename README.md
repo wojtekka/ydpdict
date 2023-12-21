@@ -92,6 +92,8 @@ Copyright (C) 1999 Stanley J. Brooks <stabro@megsinet.net>
 Lista zmian
 -----------
 
+  - 1.0.5 (2023-12-22): Kolejne poprawki użycia gettext. Poprawka sięgania
+    do wnętrza struktur ncurses Svena Joachima.
   - 1.0.4 (2023-10-21): Usunięcie nagłówka z wersją i copyrightami. Szerokość
     definicji będzie wypełniać szerokość terminala. Poprawka kompilacji
     z gettext. Szukanie pliku konfiguracyjnego najpierw zgodnie ze

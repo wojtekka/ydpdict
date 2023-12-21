@@ -1,6 +1,6 @@
 dnl $Id$
 
-AC_INIT([ydpdict], [1.0.4])
+AC_INIT([ydpdict], [1.0.5])
 AC_CONFIG_SRCDIR([src/ydpdict.c])
 AM_INIT_AUTOMAKE
 AC_PREREQ([2.71])
